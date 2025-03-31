@@ -41,71 +41,12 @@
         app:layout_constraintTop_toBottomOf="@id/search_bar"
         app:layout_constraintVertical_bias="1.0" />
 
-    <LinearLayout
+    <include
         android:id="@+id/footer"
-        style="?android:attr/buttonBarStyle"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="5"
+        layout="@layout/footer"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent" />
 
-        <Button
-            android:id="@+id/button_explore"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
-            android:text="@string/explore"
-            android:textColor="#0B0000"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/button_wishlists"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
-            android:text="@string/wishlists"
-            android:textColor="#0B0000"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/button_trips"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
-            android:text="@string/trips"
-            android:textColor="#0B0000"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/button_messages"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
-            android:text="@string/messages"
-            android:textColor="#0B0000"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/button_profile"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
-            android:text="@string/profile"
-            android:textColor="#0B0000"
-            android:textSize="12sp" />
-    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
