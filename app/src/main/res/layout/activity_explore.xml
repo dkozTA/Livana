@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.Home">
+    android:background="#FFFFFF"
+    tools:context=".ui.Explore">
 
     <!-- Search Bar -->
     <EditText
@@ -28,9 +29,9 @@
         android:layout_marginTop="8dp"
         android:fillViewport="true"
         android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/search_bar"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/search_bar">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -41,46 +42,46 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FFFFFF"
+                android:padding="12dp"
                 android:text="Option 1"
-                android:padding="12dp"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#FFFFFF"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FFFFFF"
+                android:padding="12dp"
                 android:text="Option 2"
-                android:padding="12dp"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#FFFFFF"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FFFFFF"
+                android:padding="12dp"
                 android:text="Option 3"
-                android:padding="12dp"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#FFFFFF"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="#FFFFFF"
+                android:padding="12dp"
                 android:text="Option 4"
-                android:padding="12dp"
-                android:layout_marginEnd="8dp"
-                android:backgroundTint="#FFFFFF"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black" />
 
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Option 5"
-                android:padding="12dp"
                 android:backgroundTint="#FFFFFF"
-                android:textColor="@color/black"/>
+                android:padding="12dp"
+                android:text="Option 5"
+                android:textColor="@color/black" />
 
         </LinearLayout>
     </HorizontalScrollView>
@@ -91,11 +92,12 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/options_bar"
         app:layout_constraintBottom_toTopOf="@id/footer"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/options_bar" />
 
+    <!-- Footer -->
     <include
         android:id="@+id/footer"
         layout="@layout/footer"
