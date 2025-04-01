@@ -2,6 +2,7 @@ package com.example.myapplication.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +28,11 @@ public class Explore extends AppCompatActivity {
     private Button buttonProfile;
     private List<Button> allButtons;
     EditText searchBar;
-    RecyclerView recyclerView;
+    private RecyclerView recyclerView;
+
+    private PostAdapter postAdapter;
+
+    private List<Post> postList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +52,17 @@ public class Explore extends AppCompatActivity {
         // Initialize RecyclerView
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new PlaceholderAdapter());
+        //recyclerView.setAdapter(new PlaceholderAdapter());
+        // Dummy Data
+        postList = new ArrayList<>();
+        postList.add(new Post(R.drawable.photo1, "Tambon Huai Sat Yai, Thailand",
+                "1,165 kilometres away", "6–11 Apr", "₫5,795,858 for 5 nights"));
+        postList.add(new Post(R.drawable.avatar_icon, "Bali, Indonesia",
+                "2,400 kilometres away", "10–15 Apr", "₫8,500,000 for 5 nights"));
 
+        // 🔹 Gán Adapter vào RecyclerView
+        postAdapter = new PostAdapter(postList);
+        recyclerView.setAdapter(postAdapter);
         // Set up footer navigation
         Footer.setupFooterNavigation(this);
     }
