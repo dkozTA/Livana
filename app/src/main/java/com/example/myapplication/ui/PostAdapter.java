@@ -12,18 +12,16 @@ import com.example.myapplication.R;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
-    private Context context;
     private List<Post> postList;
 
-    public PostAdapter(Context context, List<Post> postList) {
-        this.context = context;
+    public PostAdapter(List<Post> postList) {
         this.postList = postList;
     }
 
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_post, parent, false);
         return new PostViewHolder(view);
     }
 

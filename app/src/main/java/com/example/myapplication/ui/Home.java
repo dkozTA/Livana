@@ -17,7 +17,7 @@ public class Home extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_explore);
 
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -30,7 +30,7 @@ public class Home extends AppCompatActivity {
                 "2,400 kilometres away", "10–15 Apr", "₫8,500,000 for 5 nights"));
 
         // 🔹 Gán Adapter vào RecyclerView
-        adapter = new PostAdapter(this, postList);
+        adapter = new PostAdapter(postList);
         recyclerView.setAdapter(adapter);
     }
 }

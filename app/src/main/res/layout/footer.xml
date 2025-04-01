@@ -27,7 +27,9 @@
             android:background="@drawable/footer_button_selector"
             android:text="@string/explore"
             android:textColor="#0B0000"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true" />
 
         <Button
             android:id="@+id/button_wishlists"
@@ -38,7 +40,9 @@
             android:background="@drawable/footer_button_selector"
             android:text="@string/wishlists"
             android:textColor="#0B0000"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:clickable="true"
+            android:focusable="true" />
 
         <Button
             android:id="@+id/button_trips"

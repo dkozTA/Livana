@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Livana</string>
-    <string name="go_to_second_page">Go to Second Page</string>
-    <string name="go_to_main_page">Go to Main Page</string>
     <string name="list_of_search_results">List of search results</string>
     <string name="welcome_to_rent_house_app">Welcome to Rent House App</string>
     <string name="search_for_houses">Search for houses</string>

@@ -7,16 +7,19 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="500dp"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="30dp"
+        tools:layout_editor_absoluteX="41dp"
+        tools:layout_editor_absoluteY="0dp">
 
         <ImageView
             android:id="@+id/post_image"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_width="350dp"
+            android:layout_height="350dp"
             android:scaleType="centerCrop"
-            tools:src="@drawable/avatar_icon" />
+            android:layout_gravity="center_horizontal"
+            tools:src="@drawable/photo1" />
 
         <TextView
             android:id="@+id/location"
@@ -25,6 +28,7 @@
             android:paddingTop="4dp"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:textColor="@android:color/black"
             tools:text="Sample Location" />
 
         <TextView
