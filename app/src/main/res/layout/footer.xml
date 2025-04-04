@@ -24,9 +24,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
+            android:background="@drawable/rounded_button"
             android:text="@string/explore"
-            android:textColor="#0B0000"
+            android:textColor="#000000"
             android:textSize="12sp"
             android:clickable="true"
             android:focusable="true" />
@@ -37,9 +37,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
+            android:background="@drawable/rounded_button"
             android:text="@string/wishlists"
-            android:textColor="#0B0000"
+            android:textColor="#000000"
             android:textSize="12sp"
             android:clickable="true"
             android:focusable="true" />
@@ -50,9 +50,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
+            android:background="@drawable/rounded_button"
             android:text="@string/trips"
-            android:textColor="#0B0000"
+            android:textColor="#000000"
             android:textSize="12sp" />
 
         <Button
@@ -61,9 +61,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
+            android:background="@drawable/rounded_button"
             android:text="@string/messages"
-            android:textColor="#0B0000"
+            android:textColor="#000000"
             android:textSize="12sp" />
 
         <Button
@@ -72,9 +72,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/footer_button_selector"
+            android:background="@drawable/rounded_button"
             android:text="@string/profile"
-            android:textColor="#0B0000"
+            android:textColor="#000000"
             android:textSize="12sp" />
     </LinearLayout>
 

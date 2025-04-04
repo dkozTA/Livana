@@ -10,19 +10,12 @@
     <TextView
         android:layout_width="345dp"
         android:layout_height="87dp"
-        android:text="Trips"
+        android:text="Profile"
         android:textSize="48sp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:layout_editor_absoluteX="16dp" />
 
-    <!-- Footer -->
-    <include
-        android:id="@+id/footer"
-        layout="@layout/footer"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

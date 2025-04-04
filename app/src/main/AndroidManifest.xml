@@ -15,30 +15,13 @@
 
         <!-- Main activity, entry point of the app -->
         <activity
-            android:name=".ui.Explore"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Other activities -->
-        <activity
-            android:name=".ui.WishlistsActivity"
-            android:exported="true" />
-
-        <activity
-            android:name=".ui.TripsActivity"
-            android:exported="true" />
-
-        <activity
-            android:name=".ui.MessagesActivity"
-            android:exported="true" />
-
-        <activity
-            android:name=".ui.ProfileActivity"
-            android:exported="true" />
 
     </application>
 
