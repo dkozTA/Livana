@@ -21,17 +21,44 @@ public class MainActivity extends AppCompatActivity {
         setupFooterNavigation();
     }
 
+    private void updateButtonStates(int selectedButtonId) {
+        int[] buttonIds = {
+                R.id.button_explore,
+                R.id.button_wishlists,
+                R.id.button_trips,
+                R.id.button_messages,
+                R.id.button_profile
+        };
+
+        for (int id : buttonIds) {
+            findViewById(id).setSelected(id == selectedButtonId);
+        }
+    }
+
     private void setupFooterNavigation() {
-        findViewById(R.id.button_explore).setOnClickListener(v ->
-                loadFragment(new ExploreFragment()));
-        findViewById(R.id.button_wishlists).setOnClickListener(v ->
-                loadFragment(new WishlistsFragment()));
-        findViewById(R.id.button_trips).setOnClickListener(v ->
-                loadFragment(new TripsFragment()));
-        findViewById(R.id.button_messages).setOnClickListener(v ->
-                loadFragment(new MessagesFragment()));
-        findViewById(R.id.button_profile).setOnClickListener(v ->
-                loadFragment(new ProfileFragment()));
+        findViewById(R.id.button_explore).setOnClickListener(v -> {
+            loadFragment(new ExploreFragment());
+            updateButtonStates(R.id.button_explore);
+        });
+        findViewById(R.id.button_wishlists).setOnClickListener(v -> {
+            loadFragment(new WishlistsFragment());
+            updateButtonStates(R.id.button_wishlists);
+        });
+        findViewById(R.id.button_trips).setOnClickListener(v -> {
+            loadFragment(new TripsFragment());
+            updateButtonStates(R.id.button_trips);
+        });
+        findViewById(R.id.button_messages).setOnClickListener(v -> {
+            loadFragment(new MessagesFragment());
+            updateButtonStates(R.id.button_messages);
+        });
+        findViewById(R.id.button_profile).setOnClickListener(v -> {
+            loadFragment(new ProfileFragment());
+            updateButtonStates(R.id.button_profile);
+        });
+
+        // Set initial state
+        updateButtonStates(R.id.button_explore);
     }
 
     private void loadFragment(Fragment fragment) {

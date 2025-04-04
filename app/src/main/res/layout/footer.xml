@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:weightSum="5"
+        android:padding="2dp"
         android:background="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -20,62 +21,63 @@
 
         <Button
             android:id="@+id/button_explore"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:text="@string/explore"
-            android:textColor="#000000"
-            android:textSize="12sp"
-            android:clickable="true"
-            android:focusable="true" />
+            android:background="@drawable/ic_app_icon"
+            android:padding="4dp"
+            android:text="Explore"
+            android:textAllCaps="false"
+            android:textColor="@color/footer_button_text_color"
+            android:textSize="9sp" />
 
         <Button
             android:id="@+id/button_wishlists"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:text="@string/wishlists"
-            android:textColor="#000000"
-            android:textSize="12sp"
-            android:clickable="true"
-            android:focusable="true" />
+            android:background="@drawable/ic_app_icon"
+            android:text="Wishlist"
+            android:textAllCaps="false"
+            android:padding="4dp"
+            android:textColor="@color/footer_button_text_color"
+            android:textSize="9sp" />
 
         <Button
             android:id="@+id/button_trips"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:text="@string/trips"
-            android:textColor="#000000"
-            android:textSize="12sp" />
+            android:background="@drawable/ic_app_icon"
+            android:text="Trips"
+            android:textAllCaps="false"
+            android:padding="4dp"
+            android:textColor="@color/footer_button_text_color"
+            android:textSize="9sp" />
 
         <Button
             android:id="@+id/button_messages"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:text="@string/messages"
-            android:textColor="#000000"
-            android:textSize="12sp" />
+            android:background="@drawable/ic_app_icon"
+            android:text="Messages"
+            android:textAllCaps="false"
+            android:padding="4dp"
+            android:textColor="@color/footer_button_text_color"
+            android:textSize="9sp" />
 
         <Button
             android:id="@+id/button_profile"
-            style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_weight="1"
-            android:background="@drawable/rounded_button"
-            android:text="@string/profile"
-            android:textColor="#000000"
-            android:textSize="12sp" />
+            android:background="@drawable/ic_app_icon"
+            android:text="Profile"
+            android:textAllCaps="false"
+            android:padding="4dp"
+            android:textColor="@color/footer_button_text_color"
+            android:textSize="9sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
