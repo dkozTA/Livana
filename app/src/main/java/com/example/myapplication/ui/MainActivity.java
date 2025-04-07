@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             updateButtonStates(R.id.button_explore);
         });
         findViewById(R.id.button_wishlists).setOnClickListener(v -> {
-            loadFragment(new WishlistsFragment());
+            loadFragment(new WishlistFragment());
             updateButtonStates(R.id.button_wishlists);
         });
         findViewById(R.id.button_trips).setOnClickListener(v -> {

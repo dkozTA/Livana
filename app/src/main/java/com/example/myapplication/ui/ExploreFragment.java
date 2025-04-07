@@ -31,15 +31,48 @@ public class ExploreFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        postList = new ArrayList<>();
-        postList.add(new Post(R.drawable.photo1, "Tambon Huai Sat Yai, Thailand",
-                "1,165 kilometres away", "6–11 Apr", "₫5,795,858 for 5 nights"));
-        postList.add(new Post(R.drawable.avatar_icon, "Bali, Indonesia",
-                "2,400 kilometres away", "10–15 Apr", "₫8,500,000 for 5 nights"));
-
-        postAdapter = new PostAdapter(postList);
+        postList = createFakeData();
+        postAdapter = new PostAdapter(getContext(), postList, false);
         recyclerView.setAdapter(postAdapter);
 
         return view;
+    }
+
+    private List<Post> createFakeData() {
+        List<Post> posts = new ArrayList<>();
+
+        posts.add(new Post(
+                R.drawable.photo1,
+                "Luxury Villa in Bali",
+                "2,400 kilometers away",
+                "Apr 15-20",
+                "₫8,500,000 per night"
+        ));
+
+        posts.add(new Post(
+                R.drawable.photo1,
+                "Beachfront Resort Phuket",
+                "1,500 kilometers away",
+                "Apr 20-25",
+                "₫6,200,000 per night"
+        ));
+
+        posts.add(new Post(
+                R.drawable.photo1,
+                "Mountain View Cottage",
+                "800 kilometers away",
+                "May 1-6",
+                "₫4,800,000 per night"
+        ));
+
+        posts.add(new Post(
+                R.drawable.photo1,
+                "City Center Apartment",
+                "500 kilometers away",
+                "May 10-15",
+                "₫3,500,000 per night"
+        ));
+
+        return posts;
     }
 }

@@ -14,7 +14,7 @@ public class Footer {
         Button buttonProfile = activity.findViewById(R.id.button_profile);
 
         buttonExplore.setOnClickListener(v -> loadFragment(activity, new ExploreFragment()));
-        buttonWishlists.setOnClickListener(v -> loadFragment(activity, new WishlistsFragment()));
+        buttonWishlists.setOnClickListener(v -> loadFragment(activity, new WishlistFragment()));
         buttonTrips.setOnClickListener(v -> loadFragment(activity, new TripsFragment()));
         buttonMessages.setOnClickListener(v -> loadFragment(activity, new MessagesFragment()));
         buttonProfile.setOnClickListener(v -> loadFragment(activity, new ProfileFragment()));

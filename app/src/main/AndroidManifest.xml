@@ -23,6 +23,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ui.HouseDetailActivity"
+            android:exported="false">
+        </activity>
+
     </application>
 
 </manifest>
