@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "902300555019",
+    "project_id": "mobile-application-5d7c5",
+    "storage_bucket": "mobile-application-5d7c5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:902300555019:android:c5fe9740b13b704115340e",
+        "android_client_info": {
+          "package_name": "com.example.uetinder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-t-62M5ABz1i84fEUmhBJ1GbtTsN3iqY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
