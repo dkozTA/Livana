@@ -21,7 +21,7 @@ public class AuthRepository {
         this.userRepository = new UserRepository(context);
     }
 
-    // 📌 Đăng ký
+    // Đăng ký
     public void register(AuthRegister authInformation, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         firebaseAuth.createUserWithEmailAndPassword(authInformation.email, authInformation.password)
                 .addOnCompleteListener(task -> {
@@ -45,7 +45,7 @@ public class AuthRepository {
                 });
     }
 
-    // 🔐 Đăng nhập
+    //Đăng nhập
     public void login(AuthLogin authInformation, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         firebaseAuth.signInWithEmailAndPassword(authInformation.email, authInformation.password)
                 .addOnCompleteListener(task -> {
@@ -55,6 +55,10 @@ public class AuthRepository {
                         onFailure.onFailure(task.getException());
                     }
                 });
+    }
+
+    public String getUserUid() {
+        return this.firebaseAuth.getUid();
     }
 
     public void logout() {

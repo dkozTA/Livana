@@ -24,7 +24,7 @@ public class UserRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    // 🔍 Lấy user theo UID
+    // 🔍 Lấy thông tin 1 user theo UID
     public void getUserByUid(String uid, OnSuccessListener<User> onSuccess, OnFailureListener onFailure) {
         db.collection("users").document(uid)
                 .get()

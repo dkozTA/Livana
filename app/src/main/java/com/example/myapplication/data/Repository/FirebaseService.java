@@ -4,15 +4,19 @@ import android.content.Context;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class FirebaseService {
     private static FirebaseService instance;
-    private FirebaseFirestore firestore;
-    private FirebaseAuth firebaseAuth;
+    private final FirebaseFirestore firestore;
+    private final FirebaseAuth firebaseAuth;
+    private final FirebaseStorage firebaseStorage;
 
     private FirebaseService (Context context) {
         firestore = FirebaseFirestore.getInstance();
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseStorage = FirebaseStorage.getInstance();
     }
 
     public static synchronized FirebaseService getInstance(Context context) {
@@ -28,5 +32,13 @@ public class FirebaseService {
 
     public FirebaseAuth getAuth() {
         return firebaseAuth;
+    }
+
+    public FirebaseStorage getStorage() {
+        return firebaseStorage;
+    }
+
+    public StorageReference getStorageReference() {
+        return firebaseStorage.getReference();
     }
 }

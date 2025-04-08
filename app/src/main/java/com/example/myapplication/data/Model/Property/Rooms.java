@@ -1,7 +1,7 @@
 package com.example.myapplication.data.Model.Property;
 
 public class Rooms {
-    public int bedRooms;
+    public int bedRooms; // co bao nhieu phong ngu
     public int livingRooms;
     public int kitchen;
 
