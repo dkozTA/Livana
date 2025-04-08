@@ -38,16 +38,16 @@ public class WishlistFolderAdapter extends RecyclerView.Adapter<WishlistFolderAd
 
         // Show first 4 house images in a grid
         List<Post> posts = folder.getPosts();
-        if (!posts.isEmpty()) {
-            for (int i = 0; i < Math.min(posts.size(), 4); i++) {
+        for (int i = 0; i < 4; i++) {
+            if (i < posts.size()) {
                 holder.previewImages[i].setImageResource(posts.get(i).getImageResId());
                 holder.previewImages[i].setVisibility(View.VISIBLE);
-            }
-            // Hide remaining preview images if less than 4 posts
-            for (int i = posts.size(); i < 4; i++) {
-                holder.previewImages[i].setVisibility(View.GONE);
+            } else {
+                holder.previewImages[i].setImageResource(R.color.black); // hoặc ảnh placeholder
+                holder.previewImages[i].setVisibility(View.INVISIBLE); // giữ không gian nhưng ẩn nội dung
             }
         }
+
 
         holder.itemView.setOnClickListener(v -> listener.onFolderClick(folder));
     }
