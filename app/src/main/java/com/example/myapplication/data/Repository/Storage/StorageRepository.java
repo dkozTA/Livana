@@ -64,4 +64,19 @@ public class StorageRepository {
                     .addOnFailureListener(onFailure);
         }
     }
+
+    public void uploadUserAvatar(String uid, Uri avatar_uri, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
+        String fileName = UUID.randomUUID().toString() + ".jpg";
+        StorageReference avatarRef = storageReference.child("avatars/" + "user_" + uid + "/" + fileName);
+
+        avatarRef.putFile(avatar_uri)
+                .addOnSuccessListener(taskSnapshot -> avatarRef.getDownloadUrl()
+                        .addOnSuccessListener(downloadUri -> {
+                            String url = downloadUri.toString();
+                            onSuccess.onSuccess(url);
+                        })
+                        .addOnFailureListener(onFailure)
+                )
+                .addOnFailureListener(onFailure);
+    }
 }

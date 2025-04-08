@@ -1,18 +1,21 @@
 package com.example.myapplication.data.Repository.User;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.FirebaseService;
+import com.example.myapplication.data.Repository.Storage.StorageRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class UserRepository {
     private final FirebaseFirestore db;
-
+    private final StorageRepository storageRepository;
     public UserRepository(Context context) {
         db = FirebaseService.getInstance(context).getFireStore();
+        storageRepository = new StorageRepository(context);
     }
 
     // ➕ Tạo user mới
@@ -42,5 +45,24 @@ public class UserRepository {
                     }
                 })
                 .addOnFailureListener(onFailure);
+    }
+
+    public void updateUser(User user, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        String uid = user.uid;
+        db.collection("users").document(uid)
+                .set(user)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
+    public void updateAvatar(String uid, Uri avatar_img, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.storageRepository.uploadUserAvatar(uid, avatar_img,
+                avatar_url -> {
+                    db.collection("users").document(uid).update("avatar_link", avatar_url)
+                    .addOnSuccessListener(onSuccess)
+                    .addOnFailureListener(onFailure);
+                },
+                onFailure
+        );
     }
 }

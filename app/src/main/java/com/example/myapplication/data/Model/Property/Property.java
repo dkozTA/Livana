@@ -6,8 +6,10 @@ import com.example.myapplication.data.Enum.PropertyType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 public class Property {
+    public String id;
     public String host_id;
     public String name;
     public PropertyType property_type;
@@ -32,6 +34,7 @@ public class Property {
     public Property(String host_id, String name, PropertyType property_type, PropertyStatus status,
                     Address address, Rooms rooms, Amenities amenities,
                     double normal_price, double weekend_price, double holiday_price, double deposit) {
+        this.id = UUID.randomUUID().toString();
         this.host_id = host_id;
         this.name = name;
         this.property_type = property_type;

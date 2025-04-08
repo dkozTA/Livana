@@ -28,4 +28,16 @@ public class User {
         this.wish_list = new ArrayList<>();
         this.avatar_link = "";
     }
+
+    public void setAvatar_link(String avatar_link) {
+        this.avatar_link = avatar_link;
+    }
+
+    public void setRentingHistory(List<String> rentingHistory) {
+        this.rentingHistory = rentingHistory;
+    }
+
+    public void setWish_list(List<String> wish_list) {
+        this.wish_list = wish_list;
+    }
 }

@@ -8,7 +8,6 @@ import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -25,7 +24,7 @@ public class PropertyRepository {
         this.storageRepository = new StorageRepository(context);
     }
 
-    public void addProperty(Property property, Uri main_image ,List<Uri> sub_images , OnSuccessListener<DocumentReference> onSuccess, OnFailureListener onFailure) {
+    public void addProperty(Property property, Uri main_image ,List<Uri> sub_images , OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         storageRepository.uploadMainImage(main_image, mainImageUrl -> {
             property.setMainPhoto(mainImageUrl);
 
@@ -34,11 +33,10 @@ public class PropertyRepository {
                 property.setSub_photos(subImageUrls);
 
                 // 3. Khi cả hai xong thì mới add vào Firestore
-                db.collection(COLLECTION_NAME)
-                        .add(property)
+                db.collection(COLLECTION_NAME).document(property.id)
+                        .set(property)
                         .addOnSuccessListener(onSuccess)
                         .addOnFailureListener(onFailure);
-
             }, onFailure);
 
         }, onFailure);

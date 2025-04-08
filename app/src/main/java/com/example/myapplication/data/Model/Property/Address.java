@@ -6,6 +6,8 @@ public class Address {
     public int ward_code;
     public String detailed_address;
 
+    public Address() {}
+
     public Address(int city, int district, int ward, String detailed_add) {
         this.city_code = city;
         this.district_code = district;
