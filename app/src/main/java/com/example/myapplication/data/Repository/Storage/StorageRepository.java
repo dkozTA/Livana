@@ -21,9 +21,9 @@ public class StorageRepository {
         storageReference = storage.getReference();
     }
 
-    public void uploadMainImage(Uri imageUri, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
+    public void uploadMainImage(String house_id, Uri imageUri, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
         String fileName = UUID.randomUUID().toString() + ".jpg";
-        StorageReference fileRef = storageReference.child("houses/" + fileName);
+        StorageReference fileRef = storageReference.child("houses/" + house_id + "/main_photo/" + fileName);
 
         fileRef.putFile(imageUri)
                 .addOnSuccessListener(taskSnapshot ->
@@ -37,7 +37,7 @@ public class StorageRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    public void uploadHouseSubImages(List<Uri> imageUris, OnSuccessListener<List<String>> onComplete, OnFailureListener onFailure) {
+    public void uploadHouseSubImages(String house_id, List<Uri> imageUris, OnSuccessListener<List<String>> onComplete, OnFailureListener onFailure) {
         List<String> downloadUrls = new ArrayList<>();
         int total = imageUris.size();
 
@@ -48,7 +48,7 @@ public class StorageRepository {
 
         for (Uri uri : imageUris) {
             String fileName = UUID.randomUUID().toString() + ".jpg";
-            StorageReference fileRef = storageReference.child("houses/" + fileName);
+            StorageReference fileRef = storageReference.child("houses/" + house_id + "/sub_photos/" + fileName);
 
             fileRef.putFile(uri)
                     .addOnSuccessListener(taskSnapshot ->

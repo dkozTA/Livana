@@ -25,11 +25,12 @@ public class PropertyRepository {
     }
 
     public void addProperty(Property property, Uri main_image ,List<Uri> sub_images , OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        storageRepository.uploadMainImage(main_image, mainImageUrl -> {
+        String propertyID = property.id;
+        storageRepository.uploadMainImage(propertyID, main_image, mainImageUrl -> {
             property.setMainPhoto(mainImageUrl);
 
             // 2. Upload các ảnh phụ
-            storageRepository.uploadHouseSubImages(sub_images, subImageUrls -> {
+            storageRepository.uploadHouseSubImages(propertyID, sub_images, subImageUrls -> {
                 property.setSub_photos(subImageUrls);
 
                 // 3. Khi cả hai xong thì mới add vào Firestore
