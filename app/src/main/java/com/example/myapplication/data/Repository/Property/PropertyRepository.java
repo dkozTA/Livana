@@ -43,6 +43,16 @@ public class PropertyRepository {
         }, onFailure);
     }
 
+    public void addProperty(Property property, String main_image, List<String> sub_images, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        String propertyID = property.id;
+        property.setMainPhoto(main_image);
+        property.setSub_photos(sub_images);
+        db.collection(COLLECTION_NAME).document(property.id)
+                .set(property)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
     public void updateProperty(String id, Property updatedProperty, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         db.collection(COLLECTION_NAME)
                 .document(id)
