@@ -73,6 +73,22 @@ public class ExploreFragment extends Fragment {
                 "₫3,500,000 per night"
         ));
 
+        posts.add(new Post(
+                R.drawable.photo1,
+                "City Apartment",
+                "500 kilometers away",
+                "May 10-15",
+                "₫3,500,000 per night"
+        ));
+
+        posts.add(new Post(
+                R.drawable.photo1,
+                "City Center",
+                "500 kilometers away",
+                "May 10-15",
+                "₫3,500,000 per night"
+        ));
+
         return posts;
     }
 }
