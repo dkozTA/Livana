@@ -16,7 +16,6 @@ public class Property {
     public PropertyStatus status;
     public Address address;
     public Rooms rooms;
-    public int guess;
     public int max_guess;
     public Amenities amenities;
     public String main_photo;
@@ -34,7 +33,7 @@ public class Property {
     public Property() {};
 
     public Property(String host_id, String name, PropertyType property_type, PropertyStatus status,
-                    Address address, Rooms rooms, int guess, int max_guess, Amenities amenities,
+                    Address address, Rooms rooms, int max_guess, Amenities amenities,
                     double normal_price, double weekend_price, double holiday_price, double deposit) {
         this.id = UUID.randomUUID().toString();
         this.host_id = host_id;
@@ -43,7 +42,6 @@ public class Property {
         this.status = status;
         this.address = address;
         this.rooms = rooms;
-        this.guess = guess;
         this.max_guess = max_guess;
         this.amenities = amenities;
         this.main_photo = "";

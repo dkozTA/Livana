@@ -10,6 +10,7 @@ import com.example.myapplication.data.Enum.PropertyType;
 import com.example.myapplication.data.Model.Auth.AuthRegister;
 import com.example.myapplication.data.Model.Property.Address;
 import com.example.myapplication.data.Model.Property.Amenities;
+import com.example.myapplication.data.Model.Property.AmenityStatus;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Model.Property.Rooms;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
@@ -42,18 +43,19 @@ public class TestActivity extends AppCompatActivity {
 
                 new Address(1, 123, 45678, "Thôn Lâm Trường, xã Minh Phú, huyện Sóc Sơn"), // Hà Nội, Sóc Sơn, Minh Phú
 
-                new Rooms(2, 1, 1), // 2 phòng ngủ, 1 phòng khách, 1 bếp
-                2,2,
+                new Rooms(2, AmenityStatus.Available, AmenityStatus.Available), // 2 phòng ngủ, 1 phòng khách, 1 bếp
+                2,
                 new Amenities(
-                        1,       // 1 TV
-                        true,    // có wifi
-                        false,   // không cho phép thú cưng
-                        true,    // có hồ bơi
-                        true,    // có máy giặt
-                        false,   // không có bữa sáng
-                        true,    // có điều hòa
-                        true,    // có BBQ
-                        "View rừng thông, có sân nướng, xích đu, lò sưởi ngoài trời" // more
+                        AmenityStatus.Available,     // 1 TV
+                        AmenityStatus.Available,    // có wifi
+                        AmenityStatus.Available,   // không cho phép thú cưng
+                        AmenityStatus.Available,    // có hồ bơi
+                        AmenityStatus.Available,    // có máy giặt
+                        AmenityStatus.Available,   // không có bữa sáng
+                        AmenityStatus.Available,    // có điều hòa
+                        AmenityStatus.Available,    // có BBQ
+                        "View rừng thông, có sân nướng, xích đu, lò sưởi ngoài trời", // more
+                        "Không gây ồn ào sau 22h tối và tắt đèn trước 2 giờ sáng"
                 ),
 
                 2000000,  // normal_price (1.000.000 VND)
