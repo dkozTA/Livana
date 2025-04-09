@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application
+        android:name=".MyApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -13,7 +14,17 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
 
-        <!-- Main activity, entry point of the app -->
+        <!-- Main activity, entry point of the app
+           <activity
+                android:name=".ui.TestActivity"
+                android:exported="true">
+                <intent-filter>
+                    <action android:name="android.intent.action.MAIN" />
+                    <category android:name="android.intent.category.LAUNCHER" />
+                </intent-filter>
+            </activity>
+        -->
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">
