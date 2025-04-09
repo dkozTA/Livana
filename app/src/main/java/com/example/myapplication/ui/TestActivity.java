@@ -15,6 +15,10 @@ import com.example.myapplication.data.Model.Property.Rooms;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 // cai nay de ben backend test data thoi khong quan trong dau
 public class TestActivity extends AppCompatActivity {
     @Override
@@ -28,34 +32,60 @@ public class TestActivity extends AppCompatActivity {
                 unused -> Log.d("TEST", "Đăng ký thành công" + auth.getUserUid()),
                 e -> Log.e("TEST", "Đăng ký thất bại: " + e.getMessage())
         );
-
+        v4528ioquLTQbtmKYieS3quQUsp2
+        */
         Property sampleProperty = new Property(
-                "host123", // host_id
-                "Biệt thự ven sông", // name
+                "host789", // host_id (giả định)
+                "Họa Giấy 1 - Một Homestay Sóc Sơn", // name
                 PropertyType.Villa, // property_type
                 PropertyStatus.Active, // status
 
-                new Address(79, 769, 26899, "123 Nguyễn Văn Linh, Phường Tân Phong"), // TP.HCM, Q.7, P. Tân Phong
+                new Address(1, 123, 45678, "Thôn Lâm Trường, xã Minh Phú, huyện Sóc Sơn"), // Hà Nội, Sóc Sơn, Minh Phú
 
-                new Rooms(3, 1, 1), // 3 phòng ngủ, 1 phòng khách, 1 bếp
-
+                new Rooms(2, 1, 1), // 2 phòng ngủ, 1 phòng khách, 1 bếp
+                2,2,
                 new Amenities(
-                        2,       // 2 TV
+                        1,       // 1 TV
                         true,    // có wifi
-                        true,    // cho phép thú cưng
+                        false,   // không cho phép thú cưng
                         true,    // có hồ bơi
                         true,    // có máy giặt
-                        true,    // có bữa sáng
+                        false,   // không có bữa sáng
                         true,    // có điều hòa
                         true,    // có BBQ
-                        "Có bàn bida và khu vui chơi trẻ em" // more
+                        "View rừng thông, có sân nướng, xích đu, lò sưởi ngoài trời" // more
                 ),
 
-                1200000,  // normal_price (1.200.000 VND)
-                1500000,  // weekend_price
-                1800000,  // holiday_price
-                1000000   // deposit
+                2000000,  // normal_price (1.000.000 VND)
+                2300000,  // weekend_price
+                2600000,  // holiday_price
+                1800000    // deposit
         );
-         */
+
+        String mainImage = "https://cdn.justfly.vn/2048x1364/media/202406/20/1718849102-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-5.jpg";
+
+        List<String> sub_images = Arrays.asList(
+                "https://cdn.justfly.vn/2048x1364/media/202406/20/1718849099-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-2.jpg",
+                "https://cdn.justfly.vn/2048x1366/media/202406/20/1718849116-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-18.jpg",
+                "https://cdn.justfly.vn/2048x1366/media/202406/20/1718849111-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-13.jpg",
+                "https://cdn.justfly.vn/1366x2048/media/202406/20/1718849118-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-20.jpg",
+                "https://cdn.justfly.vn/2048x1364/media/202406/20/1718849104-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-7.jpg",
+                "https://cdn.justfly.vn/2048x1364/media/202406/20/1718849100-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-3.jpg",
+                "https://cdn.justfly.vn/2048x1366/media/202406/20/1718849115-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-17.jpg",
+                "https://cdn.justfly.vn/2048x1366/media/202406/20/1718849120-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-22.jpg",
+                "https://cdn.justfly.vn/2048x1366/media/202406/20/1718849110-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-12.jpg",
+                "https://cdn.justfly.vn/2048x1366/media/202406/20/1718849112-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-14.jpg",
+                "https://cdn.justfly.vn/2048x1366/media/202406/20/1718849123-justfly-hoa-giay-1-mot-homestay-soc-ha-noi-24.jpg"
+        );
+
+
+        PropertyRepository propertyRepository = new PropertyRepository(this);
+        propertyRepository.addProperty(sampleProperty, mainImage, sub_images,
+                unused -> {
+                    Log.d("TEST", "Thêm thành công " + sampleProperty.id);
+                },
+                e -> {
+                    Log.e("TEST", "Thêm thất bại " + e.getMessage());
+                });
     }
 }
