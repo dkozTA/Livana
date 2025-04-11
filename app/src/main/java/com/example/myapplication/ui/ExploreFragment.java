@@ -10,17 +10,26 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
+import com.example.myapplication.data.Model.Property.Property;
+import com.example.myapplication.data.Repository.Property.PropertyRepository;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExploreFragment extends Fragment {
     private EditText searchBar;
     private RecyclerView recyclerView;
-    private PostAdapter postAdapter;
+    // Store property data from backend
+    private PropertyRepository propertyRepository;
+    // List to hold UI post items
     private List<Post> postList;
+    // Adapter to display posts in RecyclerView
+    private PostAdapter postAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // ... UI code:
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
 
         searchBar = view.findViewById(R.id.search_bar);
@@ -31,97 +40,62 @@ public class ExploreFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        postList = createFakeData();
+        // Initialize empty list and adapter
+        postList = new ArrayList<>();
         postAdapter = new PostAdapter(getContext(), postList, false);
         recyclerView.setAdapter(postAdapter);
+
+        // Create repository instance to interact with Firebase
+        propertyRepository = new PropertyRepository(requireContext());
+        // Start fetching data
+        fetchBackendData();
 
         return view;
     }
 
-    private List<Post> createFakeData() {
-        List<Post> posts = new ArrayList<>();
+    private void fetchBackendData() {
+        // Call repository method to get all properties from Firestore
+        propertyRepository.getAllProperties(
+                // Success callback - receives List<Property> from Firebase
+                new OnSuccessListener<List<Property>>() {
+                    @Override
+                    public void onSuccess(List<Property> properties) {
+                        // Clear existing posts
+                        postList.clear();
 
-        posts.add(new Post(
-                "Stunning bamboo tree house in cat garden",
-                R.drawable.photo1,
-                "Treehouse in Thailand, Thailand",
-                "4 guests . 1 bedroom . 1 bathroom",
-                "2,400 kilometers away",
-                "Apr 15–20",
-                "₫8,500,000 per night"
-        ));
+                        // Convert each Property to Post
+                        for (Property property : properties) {
+                            // Format price to display with $ symbol
+                            String formattedPrice = String.format("$%.2f", property.normal_price);
 
-        posts.add(new Post(
-                "Bamboo villa with forest view",
-                R.drawable.photo1,
-                "Treehouse in Thailand, Thailand",
-                "4 guests . 2 bedrooms . 2 bathrooms",
-                "2,100 kilometers away",
-                "Apr 18–23",
-                "₫7,900,000 per night"
-        ));
+                            // Handle null address case
+                            String location = property.address != null ?
+                                    property.address.toString() : "No location";
 
-        posts.add(new Post(
-                "Hidden jungle treehouse retreat",
-                R.drawable.photo1,
-                "Treehouse in Thailand, Thailand",
-                "2 guests . 1 bedroom . 1 bathroom",
-                "2,800 kilometers away",
-                "Apr 22–27",
-                "₫8,200,000 per night"
-        ));
-
-        posts.add(new Post(
-                "Eco bamboo lodge in nature",
-                R.drawable.photo1,
-                "Treehouse in Thailand, Thailand",
-                "3 guests . 1 bedroom . 1 bathroom",
-                "1,950 kilometers away",
-                "Apr 25–30",
-                "₫8,000,000 per night"
-        ));
-
-        posts.add(new Post(
-                "Luxury treehouse in Chiang Mai",
-                R.drawable.photo1,
-                "Treehouse in Thailand, Thailand",
-                "4 guests . 2 bedrooms . 2 bathrooms",
-                "2,600 kilometers away",
-                "May 1–6",
-                "₫9,000,000 per night"
-        ));
-
-        posts.add(new Post(
-                "Romantic bamboo stay with cats",
-                R.drawable.photo1,
-                "Treehouse in Thailand, Thailand",
-                "2 guests . 1 bedroom . 1 bathroom",
-                "2,000 kilometers away",
-                "May 5–10",
-                "₫7,500,000 per night"
-        ));
-
-        posts.add(new Post(
-                "Peaceful bamboo house escape",
-                R.drawable.photo1,
-                "Treehouse in Thailand, Thailand",
-                "4 guests . 1 bedroom . 1 bathroom",
-                "2,300 kilometers away",
-                "May 10–15",
-                "₫8,300,000 per night"
-        ));
-
-        posts.add(new Post(
-                "Treehouse hideout near waterfall",
-                R.drawable.photo1,
-                "Treehouse in Thailand, Thailand",
-                "3 guests . 1 bedroom . 1 bathroom",
-                "2,500 kilometers away",
-                "May 15–20",
-                "₫8,100,000 per night"
-        ));
-
-        return posts;
+                            // Create new Post object with property data
+                            postList.add(new Post(
+                                    property.name,                    // title
+                                    R.drawable.photo1,               // placeholder image
+                                    location,                        // address string
+                                    property.property_type.toString(), // property type as detail
+                                    "N/A",                          // no distance available
+                                    "Available now",                 // placeholder date range
+                                    formattedPrice                  // formatted price
+                            ));
+                        }
+                        // Notify adapter to refresh RecyclerView
+                        postAdapter.notifyDataSetChanged();
+                    }
+                },
+                // Failure callback - shows error toast
+                new OnFailureListener() {
+                    @Override
+                    public void onFailure(Exception e) {
+                        Toast.makeText(getContext(),
+                                "Failed to fetch data: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+        );
     }
-
 }
