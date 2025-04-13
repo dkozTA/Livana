@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.misc;
 
 import java.util.ArrayList;
 import java.util.List;
