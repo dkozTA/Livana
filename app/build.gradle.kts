@@ -48,6 +48,15 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth-ktx") // Firebase Authentication
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+
+    // Retrofit
+    // Thư viện Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Thêm Gson để xử lý JSON
+    implementation ("com.google.code.gson:gson:2.9.0")
 }
 
 apply(plugin = "com.google.gms.google-services")
+
