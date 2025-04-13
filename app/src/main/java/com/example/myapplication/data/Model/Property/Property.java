@@ -57,6 +57,79 @@ public class Property {
         this.updated_at = new Date();
     }
 
+    // --- GETTERS ---
+    public String getId() {
+        return id;
+    }
+
+    public String getHost_id() {
+        return host_id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public PropertyType getProperty_type() {
+        return property_type;
+    }
+
+    public PropertyStatus getStatus() {
+        return status;
+    }
+
+    public Address getAddress() {
+        return address;
+    }
+
+    public Rooms getRooms() {
+        return rooms;
+    }
+
+    public int getMax_guess() {
+        return max_guess;
+    }
+
+    public Amenities getAmenities() {
+        return amenities;
+    }
+
+    public String getMainPhoto() {
+        return main_photo;
+    }
+
+    public List<String> getSub_photos() {
+        return sub_photos;
+    }
+
+    public double getNormal_price() {
+        return normal_price;
+    }
+
+    public double getWeekend_price() {
+        return weekend_price;
+    }
+
+    public double getHoliday_price() {
+        return holiday_price;
+    }
+
+    public double getDeposit() {
+        return deposit;
+    }
+
+    public List<String> getBooked_date() {
+        return booked_date;
+    }
+
+    public int getTotal_reviews() {
+        return total_reviews;
+    }
+
+    public double getAvg_ratings() {
+        return avg_ratings;
+    }
+
     public void setMainPhoto(String main_photo) {
         this.main_photo = main_photo;
     }
