@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
+import com.example.myapplication.data.Model.Property.AmenityStatus;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.ui.misc.Post;
@@ -68,21 +69,50 @@ public class ExploreFragment extends Fragment {
                         // Convert each Property to Post
                         for (Property property : properties) {
                             // Format price to display with $ symbol
-                            String formattedPrice = String.format("$%.2f", property.normal_price);
+                            String formattedPrice = "₫" + String.format("%,.0f", property.getNormal_price()) + " per night";
 
                             // Handle null address case
-                            String location = property.address != null ?
-                                    property.address.toString() : "No location";
+                            String title = property.address.getDetailAddress() != null ?
+                                    property.address.getDetailAddress() : "No location";
+
+                            String propertyType = property.property_type.toString();
+                            int maxGuest = property.max_guess;
+                            int bedRooms = property.rooms.bedRooms;
+                            String livingRoomStatus = property.rooms.livingRooms.toString();
+                            String kitchenStatus = property.rooms.kitchen.toString();
+
+                            // Xử lý số ít/số nhiều
+                            String guestText = maxGuest + " guest" + (maxGuest > 1 ? "s" : "");
+                            String bedroomText = bedRooms + " bedroom" + (bedRooms > 1 ? "s" : "");
+
+                            // Nếu có phòng khách, chỉ ghi "· living room"
+                            String livingRoomText = "";
+                            if ("available".equalsIgnoreCase(livingRoomStatus)) {
+                                livingRoomText = " · living room";
+                            }
+
+                            // Nếu có phòng khách, chỉ ghi "· living room"
+                            String kitchenText = "";
+                            if ("available".equalsIgnoreCase(kitchenStatus)) {
+                                livingRoomText = " · kitchen";
+                            }
+
+                            // Ghép chuỗi mô tả chi tiết
+                            String detail = propertyType + " · " + guestText + " · " + bedroomText + livingRoomText + kitchenText;
+
 
                             // Create new Post object with property data
                             postList.add(new Post(
-                                    property.name,                    // title
-                                    R.drawable.photo1,               // placeholder image
-                                    location,                        // address string
-                                    property.property_type.toString(), // property type as detail
-                                    "N/A",                          // no distance available
+                                    title,                    // title
+                                    property.getMainPhoto(),               // placeholder image
+                                    property.name,                        // address string
+                                    detail, // property type as detail
+                                    "1.200 km",                          // no distance available
                                     "Available now",                 // placeholder date range
-                                    formattedPrice                  // formatted price
+                                    formattedPrice,                 // formatted price
+                                    property.total_reviews,
+                                    property.avg_ratings,
+                                    property.amenities
                             ));
                         }
                         // Notify adapter to refresh RecyclerView

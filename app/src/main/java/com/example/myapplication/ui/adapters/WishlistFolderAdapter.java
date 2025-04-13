@@ -7,6 +7,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistFolder;
@@ -43,7 +45,12 @@ public class WishlistFolderAdapter extends RecyclerView.Adapter<WishlistFolderAd
         List<Post> posts = folder.getPosts();
         for (int i = 0; i < 4; i++) {
             if (i < posts.size()) {
-                holder.previewImages[i].setImageResource(posts.get(i).getImageResId());
+                Glide.with(holder.itemView.getContext())
+                        .load(posts.get(i).getImageResId()) // nếu là URL, nên đổi tên hàm thành getImageUrl()
+                        .placeholder(R.drawable.photo1)
+                        .error(R.drawable.photo1)
+                        .into(holder.previewImages[i]);
+
                 holder.previewImages[i].setVisibility(View.VISIBLE);
             } else {
                 holder.previewImages[i].setImageResource(R.color.black); // hoặc ảnh placeholder

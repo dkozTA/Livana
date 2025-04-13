@@ -14,6 +14,10 @@ public class Address {
         this.ward_code = ward;
         this.detailed_address = detailed_add;
     }
+    
+    public String getDetailAddress() {
+        return this.detailed_address;
+    }
 
     // luư địa chỉ city district và ward theo dạng code nhé để dễ search
     // https://provinces.open-api.vn/

@@ -13,6 +13,7 @@ import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.ui.activities.HouseDetailActivity;
 import com.example.myapplication.utils.DialogUtils;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -42,7 +43,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
 
-        holder.postImage.setImageResource(post.getImageResId());
+        // Load ảnh từ URL
+        Glide.with(holder.itemView.getContext())
+                .load(post.getImageResId()) // ảnh từ property.getMainPhoto()
+                .placeholder(R.drawable.photo1) // ảnh chờ
+                .error(R.drawable.photo1)             // ảnh khi lỗi
+                .into(holder.postImage);
         holder.location.setText(post.getLocation());
         holder.dateRange.setText(post.getDateRange());
         holder.price.setText(post.getPrice());

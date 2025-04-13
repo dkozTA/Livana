@@ -12,10 +12,13 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.utils.DialogUtils;
+
+import org.w3c.dom.Text;
 
 public class HouseDetailActivity extends AppCompatActivity {
     private ImageButton heartButton;
@@ -62,14 +65,22 @@ public class HouseDetailActivity extends AppCompatActivity {
             TextView detail = findViewById(R.id.details);
             TextView dateRange = findViewById(R.id.date_range);
             TextView price = findViewById(R.id.price);
+            TextView avg_ratings = findViewById(R.id.avg_ratings);
+            TextView total_reviews = findViewById(R.id.total_reviews);
             heartButton = findViewById(R.id.heart_button);
 
             title.setText(post.getTitle());
-            postImageView.setImageResource(post.getImageResId());
+            Glide.with(this)
+                    .load(post.getImageResId()) // hoặc getImageResId() nếu dùng R.drawable
+                    .placeholder(R.drawable.photo1) // tùy chọn
+                    .error(R.drawable.photo1) // tùy chọn
+                    .into(postImageView);
             location.setText(post.getLocation());
             detail.setText(post.getDetail());
             dateRange.setText(post.getDateRange());
             price.setText(post.getPrice());
+            avg_ratings.setText(post.getAvgRatings() + " ★ ");
+            total_reviews.setText(post.getTotalReview() + " reviews");
 
             updateHeartIcon();
 
