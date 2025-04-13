@@ -1,9 +1,14 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.misc;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import android.widget.Button;
 import com.example.myapplication.R;
+import com.example.myapplication.ui.fragments.ExploreFragment;
+import com.example.myapplication.ui.fragments.MessagesFragment;
+import com.example.myapplication.ui.fragments.ProfileFragment;
+import com.example.myapplication.ui.fragments.TripsFragment;
+import com.example.myapplication.ui.fragments.WishlistFragment;
 
 public class Footer {
     public static void setupFooterNavigation(FragmentActivity activity) {

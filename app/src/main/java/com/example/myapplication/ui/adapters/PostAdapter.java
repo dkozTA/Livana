@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.adapters;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,6 +9,9 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
+import com.example.myapplication.ui.misc.Post;
+import com.example.myapplication.ui.misc.WishlistManager;
+import com.example.myapplication.ui.activities.HouseDetailActivity;
 import com.example.myapplication.utils.DialogUtils;
 
 import java.util.List;

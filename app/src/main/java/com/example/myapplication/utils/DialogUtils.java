@@ -8,8 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.*;
 import com.example.myapplication.R;
-import com.example.myapplication.ui.Post;
-import com.example.myapplication.ui.WishlistManager;
+import com.example.myapplication.ui.misc.Post;
+import com.example.myapplication.ui.misc.WishlistManager;
 
 public class DialogUtils {
 

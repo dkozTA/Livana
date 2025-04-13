@@ -1,9 +1,14 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.activities;
 
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.myapplication.R;
+import com.example.myapplication.ui.fragments.ExploreFragment;
+import com.example.myapplication.ui.fragments.MessagesFragment;
+import com.example.myapplication.ui.fragments.ProfileFragment;
+import com.example.myapplication.ui.fragments.TripsFragment;
+import com.example.myapplication.ui.fragments.WishlistFragment;
 
 public class MainActivity extends AppCompatActivity {
     @Override

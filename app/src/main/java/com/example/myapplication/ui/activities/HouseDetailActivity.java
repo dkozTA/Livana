@@ -1,10 +1,9 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.activities;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -14,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.myapplication.R;
+import com.example.myapplication.ui.misc.Post;
+import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.utils.DialogUtils;
 
 public class HouseDetailActivity extends AppCompatActivity {

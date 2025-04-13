@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.misc;
 
 import android.os.Parcel;
 import android.os.Parcelable;
