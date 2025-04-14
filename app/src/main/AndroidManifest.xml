@@ -56,5 +56,5 @@
         <activity android:name=".ui.activities.PersonalInfoActivity" />
 
     </application>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 </manifest>
