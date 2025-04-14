@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services") version "4.4.2" apply false
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -30,6 +31,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -48,6 +52,10 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth-ktx") // Firebase Authentication
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
+
+    // GG MAP
+    implementation ("com.google.android.gms:play-services-maps:18.0.1")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
 
     // Retrofit
     // Thư viện Retrofit
