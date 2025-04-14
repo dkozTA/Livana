@@ -17,13 +17,12 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/post_image"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPagerImages"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:scaleType="centerCrop" />
+                android:layout_height="300dp" />
 
-<!--            <androidx.viewpager2.widget.ViewPager2-->
+<!--            -->
 <!--                android:id="@+id/viewPagerImages"-->
 <!--                android:layout_width="match_parent"-->
 <!--                android:layout_height="300dp"-->
