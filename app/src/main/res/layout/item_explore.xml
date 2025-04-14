@@ -17,11 +17,10 @@
             android:layout_width="match_parent"
             android:layout_height="300dp">
 
-            <ImageView
-                android:id="@+id/post_image"
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/image_viewpager"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
+                android:layout_height="match_parent" />
 
             <ImageButton
                 android:id="@+id/heart_button"

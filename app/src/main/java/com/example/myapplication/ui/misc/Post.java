@@ -2,6 +2,7 @@ package com.example.myapplication.ui.misc;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.example.myapplication.data.Model.Property.Amenities;
 
@@ -120,6 +121,7 @@ public class Post implements Parcelable {
 
     // Getter
     public List<String> getSub_photos() {
+        Log.d("Post", "getSub_photos size: " + (sub_photos != null ? sub_photos.size() : 0));
         return sub_photos;
     }
 }

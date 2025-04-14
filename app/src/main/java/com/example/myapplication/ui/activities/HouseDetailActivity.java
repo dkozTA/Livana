@@ -15,11 +15,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.AmenityStatus;
+import com.example.myapplication.ui.adapters.PostImageAdapter;
 import com.example.myapplication.ui.misc.Amenity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
@@ -27,6 +29,7 @@ import com.example.myapplication.utils.DialogUtils;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,7 +53,7 @@ public class HouseDetailActivity extends AppCompatActivity {
         shareButton.setOnClickListener(v -> sharePost());
 
         ScrollView scrollView = findViewById(R.id.scrollView);
-        ImageView postImage = findViewById(R.id.post_image);
+        ViewPager2 postImage = findViewById(R.id.viewPagerImages);
         ConstraintLayout topBar = findViewById(R.id.top_button_bar);
 
         scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
@@ -70,7 +73,9 @@ public class HouseDetailActivity extends AppCompatActivity {
         post = getIntent().getParcelableExtra("post");
         if (post != null) {
             TextView title = findViewById(R.id.title);
-            ImageView postImageView = findViewById(R.id.post_image);
+            //ImageView postImageView = findViewById(R.id.post_image);
+            ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
+
             TextView location = findViewById(R.id.location);
             TextView detail = findViewById(R.id.details);
             TextView dateRange = findViewById(R.id.date_range);
@@ -83,11 +88,15 @@ public class HouseDetailActivity extends AppCompatActivity {
             heartButton = findViewById(R.id.heart_button);
 
             title.setText(post.getTitle());
-            Glide.with(this)
-                    .load(post.getImageResId()) // hoặc getImageResId() nếu dùng R.drawable
-                    .placeholder(R.drawable.photo1) // tùy chọn
-                    .error(R.drawable.photo1) // tùy chọn
-                    .into(postImageView);
+            List<String> allImages = post.getSub_photos();
+            if (allImages == null) allImages = new ArrayList<>();
+            if (!allImages.contains(post.getImageResId())) {
+                allImages.add(0, post.getImageResId()); // chèn ảnh chính vào đầu
+            }
+
+            PostImageAdapter adapter = new PostImageAdapter(this, allImages, post, false);
+            viewPager.setAdapter(adapter);
+
             location.setText(post.getLocation());
             detail.setText(post.getDetail());
             dateRange.setText(post.getDateRange());
@@ -157,14 +166,14 @@ public class HouseDetailActivity extends AppCompatActivity {
         Amenities a = post.getAmenities();
 
         List<Amenity> amenityList = Arrays.asList(
-                new Amenity("TV", R.drawable.ic_bed, a.tv),
-                new Amenity("Wi-Fi", R.drawable.ic_bed, a.wifi),
-                new Amenity("Thú cưng", R.drawable.ic_bed, a.petAllowance),
-                new Amenity("Hồ bơi", R.drawable.ic_bed, a.pool),
+                new Amenity("TV", R.drawable.ic_tv, a.tv),
+                new Amenity("Wi-Fi", R.drawable.ic_wifi, a.wifi),
+                new Amenity("Thú cưng", R.drawable.ic_pets, a.petAllowance),
+                new Amenity("Hồ bơi", R.drawable.ic_pool, a.pool),
                 new Amenity("Máy giặt", R.drawable.ic_bed, a.washingMachine),
-                new Amenity("Bữa sáng", R.drawable.ic_bed, a.breakfast),
-                new Amenity("Máy lạnh", R.drawable.ic_bed, a.airConditioner),
-                new Amenity("BBQ", R.drawable.ic_bed, a.bbq)
+                new Amenity("Bữa sáng", R.drawable.ic_free_breakfast, a.breakfast),
+                new Amenity("Máy lạnh", R.drawable.ic_airconditioner, a.airConditioner),
+                new Amenity("BBQ", R.drawable.ic_outdoor_grill, a.bbq)
         );
 
         for (Amenity amenity : amenityList) {
