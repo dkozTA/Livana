@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
-import com.example.myapplication.data.Model.Property.AmenityStatus;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.ui.misc.Post;
@@ -19,6 +18,9 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.ArrayList;
 import java.util.List;
+import android.text.Editable;
+import android.text.TextWatcher;
+
 
 public class ExploreFragment extends Fragment {
     private EditText searchBar;
@@ -30,15 +32,18 @@ public class ExploreFragment extends Fragment {
     // Adapter to display posts in RecyclerView
     private PostAdapter postAdapter;
 
+    private List<Post> fullPostList = new ArrayList<>(); // chứa toàn bộ dữ liệu gốc (không lọc)
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // ... UI code:
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
 
         searchBar = view.findViewById(R.id.search_bar);
-        searchBar.setOnClickListener(v -> {
-            Toast.makeText(getContext(), "Search functionality coming soon", Toast.LENGTH_SHORT).show();
-        });
+//        searchBar.setOnClickListener(v -> {
+//            Toast.makeText(getContext(), "Search functionality coming soon", Toast.LENGTH_SHORT).show();
+//        });
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -53,6 +58,26 @@ public class ExploreFragment extends Fragment {
         // Start fetching data
         fetchBackendData();
 
+        postList = new ArrayList<>();
+        fullPostList = new ArrayList<>();
+        postAdapter = new PostAdapter(getContext(), postList, false);
+        recyclerView.setAdapter(postAdapter);
+
+// Bắt sự kiện khi người dùng nhập vào search bar
+        searchBar.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filterPosts(s.toString()); // Gọi hàm lọc mỗi khi thay đổi
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
+
         return view;
     }
 
@@ -65,6 +90,7 @@ public class ExploreFragment extends Fragment {
                     public void onSuccess(List<Property> properties) {
                         // Clear existing posts
                         postList.clear();
+                        fullPostList.clear();
 
                         // Convert each Property to Post
                         for (Property property : properties) {
@@ -98,7 +124,7 @@ public class ExploreFragment extends Fragment {
 
 
                             // Create new Post object with property data
-                            postList.add(new Post(
+                            Post post = new Post(
                                     title,                    // title
                                     property.getMainPhoto(),               // placeholder image
                                     property.name,                        // address string
@@ -110,7 +136,9 @@ public class ExploreFragment extends Fragment {
                                     property.avg_ratings,
                                     property.amenities,
                                     property.sub_photos
-                            ));
+                            );
+                            postList.add(post);
+                            fullPostList.add(post);
                         }
                         // Notify adapter to refresh RecyclerView
                         postAdapter.notifyDataSetChanged();
@@ -127,4 +155,22 @@ public class ExploreFragment extends Fragment {
                 }
         );
     }
+
+    private void filterPosts(String query) {
+        postList.clear();
+        if (query.isEmpty()) {
+            postList.addAll(fullPostList); // Nếu rỗng thì hiển thị tất cả
+        } else {
+            String lowerQuery = query.toLowerCase();
+            for (Post post : fullPostList) {
+                if (post.getTitle().toLowerCase().contains(lowerQuery) ||
+                        post.getLocation().toLowerCase().contains(lowerQuery) ||
+                        post.getDetail().toLowerCase().contains(lowerQuery)) {
+                    postList.add(post);
+                }
+            }
+        }
+        postAdapter.notifyDataSetChanged();
+    }
+
 }
