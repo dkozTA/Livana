@@ -18,14 +18,27 @@ public class Footer {
         Button buttonMessages = activity.findViewById(R.id.button_messages);
         Button buttonProfile = activity.findViewById(R.id.button_profile);
 
-        buttonExplore.setOnClickListener(v -> loadFragment(activity, new ExploreFragment()));
-        buttonWishlists.setOnClickListener(v -> loadFragment(activity, new WishlistFragment()));
-        buttonTrips.setOnClickListener(v -> loadFragment(activity, new TripsFragment()));
-        buttonMessages.setOnClickListener(v -> loadFragment(activity, new MessagesFragment()));
-        buttonProfile.setOnClickListener(v -> loadFragment(activity, new ProfileFragment()));
+        Button[] buttons = new Button[]{
+                buttonExplore, buttonWishlists, buttonTrips, buttonMessages, buttonProfile
+        };
+
+        buttonExplore.setOnClickListener(v -> loadFragment(activity, new ExploreFragment(), buttons, buttonExplore));
+        buttonWishlists.setOnClickListener(v -> loadFragment(activity, new WishlistFragment(), buttons, buttonWishlists));
+        buttonTrips.setOnClickListener(v -> loadFragment(activity, new TripsFragment(), buttons, buttonTrips));
+        buttonMessages.setOnClickListener(v -> loadFragment(activity, new MessagesFragment(), buttons, buttonMessages));
+        buttonProfile.setOnClickListener(v -> loadFragment(activity, new ProfileFragment(), buttons, buttonProfile));
+
+        // Set initial selection
+        buttonExplore.setSelected(true);
     }
 
-    private static void loadFragment(FragmentActivity activity, Fragment fragment) {
+    private static void loadFragment(FragmentActivity activity, Fragment fragment, Button[] buttons, Button selectedButton) {
+        // Update button states
+        for (Button button : buttons) {
+            button.setSelected(button == selectedButton);
+        }
+
+        // Load fragment
         activity.getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
