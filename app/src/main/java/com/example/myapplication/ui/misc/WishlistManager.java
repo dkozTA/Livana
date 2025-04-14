@@ -40,7 +40,7 @@ public class WishlistManager {
     // Kiểm tra post có trong folder wishlist nào không (trừ "Recently viewed")
     public boolean isPostInAnyWishlist(Post post) {
         for (WishlistFolder folder : folders) {
-            if (!folder.getName().equals("Recently viewed") && folder.getPosts().contains(post)) {
+            if (!folder.getName().equals("Đã xem gần đây") && folder.getPosts().contains(post)) {
                 return true;
             }
         }
