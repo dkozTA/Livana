@@ -7,6 +7,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.myapplication.data.Enum.Role;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.example.myapplication.R;
@@ -14,6 +16,9 @@ import com.example.myapplication.data.Model.Auth.AuthRegister;
 import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.activities.MainActivity;
+
+import java.util.ArrayList;
+import java.util.Date;
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -76,6 +81,10 @@ public class RegisterActivity extends AppCompatActivity {
                         user.uid = firebaseUser.getUid();
                         user.full_name = authRegister.full_name;
                         user.phone_number = authRegister.phone_number;
+                        user.created_at = new Date(); // Add creation timestamp
+                        user.role = Role.valueOf("USER");
+                        user.rentingHistory = new ArrayList<>(); // Initialize empty list
+                        user.wish_list = new ArrayList<>(); // Initialize empty list
 
                         // Save user to Firestore
                         userRepository.createUser(user,

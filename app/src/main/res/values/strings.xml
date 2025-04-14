@@ -13,4 +13,6 @@
     <string name="trips">Trips</string>
     <string name="messages">Messages</string>
     <string name="profile">Profile</string>
+    <string name="change_profile_photo">Change profile photo</string>
+    <string name="back_button">Back</string>
 </resources>
