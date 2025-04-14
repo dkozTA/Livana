@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -23,10 +24,9 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyD_vlTxVQrjoX7mvOD5H7tLjvLDZLAQgj8" />
 
-        <!--
-         Main activity, entry point of the app
+        <!-- Main activity, entry point of the app
            <activity
-                android:name=".ui.Explore"
+                android:name=".ui.TestActivity"
                 android:exported="true">
                 <intent-filter>
                     <action android:name="android.intent.action.MAIN" />
@@ -36,28 +36,34 @@
         -->
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".ui.activities.MainActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".ui.activities.HouseDetailActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
 
-        <!-- Other activities -->
         <activity
-            android:name=".ui.WishlistsActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.TripsActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.MessagesActivity"
-            android:exported="true" />
-        <activity
-            android:name=".ui.ProfileActivity"
-            android:exported="true" />
-    </application>
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="false" />
 
+        <activity
+            android:name=".ui.activities.ProfileInfoActivity"
+            android:exported="false" />
+
+        <activity android:name=".ui.activities.PersonalInfoActivity" />
+
+    </application>
 </manifest>
