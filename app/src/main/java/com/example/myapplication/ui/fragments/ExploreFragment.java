@@ -69,7 +69,7 @@ public class ExploreFragment extends Fragment {
                         // Convert each Property to Post
                         for (Property property : properties) {
                             // Format price to display with $ symbol
-                            String formattedPrice = "₫" + String.format("%,.0f", property.getNormal_price()) + " per night";
+                            String formattedPrice = "₫" + String.format("%,.0f", property.getNormal_price()) + " cho 1 đêm";
 
                             // Handle null address case
                             String title = property.address.getDetailAddress() != null ?
@@ -81,24 +81,20 @@ public class ExploreFragment extends Fragment {
                             String livingRoomStatus = property.rooms.livingRooms.toString();
                             String kitchenStatus = property.rooms.kitchen.toString();
 
-                            // Xử lý số ít/số nhiều
-                            String guestText = maxGuest + " guest" + (maxGuest > 1 ? "s" : "");
-                            String bedroomText = bedRooms + " bedroom" + (bedRooms > 1 ? "s" : "");
-
                             // Nếu có phòng khách, chỉ ghi "· living room"
                             String livingRoomText = "";
                             if ("available".equalsIgnoreCase(livingRoomStatus)) {
-                                livingRoomText = " · living room";
+                                livingRoomText = " · phòng khách";
                             }
 
                             // Nếu có phòng khách, chỉ ghi "· living room"
                             String kitchenText = "";
                             if ("available".equalsIgnoreCase(kitchenStatus)) {
-                                livingRoomText = " · kitchen";
+                                livingRoomText = " · phòng bếp";
                             }
 
                             // Ghép chuỗi mô tả chi tiết
-                            String detail = propertyType + " · " + guestText + " · " + bedroomText + livingRoomText + kitchenText;
+                            String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
 
 
                             // Create new Post object with property data
@@ -112,7 +108,8 @@ public class ExploreFragment extends Fragment {
                                     formattedPrice,                 // formatted price
                                     property.total_reviews,
                                     property.avg_ratings,
-                                    property.amenities
+                                    property.amenities,
+                                    property.sub_photos
                             ));
                         }
                         // Notify adapter to refresh RecyclerView

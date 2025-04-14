@@ -2,10 +2,14 @@ package com.example.myapplication.ui.activities;
 
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -14,11 +18,17 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.data.Model.Property.Amenities;
+import com.example.myapplication.data.Model.Property.AmenityStatus;
+import com.example.myapplication.ui.misc.Amenity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.utils.DialogUtils;
 
 import org.w3c.dom.Text;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class HouseDetailActivity extends AppCompatActivity {
     private ImageButton heartButton;
@@ -67,6 +77,9 @@ public class HouseDetailActivity extends AppCompatActivity {
             TextView price = findViewById(R.id.price);
             TextView avg_ratings = findViewById(R.id.avg_ratings);
             TextView total_reviews = findViewById(R.id.total_reviews);
+            TextView house_rule = findViewById(R.id.house_rule);
+            TextView special_feature = findViewById(R.id.special_feature);
+            showAmenities(post);
             heartButton = findViewById(R.id.heart_button);
 
             title.setText(post.getTitle());
@@ -79,8 +92,19 @@ public class HouseDetailActivity extends AppCompatActivity {
             detail.setText(post.getDetail());
             dateRange.setText(post.getDateRange());
             price.setText(post.getPrice());
-            avg_ratings.setText(post.getAvgRatings() + " ★ ");
-            total_reviews.setText(post.getTotalReview() + " reviews");
+            avg_ratings.setText(post.getAvgRatings() + " ⭐ ");
+            total_reviews.setText(post.getTotalReview() + " đánh giá");
+            if (post.getAmenities() != null && post.getAmenities().houseRules != null) {
+                house_rule.setText(post.getAmenities().houseRules);
+            } else {
+                house_rule.setText("Không có nội quy"); // hoặc để trống
+            }
+
+            if (post.getAmenities() != null && post.getAmenities().more != null) {
+                special_feature.setText(post.getAmenities().more);
+            } else {
+                special_feature.setText("Không có"); // hoặc để trống
+            }
 
             updateHeartIcon();
 
@@ -126,5 +150,42 @@ public class HouseDetailActivity extends AppCompatActivity {
 
         startActivity(Intent.createChooser(shareIntent, "Share via"));
     }
+
+    private void showAmenities(Post post) {
+        LinearLayout amenityContainer = findViewById(R.id.amenity_list); // LinearLayout trong layout chính
+
+        Amenities a = post.getAmenities();
+
+        List<Amenity> amenityList = Arrays.asList(
+                new Amenity("TV", R.drawable.ic_bed, a.tv),
+                new Amenity("Wi-Fi", R.drawable.ic_bed, a.wifi),
+                new Amenity("Thú cưng", R.drawable.ic_bed, a.petAllowance),
+                new Amenity("Hồ bơi", R.drawable.ic_bed, a.pool),
+                new Amenity("Máy giặt", R.drawable.ic_bed, a.washingMachine),
+                new Amenity("Bữa sáng", R.drawable.ic_bed, a.breakfast),
+                new Amenity("Máy lạnh", R.drawable.ic_bed, a.airConditioner),
+                new Amenity("BBQ", R.drawable.ic_bed, a.bbq)
+        );
+
+        for (Amenity amenity : amenityList) {
+            if (amenity.status == AmenityStatus.Hidden) continue;
+
+            View view = LayoutInflater.from(this).inflate(R.layout.amenity_item, amenityContainer, false);
+            ImageView icon = view.findViewById(R.id.amenity_icon);
+            TextView name = view.findViewById(R.id.amenity_name);
+
+            icon.setImageResource(amenity.iconResId);
+            name.setText(amenity.name);
+
+            if (amenity.status == AmenityStatus.Unavailable) {
+                name.setPaintFlags(name.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                name.setTextColor(Color.GRAY);
+                icon.setColorFilter(Color.GRAY);
+            }
+
+            amenityContainer.addView(view);
+        }
+    }
+
 
 }
