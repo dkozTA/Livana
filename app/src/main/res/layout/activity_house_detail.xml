@@ -23,6 +23,12 @@
                 android:layout_height="300dp"
                 android:scaleType="centerCrop" />
 
+<!--            <androidx.viewpager2.widget.ViewPager2-->
+<!--                android:id="@+id/viewPagerImages"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="300dp"-->
+<!--                android:layout_marginTop="8dp"/>-->
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -183,6 +189,7 @@
                     android:id="@+id/special_feature"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="#777777"
                     android:textSize="16dp"/>
 
                 <!-- ✅ Divider -->
