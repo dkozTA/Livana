@@ -60,6 +60,8 @@ dependencies {
 
     // Thêm Gson để xử lý JSON
     implementation ("com.google.code.gson:gson:2.9.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }
 
 apply(plugin = "com.google.gms.google-services")
