@@ -10,7 +10,7 @@ public class WishlistManager {
 
     private WishlistManager() {
         folders = new ArrayList<>();
-        defaultFolder = new WishlistFolder("Recently viewed");
+        defaultFolder = new WishlistFolder("Đã xem gần đây");
         folders.add(defaultFolder);
     }
 
