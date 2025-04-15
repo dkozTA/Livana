@@ -2,18 +2,21 @@ package com.example.myapplication.ui.activities;
 
 import android.location.Address;
 import android.location.Geocoder;
+
 import android.os.Bundle;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import com.example.myapplication.R;
+import com.example.myapplication.databinding.ActivityMapsBinding;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -21,38 +24,34 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
-public class LargeMapDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
-    private MapView mapView;
-    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
-
+public class LargeMapDetailActivity extends FragmentActivity implements OnMapReadyCallback {
     private GoogleMap mMap;
-
+    private ActivityMapsBinding binding;
+    private String locationName;
+    private String locationTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_large_map);
 
-        Bundle mapViewBundle = savedInstanceState != null ?
-                savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY) : new Bundle();
+        binding = ActivityMapsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        mapView = findViewById(R.id.largeMap);
-        mapView.onCreate(mapViewBundle);
-        mapView.getMapAsync(this);
+        locationName = getIntent().getStringExtra("location");
+        locationTitle = getIntent().getStringExtra("name");
 
-        TextView name = findViewById(R.id.houseName);
-        name.setText(getIntent().getStringExtra("name"));
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
+    public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
         showDestination();
     }
 
     private void showDestination() {
-        String locationName = getIntent().getStringExtra("location");
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
@@ -61,7 +60,7 @@ public class LargeMapDetailActivity extends AppCompatActivity implements OnMapRe
                 Address address = addresses.get(0);
                 LatLng location = new LatLng(address.getLatitude(), address.getLongitude());
 
-                mMap.addMarker(new MarkerOptions().position(location).title(locationName));
+                mMap.addMarker(new MarkerOptions().position(location).title(locationTitle != null ? locationTitle : locationName));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 14));
             } else {
                 Toast.makeText(this, "Không tìm thấy vị trí đích", Toast.LENGTH_SHORT).show();
@@ -71,4 +70,5 @@ public class LargeMapDetailActivity extends AppCompatActivity implements OnMapRe
             Toast.makeText(this, "Lỗi khi tìm tọa độ đích", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

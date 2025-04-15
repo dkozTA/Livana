@@ -60,6 +60,54 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
     private boolean isTopBarWhite = false;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        miniMap.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        miniMap.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        miniMap.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        miniMap.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        miniMap.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        miniMap.onLowMemory();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        miniMap.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_house_detail);
