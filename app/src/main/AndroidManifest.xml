@@ -18,11 +18,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
+        android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyD_vlTxVQrjoX7mvOD5H7tLjvLDZLAQgj8" />
+            android:value="AIzaSyDmBeaOTjeXGH-KWehgHgVHy5sU7VYWuPI" />
 
         <!-- Main activity, entry point of the app
            <activity
@@ -46,6 +47,11 @@
         </activity>
 
         <activity
+            android:name=".ui.activities.LargeMapDetailActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="true">
             <intent-filter>
@@ -61,6 +67,10 @@
 
         <activity
             android:name=".ui.activities.ProfileInfoActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.activities.AIFindActivity"
             android:exported="false" />
 
         <activity android:name=".ui.activities.PersonalInfoActivity" />

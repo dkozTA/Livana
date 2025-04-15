@@ -1,9 +1,11 @@
 package com.example.myapplication.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
+import com.example.myapplication.ui.activities.AIFindActivity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.adapters.PostAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,6 +28,7 @@ import android.text.TextWatcher;
 public class ExploreFragment extends Fragment {
     private EditText searchBar;
     private RecyclerView recyclerView;
+    private Button aiSeachButton;
     // Store property data from backend
     private PropertyRepository propertyRepository;
     // List to hold UI post items
@@ -47,6 +51,12 @@ public class ExploreFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        aiSeachButton = view.findViewById(R.id.backButton);
+        aiSeachButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), AIFindActivity.class);
+            startActivity(intent);
+        });
 
         // Initialize empty list and adapter
         postList = new ArrayList<>();

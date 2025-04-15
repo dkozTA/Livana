@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,7 +7,7 @@
     <!-- Search Bar -->
     <androidx.cardview.widget.CardView
         android:id="@+id/search_card"
-        android:layout_width="300dp"
+        android:layout_width="350dp"
         android:layout_height="50dp"
         android:layout_marginTop="20sp"
         app:cardBackgroundColor="#FFFFFF"
@@ -19,12 +18,12 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="283dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp">
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
 
             <ImageView
                 android:layout_width="24dp"
@@ -37,13 +36,21 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:gravity="center_horizontal"
                 android:hint="Bắt đầu tìm kiếm"
                 android:inputType="text"
                 android:paddingStart="8dp"
                 android:textColor="#000000"
                 android:textColorHint="#BCB3B3"
                 android:textSize="18dp" />
+
+            <Button
+                android:id="@+id/backButton"
+                android:layout_width="50dp"
+                android:layout_height="40dp"
+                android:background="@drawable/stars"
+                android:padding="0dp"
+                android:text="" />
+
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

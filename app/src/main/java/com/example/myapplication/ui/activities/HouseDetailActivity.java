@@ -1,9 +1,13 @@
 package com.example.myapplication.ui.activities;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,27 +16,45 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.AmenityStatus;
+import com.example.myapplication.databinding.ActivityMapsBinding;
 import com.example.myapplication.ui.misc.Amenity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.utils.DialogUtils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
-public class HouseDetailActivity extends AppCompatActivity {
+public class HouseDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
     private ImageButton heartButton;
     private Post post;
+
+    private MapView miniMap;
+    private GoogleMap mMap;
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     //doi mau 
     private boolean isTopBarWhite = false;
@@ -52,6 +74,24 @@ public class HouseDetailActivity extends AppCompatActivity {
         ScrollView scrollView = findViewById(R.id.scrollView);
         ImageView postImage = findViewById(R.id.post_image);
         ConstraintLayout topBar = findViewById(R.id.top_button_bar);
+
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+        miniMap = findViewById(R.id.miniMapView);
+        miniMap.onCreate(mapViewBundle);
+        miniMap.getMapAsync(this);
+
+        //Set clickable cho mapView mở Large Map
+        View mapClick = findViewById(R.id.mapClick);
+        mapClick.setClickable(true);
+        mapClick.setOnClickListener(v -> {
+            Intent intent = new Intent(HouseDetailActivity.this, LargeMapDetailActivity.class);
+            intent.putExtra("location", post.getLocation());
+            intent.putExtra("name", post.getTitle());
+            startActivity(intent);
+        });
 
         scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
             int scrollY = scrollView.getScrollY();
@@ -188,4 +228,36 @@ public class HouseDetailActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+
+        showDestination();
+
+        // Tắt tất cả tương tác người dùng
+        googleMap.getUiSettings().setAllGesturesEnabled(false);
+        googleMap.getUiSettings().setZoomControlsEnabled(false);
+        googleMap.getUiSettings().setScrollGesturesEnabled(false);
+    }
+
+    private void showDestination() {
+        String locationName = post.getLocation();
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
+
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                LatLng location = new LatLng(address.getLatitude(), address.getLongitude());
+
+                mMap.addMarker(new MarkerOptions().position(location).title(locationName));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
+            } else {
+                Toast.makeText(this, "Không tìm thấy vị trí đích", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi khi tìm tọa độ đích", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

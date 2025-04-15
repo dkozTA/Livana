@@ -17,17 +17,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!--            <androidx.viewpager2.widget.ViewPager2-->
+<!--                android:id="@+id/viewPagerImages"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="300dp"-->
+<!--                android:layout_marginTop="8dp"/>-->
+
             <ImageView
                 android:id="@+id/post_image"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:scaleType="centerCrop" />
-
-<!--            <androidx.viewpager2.widget.ViewPager2-->
-<!--                android:id="@+id/viewPagerImages"-->
-<!--                android:layout_width="match_parent"-->
-<!--                android:layout_height="300dp"-->
-<!--                android:layout_marginTop="8dp"/>-->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -142,9 +142,35 @@
                             android:layout_height="wrap_content"
                             android:textSize="16dp"/>
                     </LinearLayout>
+
                 </LinearLayout>
 
                 <!-- ✅ Divider -->
+                <View
+                    android:id="@+id/view"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#E0E0E0" />
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:cardCornerRadius="15dp">
+
+                    <com.google.android.gms.maps.MapView
+                        android:id="@+id/miniMapView"
+                        android:layout_width="match_parent"
+                        android:layout_height="174dp"
+                        android:layout_weight="1" />
+
+                    <View
+                        android:id="@+id/mapClick"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </androidx.cardview.widget.CardView>
+
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -153,6 +179,7 @@
                     android:background="#E0E0E0" />
 
                 <!-- Tiện nghi -->
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
