@@ -1,7 +1,6 @@
 package com.example.myapplication.ui.activities;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -38,7 +37,7 @@ public class AIFindActivity extends AppCompatActivity {
             }
         });
 
-        backButton = findViewById(R.id.backButton);
+        backButton = findViewById(R.id.back);
         backButton.setOnClickListener(v -> finish());
     }
 

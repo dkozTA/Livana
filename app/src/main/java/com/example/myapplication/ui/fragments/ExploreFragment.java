@@ -52,7 +52,7 @@ public class ExploreFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        aiSeachButton = view.findViewById(R.id.backButton);
+        aiSeachButton = view.findViewById(R.id.back);
         aiSeachButton.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), AIFindActivity.class);
             startActivity(intent);

@@ -40,8 +40,8 @@
             android:layout_height="120dp"
             android:layout_marginTop="16dp"
             android:src="@drawable/default_avatar"
-            app:civ_border_color="@android:color/white"
-            app:civ_border_width="2dp"
+            app:civ_border_color="#FFFFFF"
+            app:civ_border_width="3dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/header_background" />
@@ -76,15 +76,25 @@
                         android:id="@+id/profile_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
+                        android:textColor="#000000"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.02"
+                        android:shadowColor="#40000000"
+                        android:shadowDx="0"
+                        android:shadowDy="1"
+                        android:shadowRadius="2" />
 
                     <TextView
                         android:id="@+id/profile_role"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:textColor="@android:color/darker_gray" />
+                        android:layout_marginTop="8dp"
+                        android:textColor="#666666"
+                        android:textSize="16sp"
+                        android:background="@drawable/role_background"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp" />
                 </LinearLayout>
 
                 <!-- Divider -->
@@ -98,9 +108,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Contact Information"
+                    android:text="Thông tin liên lạc"
                     android:textColor="@android:color/black"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <!-- Phone -->
@@ -152,9 +162,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
-                    android:text="Activity"
+                    android:text="Hoạt động"
                     android:textColor="@android:color/black"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <!-- Renting History -->
@@ -162,7 +172,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Renting History"
+                    android:text="Lịch sử"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -178,7 +188,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Wish List"
+                    android:text="Yêu thích"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 

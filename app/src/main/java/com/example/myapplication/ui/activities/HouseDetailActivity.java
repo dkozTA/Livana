@@ -1,9 +1,8 @@
 package com.example.myapplication.ui.activities;
 
-import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.location.Address;
@@ -21,29 +20,27 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
+import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.AmenityStatus;
-import com.example.myapplication.databinding.ActivityMapsBinding;
+import com.example.myapplication.ui.adapters.PostImageAdapter;
 import com.example.myapplication.ui.misc.Amenity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.utils.DialogUtils;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -52,60 +49,15 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
     private ImageButton heartButton;
     private Post post;
 
+    //doi mau 
+    private boolean isTopBarWhite = false;
+
     private MapView miniMap;
     private GoogleMap mMap;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
-    //doi mau 
-    private boolean isTopBarWhite = false;
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        miniMap.onResume();
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        miniMap.onStart();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        miniMap.onStop();
-    }
-
-    @Override
-    protected void onPause() {
-        miniMap.onPause();
-        super.onPause();
-    }
-
-    @Override
-    protected void onDestroy() {
-        miniMap.onDestroy();
-        super.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        miniMap.onLowMemory();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
-        if (mapViewBundle == null) {
-            mapViewBundle = new Bundle();
-            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
-        }
-
-        miniMap.onSaveInstanceState(mapViewBundle);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,8 +72,21 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
         shareButton.setOnClickListener(v -> sharePost());
 
         ScrollView scrollView = findViewById(R.id.scrollView);
-        ImageView postImage = findViewById(R.id.post_image);
+        ViewPager2 postImage = findViewById(R.id.viewPagerImages);
         ConstraintLayout topBar = findViewById(R.id.top_button_bar);
+
+        scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
+            int scrollY = scrollView.getScrollY();
+            int imageHeight = postImage.getHeight();
+
+            if (scrollY > imageHeight - 100 && !isTopBarWhite) {
+                isTopBarWhite = true;
+                animateBackgroundColor(topBar, 0x00FFFFFF, 0xFFFFFFFF); // transparent → white
+            } else if (scrollY <= imageHeight - 100 && isTopBarWhite) {
+                isTopBarWhite = false;
+                animateBackgroundColor(topBar, 0xFFFFFFFF, 0x00FFFFFF); // white → transparent
+            }
+        });
 
         Bundle mapViewBundle = null;
         if (savedInstanceState != null) {
@@ -141,24 +106,13 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             startActivity(intent);
         });
 
-        scrollView.getViewTreeObserver().addOnScrollChangedListener(() -> {
-            int scrollY = scrollView.getScrollY();
-            int imageHeight = postImage.getHeight();
-
-            if (scrollY > imageHeight - 100 && !isTopBarWhite) {
-                isTopBarWhite = true;
-                animateBackgroundColor(topBar, 0x00FFFFFF, 0xFFFFFFFF); // transparent → white
-            } else if (scrollY <= imageHeight - 100 && isTopBarWhite) {
-                isTopBarWhite = false;
-                animateBackgroundColor(topBar, 0xFFFFFFFF, 0x00FFFFFF); // white → transparent
-            }
-        });
-
 
         post = getIntent().getParcelableExtra("post");
         if (post != null) {
             TextView title = findViewById(R.id.title);
-            ImageView postImageView = findViewById(R.id.post_image);
+            //ImageView postImageView = findViewById(R.id.post_image);
+            ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
+
             TextView location = findViewById(R.id.location);
             TextView detail = findViewById(R.id.details);
             TextView dateRange = findViewById(R.id.date_range);
@@ -171,11 +125,15 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             heartButton = findViewById(R.id.heart_button);
 
             title.setText(post.getTitle());
-            Glide.with(this)
-                    .load(post.getImageResId()) // hoặc getImageResId() nếu dùng R.drawable
-                    .placeholder(R.drawable.photo1) // tùy chọn
-                    .error(R.drawable.photo1) // tùy chọn
-                    .into(postImageView);
+            List<String> allImages = post.getSub_photos();
+            if (allImages == null) allImages = new ArrayList<>();
+            if (!allImages.contains(post.getImageResId())) {
+                allImages.add(0, post.getImageResId()); // chèn ảnh chính vào đầu
+            }
+
+            PostImageAdapter adapter = new PostImageAdapter(this, allImages, post, false);
+            viewPager.setAdapter(adapter);
+
             location.setText(post.getLocation());
             detail.setText(post.getDetail());
             dateRange.setText(post.getDateRange());
@@ -245,14 +203,14 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
         Amenities a = post.getAmenities();
 
         List<Amenity> amenityList = Arrays.asList(
-                new Amenity("TV", R.drawable.ic_bed, a.tv),
-                new Amenity("Wi-Fi", R.drawable.ic_bed, a.wifi),
-                new Amenity("Thú cưng", R.drawable.ic_bed, a.petAllowance),
-                new Amenity("Hồ bơi", R.drawable.ic_bed, a.pool),
+                new Amenity("TV", R.drawable.ic_tv, a.tv),
+                new Amenity("Wi-Fi", R.drawable.ic_wifi, a.wifi),
+                new Amenity("Thú cưng", R.drawable.ic_pets, a.petAllowance),
+                new Amenity("Hồ bơi", R.drawable.ic_pool, a.pool),
                 new Amenity("Máy giặt", R.drawable.ic_bed, a.washingMachine),
-                new Amenity("Bữa sáng", R.drawable.ic_bed, a.breakfast),
-                new Amenity("Máy lạnh", R.drawable.ic_bed, a.airConditioner),
-                new Amenity("BBQ", R.drawable.ic_bed, a.bbq)
+                new Amenity("Bữa sáng", R.drawable.ic_free_breakfast, a.breakfast),
+                new Amenity("Máy lạnh", R.drawable.ic_airconditioner, a.airConditioner),
+                new Amenity("BBQ", R.drawable.ic_outdoor_grill, a.bbq)
         );
 
         for (Amenity amenity : amenityList) {
@@ -276,11 +234,70 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
     }
 
 
+
+
+    //MapView setup
+    @Override
+    protected void onResume() {
+        super.onResume();
+        miniMap.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        miniMap.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        miniMap.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        miniMap.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        miniMap.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        miniMap.onLowMemory();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        miniMap.onSaveInstanceState(mapViewBundle);
+    }
+
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
 
         showDestination();
+
+        try {
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.map_style));
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
 
         // Tắt tất cả tương tác người dùng
         googleMap.getUiSettings().setAllGesturesEnabled(false);
@@ -299,7 +316,7 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
                 LatLng location = new LatLng(address.getLatitude(), address.getLongitude());
 
                 mMap.addMarker(new MarkerOptions().position(location).title(locationName));
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 16));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
             } else {
                 Toast.makeText(this, "Không tìm thấy vị trí đích", Toast.LENGTH_SHORT).show();
             }

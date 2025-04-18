@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
+
 import com.example.myapplication.R;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
@@ -15,6 +17,7 @@ import com.example.myapplication.ui.activities.HouseDetailActivity;
 import com.example.myapplication.utils.DialogUtils;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -43,12 +46,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         Post post = postList.get(position);
 
-        // Load ảnh từ URL
-        Glide.with(holder.itemView.getContext())
-                .load(post.getImageResId()) // ảnh từ property.getMainPhoto()
-                .placeholder(R.drawable.photo1) // ảnh chờ
-                .error(R.drawable.photo1)             // ảnh khi lỗi
-                .into(holder.postImage);
+        // Tạo list ảnh: ảnh chính đứng đầu
+        List<String> imageUrls = new ArrayList<>();
+        imageUrls.add(post.getImageResId());  // ảnh chính
+        if (post.getSub_photos() != null) {
+            imageUrls.addAll(post.getSub_photos()); // ảnh phụ
+        }
+
+        PostImageAdapter imageAdapter = new PostImageAdapter(context, imageUrls, post, true);
+        holder.imageViewPager.setAdapter(imageAdapter);
+
         holder.location.setText(post.getLocation());
         holder.dateRange.setText(post.getDateRange());
         holder.price.setText(post.getPrice());
@@ -85,6 +92,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             Intent intent = new Intent(context, HouseDetailActivity.class);
             intent.putExtra("post", post);
+
             context.startActivity(intent);
         });
     }
@@ -95,21 +103,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     static class PostViewHolder extends RecyclerView.ViewHolder {
-        ImageView postImage;
+        //ImageView postImage;
         TextView location;
         TextView distance;
         TextView dateRange;
         TextView price;
         ImageButton heartButton;
 
+        ViewPager2 imageViewPager;
+
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
-            postImage = itemView.findViewById(R.id.post_image);
             location = itemView.findViewById(R.id.location);
             distance = itemView.findViewById(R.id.distance);
             dateRange = itemView.findViewById(R.id.date_range);
             price = itemView.findViewById(R.id.price);
             heartButton = itemView.findViewById(R.id.heart_button);
+            imageViewPager = itemView.findViewById(R.id.image_viewpager);
         }
     }
 }
