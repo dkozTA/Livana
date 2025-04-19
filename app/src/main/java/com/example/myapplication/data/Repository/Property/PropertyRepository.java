@@ -3,6 +3,7 @@ package com.example.myapplication.data.Repository.Property;
 import android.content.Context;
 import android.net.Uri;
 
+import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
@@ -115,5 +116,22 @@ public class PropertyRepository {
                     onSuccess.onSuccess(propertyList);
                 })
                 .addOnFailureListener(onFailure);
+    }
+
+    public void getPropertyByUserID(String userID, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        this.db.collection(COLLECTION_NAME).whereEqualTo("host_id", userID).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Property> propertyList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Property property = document.toObject(Property.class);
+                        propertyList.add(property);
+                    }
+                    onSuccess.onSuccess(propertyList);
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void updateBookedDate(String propertyId, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+
     }
 }

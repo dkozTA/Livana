@@ -57,9 +57,22 @@ public class AuthRepository {
                 });
     }
 
+    public void resetPassword(String email, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        firebaseAuth.sendPasswordResetEmail(email)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
     public String getUserUid() {
         return this.firebaseAuth.getUid();
     }
+
+    public boolean checkLogin() {
+        return this.firebaseAuth.getCurrentUser() != null;
+    }
+
+    // Dang nhap bang Google
+
 
     public void logout() {
         firebaseAuth.signOut();

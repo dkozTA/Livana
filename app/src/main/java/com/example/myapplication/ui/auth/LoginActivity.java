@@ -8,6 +8,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.myapplication.data.Model.Auth.AuthLogin;
+import com.example.myapplication.data.Repository.Auth.AuthRepository;
 import com.example.myapplication.ui.activities.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -23,15 +25,24 @@ public class LoginActivity extends AppCompatActivity {
     private TextView tvForgotPassword;
     private FirebaseAuth firebaseAuth;
     private UserRepository userRepository;
+    private AuthRepository authRepository;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize Firebase Auth
-        firebaseAuth = FirebaseAuth.getInstance();
+        authRepository = new AuthRepository(this);
         userRepository = new UserRepository(this);
+
+        if (authRepository.checkLogin()) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish(); // Không hiển thị màn login nữa
+            return;
+        }
 
         // Initialize views
         etEmail = findViewById(R.id.et_email);
@@ -59,15 +70,16 @@ public class LoginActivity extends AppCompatActivity {
         // Show loading indicator
         btnLogin.setEnabled(false);
 
+        AuthLogin authLogin = new AuthLogin(email, password);
+
         // Authenticate with Firebase
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener(authResult -> {
-                    FirebaseUser user = authResult.getUser();
-                    if (user != null) {
-                        // Get user data from Firestore
-                        userRepository.getUserByUid(user.getUid(),
+        authRepository.login(authLogin,
+                unused -> {
+                    String uid = authRepository.getUserUid();
+                    if (uid != null) {
+                        userRepository.getUserByUid(uid,
                                 userData -> {
-                                    // Login successful, go to main activity
+                                    // Login thành công, chuyển sang MainActivity
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);
@@ -76,16 +88,18 @@ public class LoginActivity extends AppCompatActivity {
                                 e -> {
                                     btnLogin.setEnabled(true);
                                     Toast.makeText(LoginActivity.this,
-                                            "Failed to get user data: " + e.getMessage(),
+                                            "Lấy thông tin người dùng thất bại: " + e.getMessage(),
                                             Toast.LENGTH_SHORT).show();
-                                }
-                        );
+                                });
+                    } else {
+                        btnLogin.setEnabled(true);
+                        Toast.makeText(LoginActivity.this, "Không tìm thấy UID người dùng", Toast.LENGTH_SHORT).show();
                     }
-                })
-                .addOnFailureListener(e -> {
+                },
+                e -> {
                     btnLogin.setEnabled(true);
                     Toast.makeText(LoginActivity.this,
-                            "Login failed: " + e.getMessage(),
+                            "Đăng nhập thất bại: " + e.getMessage(),
                             Toast.LENGTH_SHORT).show();
                 });
     }
@@ -97,14 +111,10 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        firebaseAuth.sendPasswordResetEmail(email)
-                .addOnSuccessListener(unused ->
-                        Toast.makeText(LoginActivity.this,
-                                "Password reset email sent",
-                                Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e ->
-                        Toast.makeText(LoginActivity.this,
-                                "Failed to send reset email: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show());
+        authRepository.resetPassword(email,
+                unused -> Toast.makeText(LoginActivity.this,
+                        "Password reset email sent", Toast.LENGTH_SHORT).show(),
+                e -> Toast.makeText(LoginActivity.this,
+                        "Failed to send reset email: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }

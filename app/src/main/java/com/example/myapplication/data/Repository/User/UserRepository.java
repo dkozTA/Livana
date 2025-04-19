@@ -8,6 +8,7 @@ import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class UserRepository {
@@ -64,5 +65,25 @@ public class UserRepository {
                 },
                 onFailure
         );
+    }
+
+    public void addRentingHistory(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
+            onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
+            return;
+        }
+        this.db.collection("users").document(userUID).update("rentingHistory", FieldValue.arrayUnion(propertyID))
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
+    public void addRecentList(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
+            onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
+            return;
+        }
+        this.db.collection("users").document(userUID).update("recent_list", FieldValue.arrayUnion(propertyID))
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
     }
 }
