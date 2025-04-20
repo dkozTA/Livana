@@ -33,7 +33,7 @@
             android:layout_height="120dp"
             android:layout_marginBottom="32dp"
             android:contentDescription="App Logo"
-            android:src="@drawable/trollLivana" />
+            android:src="@drawable/photo1" />
 
         <!-- Welcome Text -->
         <TextView
