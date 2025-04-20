@@ -33,7 +33,7 @@
             android:layout_height="120dp"
             android:layout_marginBottom="32dp"
             android:contentDescription="App Logo"
-            android:src="@drawable/photo1" />
+            android:src="@drawable/troll_livana" />
 
         <!-- Welcome Text -->
         <TextView
@@ -106,13 +106,19 @@
             android:id="@+id/btn_login"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="5dp"
             android:text="Đăng nhập"
             android:textAllCaps="false"
             android:textSize="16sp"
             app:cornerRadius="8dp"
             android:backgroundTint="@android:color/black"
             app:rippleColor="#757575" />
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btnGoogleSignIn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp" />
 
         <!-- Register Link -->
         <LinearLayout

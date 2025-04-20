@@ -47,6 +47,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth-ktx") // Firebase Authentication
+    implementation("com.google.android.gms:play-services-auth:21.0.0") // Google Sign In
     implementation("com.google.firebase:firebase-storage-ktx:20.3.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation ("com.github.bumptech.glide:glide:4.16.0")
@@ -66,3 +67,4 @@ dependencies {
 }
 
 apply(plugin = "com.google.gms.google-services")
+
