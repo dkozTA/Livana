@@ -86,4 +86,13 @@ public class UserRepository {
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
+    public void addToWishList(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
+            onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
+            return;
+        }
+        this.db.collection("users").document(userUID).update("wish_list", FieldValue.arrayUnion(propertyID))
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
 }
