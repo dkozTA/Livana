@@ -125,6 +125,7 @@ public class ExploreFragment extends Fragment {
 
                             // Create new Post object with property data
                             Post post = new Post(
+                                    property.id,
                                     title,                    // title
                                     property.getMainPhoto(),               // placeholder image
                                     property.name,                        // address string

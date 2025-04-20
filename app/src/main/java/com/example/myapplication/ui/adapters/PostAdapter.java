@@ -14,8 +14,6 @@ import com.example.myapplication.R;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.ui.activities.HouseDetailActivity;
-import com.example.myapplication.utils.DialogUtils;
-import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,24 +63,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
 
         // 1. Cập nhật icon trái tim theo trạng thái wishlist
-        boolean isInWishlist = WishlistManager.getInstance().isPostInAnyWishlist(post);
+        boolean isInWishlist = WishlistManager.getInstance().isPostInInterestedWishlist(post);
         holder.heartButton.setImageResource(isInWishlist ?
                 R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
 
         // 2. Xử lý khi người dùng nhấn vào trái tim
         holder.heartButton.setOnClickListener(v -> {
-            boolean isCurrentlySaved = WishlistManager.getInstance().isPostInAnyWishlist(post);
+            boolean isCurrentlySaved = WishlistManager.getInstance().isPostInInterestedWishlist(post);
 
             if (!isCurrentlySaved) {
-                // Nếu post chưa có trong wishlist nào → mở dialog tạo folder
-                DialogUtils.showCreateWishlistDialog(context, post, () -> {
-                    notifyItemChanged(holder.getAdapterPosition());
-                });
+                WishlistManager.getInstance().addToInterestedView(post);
+                holder.heartButton.setImageResource(R.drawable.ic_heart_filled);
 
             } else {
-                // Nếu đã có trong wishlist → xoá khỏi tất cả folder (trừ Recently Viewed)
-                WishlistManager.getInstance().removePostFromWishlists(post);
+                WishlistManager.getInstance().removeFromInterestedView(post);
                 notifyItemChanged(holder.getAdapterPosition()); // Cập nhật lại icon
+                holder.heartButton.setImageResource(R.drawable.ic_heart_outline);
             }
         });
 

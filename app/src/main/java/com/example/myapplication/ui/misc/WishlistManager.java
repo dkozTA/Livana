@@ -6,12 +6,18 @@ import java.util.List;
 public class WishlistManager {
     private static WishlistManager instance;
     private List<WishlistFolder> folders;
-    private WishlistFolder defaultFolder;
+    private WishlistFolder recentViewedFolder;
+
+    private WishlistFolder interestedFolder;
+
+
 
     private WishlistManager() {
         folders = new ArrayList<>();
-        defaultFolder = new WishlistFolder("Đã xem gần đây");
-        folders.add(defaultFolder);
+        recentViewedFolder = new WishlistFolder("Đã xem gần đây");
+        interestedFolder = new WishlistFolder("Yêu thích");
+        folders.add(recentViewedFolder);
+        folders.add(interestedFolder);
     }
 
     public static WishlistManager getInstance() {
@@ -23,58 +29,41 @@ public class WishlistManager {
 
     // Thêm vào "Recently viewed"
     public void addToRecentlyViewed(Post post) {
-        if (!defaultFolder.getPosts().contains(post)) {
-            defaultFolder.addPost(post);
+        if (recentViewedFolder.getPosts().contains(post)) {
+            recentViewedFolder.removePost(post);
+        }
+        recentViewedFolder.getPosts().add(0, post); // luôn thêm lên đầu
+    }
+
+
+    public void removeFromRecentlyView(Post post) {
+        if (recentViewedFolder.getPosts().contains(post)) {
+            recentViewedFolder.removePost(post);
         }
     }
 
-    // Xóa post khỏi tất cả wishlist (trừ "Recently viewed")
-    public void removePostFromWishlists(Post post) {
-        for (WishlistFolder folder : folders) {
-            if (!folder.getName().equals("Recently viewed")) {
-                folder.removePost(post);
-            }
-        }
-    }
 
     // Kiểm tra post có trong folder wishlist nào không (trừ "Recently viewed")
-    public boolean isPostInAnyWishlist(Post post) {
-        for (WishlistFolder folder : folders) {
-            if (!folder.getName().equals("Đã xem gần đây") && folder.getPosts().contains(post)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isPostInRecentlyWishlist(Post post) {
+        return recentViewedFolder.getPosts().contains(post);
     }
 
-    // Tạo folder mới, trả về true nếu tạo thành công, false nếu trùng tên
-    public boolean createFolder(String name) {
-        folders.add(new WishlistFolder(name));
-        return true;
+    // Thêm vào 'Mục yêu thích"
+    public void addToInterestedView(Post post) {
+        interestedFolder.getPosts().add(0, post);
     }
 
-    // Di chuyển post sang 1 folder cụ thể (chỉ 1 folder duy nhất)
-    public void movePostToFolder(Post post, String folderName) {
-        removePostFromWishlists(post); // Xóa khỏi các folder khác
-        for (WishlistFolder folder : folders) {
-            if (folder.getName().equals(folderName)) {
-                folder.addPost(post);
-                break;
-            }
+    // Xóa khỏi folder "Yêu thích"
+    public void removeFromInterestedView(Post post) {
+        if (interestedFolder.getPosts().contains(post)) {
+            interestedFolder.removePost(post);
         }
     }
 
-    // Toggle trạng thái post trong folder "Recently viewed"
-    public void togglePost(Post post) {
-        if (isPostSaved(post)) {
-            defaultFolder.removePost(post);
-        } else {
-            defaultFolder.addPost(post);
-        }
-    }
 
-    public boolean isPostSaved(Post post) {
-        return defaultFolder.getPosts().contains(post);
+    // Kiểm tra post có trong folder wishlist nào không (trừ "Recently viewed")
+    public boolean isPostInInterestedWishlist(Post post) {
+        return interestedFolder.getPosts().contains(post);
     }
 
     public List<WishlistFolder> getFolders() {
