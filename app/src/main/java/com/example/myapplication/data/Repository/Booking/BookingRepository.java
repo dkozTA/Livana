@@ -1,8 +1,10 @@
 package com.example.myapplication.data.Repository.Booking;
 
+import com.example.myapplication.data.Enum.Booking_status;
 import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.FirebaseService;
+import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -16,9 +18,11 @@ import java.util.List;
 public class BookingRepository {
     private final FirebaseFirestore db;
     private final String COLLECTION_NAME = "bookings"; // Tên collection trong Firestore
+    private final PropertyRepository propertyRepository;
 
     public BookingRepository(Context context) {
         this.db = FirebaseService.getInstance(context).getFireStore();
+        this.propertyRepository = new PropertyRepository(context);
     }
 
     public void createBooking(Booking booking, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
@@ -40,19 +44,96 @@ public class BookingRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    public void acceptBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+    public void getBookingById(String bookingID, OnSuccessListener<Booking> onSuccess, OnFailureListener onFailure) {
+        db.collection(COLLECTION_NAME)
+                .document(bookingID)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Booking booking = documentSnapshot.toObject(Booking.class);
+                        if (booking != null) {
+                            onSuccess.onSuccess(booking);
+                        } else {
+                            onFailure.onFailure(new Exception("Property is null"));
+                        }
+                    } else {
+                        onFailure.onFailure(new Exception("Property not found"));
+                    }
+                })
+                .addOnFailureListener(onFailure);
+    }
 
+    public void acceptBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getBookingById(bookingId,
+                booking -> {
+                    if(booking.status == Booking_status.PENDING) {
+                        this.propertyRepository.updateBookedDate(booking.property_id, booking.check_in_day, booking.check_out_day,
+                                unused -> {
+                                    this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.ACCEPTED)
+                                            .addOnSuccessListener(onSuccess)
+                                            .addOnFailureListener(onFailure);
+                                },
+                               onFailure);
+                    } else {
+                        onFailure.onFailure(new Exception("Booking status must be PENDING"));
+                    }
+                },
+                onFailure);
     }
 
     public void rejectBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-
+        this.getBookingById(bookingId,
+                booking -> {
+                    if(booking.status == Booking_status.PENDING) {
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.REJECTED)
+                                .addOnSuccessListener(onSuccess)
+                                .addOnFailureListener(onFailure);
+                    } else {
+                        onFailure.onFailure(new Exception("Booking status must be PENDING"));
+                    }
+                },
+                onFailure);
     }
 
     public void completeBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-
+        this.getBookingById(bookingId,
+                booking -> {
+                    if(booking.status == Booking_status.IN_PROGRESS) {
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.COMPLETED)
+                                .addOnSuccessListener(onSuccess)
+                                .addOnFailureListener(onFailure);
+                    } else {
+                        onFailure.onFailure(new Exception("Booking status must be ACCEPTED"));
+                    }
+                },
+                onFailure);
     }
 
     public void cancelBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getBookingById(bookingId,
+                booking -> {
+                    if(booking.status != Booking_status.COMPLETED && booking.status != Booking_status.IN_PROGRESS) {
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.CANCELLED)
+                                .addOnSuccessListener(onSuccess)
+                                .addOnFailureListener(onFailure);
+                    } else {
+                        onFailure.onFailure(new Exception("Booking status must be PENDING"));
+                    }
+                },
+                onFailure);
+    }
 
+    public void InProgressBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getBookingById(bookingId,
+                booking -> {
+                    if(booking.status != Booking_status.ACCEPTED) {
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.IN_PROGRESS)
+                                .addOnSuccessListener(onSuccess)
+                                .addOnFailureListener(onFailure);
+                    } else {
+                        onFailure.onFailure(new Exception("Booking status must be PENDING"));
+                    }
+                },
+                onFailure);
     }
 }

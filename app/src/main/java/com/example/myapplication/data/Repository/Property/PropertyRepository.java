@@ -2,6 +2,7 @@ package com.example.myapplication.data.Repository.Property;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 
 import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Model.Property.Property;
@@ -9,11 +10,16 @@ import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class PropertyRepository {
     private final FirebaseFirestore db;
@@ -131,7 +137,33 @@ public class PropertyRepository {
                 .addOnFailureListener(onFailure);
     }
 
+    // Lưu theo định dạng dd-MM-yyyy
     public void updateBookedDate(String propertyId, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        Set<String> bookedDates = new HashSet<>();
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            onFailure.onFailure(new Exception("Version is not supported"));
+            return;
+        }
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+            LocalDate start = LocalDate.parse(startDate, formatter);
+            LocalDate end = LocalDate.parse(endDate, formatter);
 
+            while (!start.isAfter(end)) {
+                bookedDates.add(start.format(formatter));
+                start = start.plusDays(1);
+            }
+
+            // Cập nhật vào Firestore
+            db.collection(COLLECTION_NAME)
+                    .document(propertyId)
+                    .update("booked_date", FieldValue.arrayUnion(bookedDates.toArray()))
+                    .addOnSuccessListener(onSuccess)
+                    .addOnFailureListener(onFailure);
+
+        } catch (Exception e) {
+            onFailure.onFailure(e);
+        }
     }
+
 }

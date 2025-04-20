@@ -1,16 +1,26 @@
 package com.example.myapplication.data.Repository.Auth;
 
 import android.content.Context;
+import android.content.Intent;
 
+import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Auth.AuthLogin;
 import com.example.myapplication.data.Model.Auth.AuthRegister;
 import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.User.UserRepository;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 public class AuthRepository {
     private final FirebaseAuth firebaseAuth;
@@ -73,6 +83,12 @@ public class AuthRepository {
 
     // Dang nhap bang Google
 
+    public void loginWithGoogleAccount(GoogleSignInAccount account, OnSuccessListener<AuthResult> onSuccess, OnFailureListener onFailure) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
+        firebaseAuth.signInWithCredential(credential)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
 
     public void logout() {
         firebaseAuth.signOut();
