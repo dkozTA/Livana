@@ -1,5 +1,7 @@
 package com.example.myapplication.data.Model.Location;
 
+import androidx.annotation.NonNull;
+
 import java.util.List;
 
 public class Province {
@@ -17,5 +19,11 @@ public class Province {
         this.division_type = division_type;
         this.phone_code = phone_code;
         this.districts = districts;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
     }
 }

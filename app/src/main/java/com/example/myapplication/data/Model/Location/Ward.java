@@ -1,5 +1,7 @@
 package com.example.myapplication.data.Model.Location;
 
+import androidx.annotation.NonNull;
+
 public class Ward {
     public String name;
     public int code;
@@ -13,5 +15,11 @@ public class Ward {
         this.division_type = division_type;
         this.codename = codename;
         this.district_code = district_code;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
     }
 }
