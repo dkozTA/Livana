@@ -69,7 +69,6 @@ public class HouseDetailActivity extends AppCompatActivity {
         post = getIntent().getParcelableExtra("post");
         if (post != null) {
             TextView title = findViewById(R.id.title);
-            //ImageView postImageView = findViewById(R.id.post_image);
             ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
 
             TextView location = findViewById(R.id.location);
@@ -96,7 +95,7 @@ public class HouseDetailActivity extends AppCompatActivity {
             location.setText(post.getLocation());
             detail.setText(post.getDetail());
             dateRange.setText(post.getDateRange());
-            price.setText(post.getPrice());
+            price.setText(post.getNormal_price());
             avg_ratings.setText(post.getAvgRatings() + " ⭐ ");
             total_reviews.setText(post.getTotalReview() + " đánh giá");
             if (post.getAmenities() != null && post.getAmenities().houseRules != null) {
@@ -147,7 +146,7 @@ public class HouseDetailActivity extends AppCompatActivity {
         String shareText = "Check out this house!\n"
                 + post.getTitle() + "\n"
                 + post.getLocation() + "\n"
-                + "Price: " + post.getPrice();
+                + "Price: " + post.getNormal_price();
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");

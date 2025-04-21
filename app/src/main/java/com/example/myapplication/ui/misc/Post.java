@@ -4,20 +4,24 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.example.myapplication.data.Enum.PropertyStatus;
 import com.example.myapplication.data.Model.Property.Amenities;
 
+import java.util.Date;
 import java.util.List;
 
 public class Post implements Parcelable {
-    private String id, title, imageResId, location, distance, dateRange, price, detail;
+    private String id, title, imageResId, location, distance, dateRange, detail;
     private int total_review;
     private double avg_ratings;
     private Amenities amenities;
+    public String normal_price;
+
 
     private List<String> sub_photos; // ảnh phụ (URLs)
 
     public Post(String id, String title, String imageResId, String location, String detail,
-                String distance, String dateRange, String price,
+                String distance, String dateRange, String normal_price,
                 int total_review, double avg_ratings, Amenities amenities, List<String> sub_photos) {
         this.title = title;
         this.imageResId = imageResId;
@@ -25,7 +29,7 @@ public class Post implements Parcelable {
         this.detail = detail;
         this.distance = distance;
         this.dateRange = dateRange;
-        this.price = price;
+        this.normal_price = normal_price;
         this.total_review = total_review;
         this.avg_ratings = avg_ratings;
         this.amenities = amenities;
@@ -40,7 +44,7 @@ public class Post implements Parcelable {
         detail = in.readString();
         distance = in.readString();
         dateRange = in.readString();
-        price = in.readString();
+        normal_price = in.readString();
         total_review = in.readInt();
         avg_ratings = in.readDouble();
         amenities = in.readParcelable(Amenities.class.getClassLoader());
@@ -68,7 +72,8 @@ public class Post implements Parcelable {
         dest.writeString(detail);
         dest.writeString(distance);
         dest.writeString(dateRange);
-        dest.writeString(price);
+        dest.writeString(normal_price);
+
         dest.writeInt(total_review);
         dest.writeDouble(avg_ratings);
         dest.writeParcelable(amenities, flags);
@@ -106,8 +111,8 @@ public class Post implements Parcelable {
         return dateRange;
     }
 
-    public String getPrice() {
-        return price;
+    public String getNormal_price() {
+        return normal_price;
     }
 
     public String getDetail() {

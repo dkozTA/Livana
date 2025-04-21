@@ -52,11 +52,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
 
         PostImageAdapter imageAdapter = new PostImageAdapter(context, imageUrls, post, true);
+        //holder.postImage.setImageResource(post.getImageResId());
         holder.imageViewPager.setAdapter(imageAdapter);
-
         holder.location.setText(post.getLocation());
         holder.dateRange.setText(post.getDateRange());
-        holder.price.setText(post.getPrice());
+        holder.price.setText(post.getNormal_price());
 
         if (!isWishlistView) {
             holder.distance.setText(post.getDistance());
@@ -110,6 +110,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
+            //postImage = itemView.findViewById(R.id.post_image);
             location = itemView.findViewById(R.id.location);
             distance = itemView.findViewById(R.id.distance);
             dateRange = itemView.findViewById(R.id.date_range);

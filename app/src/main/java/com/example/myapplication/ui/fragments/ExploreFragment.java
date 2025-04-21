@@ -9,6 +9,8 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
@@ -47,11 +49,6 @@ public class ExploreFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        // Initialize empty list and adapter
-        postList = new ArrayList<>();
-        postAdapter = new PostAdapter(getContext(), postList, false);
-        recyclerView.setAdapter(postAdapter);
 
         // Create repository instance to interact with Firebase
         propertyRepository = new PropertyRepository(requireContext());
@@ -95,7 +92,9 @@ public class ExploreFragment extends Fragment {
                         // Convert each Property to Post
                         for (Property property : properties) {
                             // Format price to display with $ symbol
-                            String formattedPrice = "₫" + String.format("%,.0f", property.getNormal_price()) + " cho 1 đêm";
+                            String normal_Price = "₫" + String.format("%,.0f", property.getNormal_price()) + " cho 1 đêm";
+                            String weekend_Price = "₫" + String.format("%,.0f", property.getWeekend_price()) + " cho 1 đêm";
+                            String holiday_Price = "₫" + String.format("%,.0f", property.getHoliday_price()) + " cho 1 đêm";
 
                             // Handle null address case
                             String title = property.address.getDetailAddress() != null ?
@@ -129,15 +128,16 @@ public class ExploreFragment extends Fragment {
                                     title,                    // title
                                     property.getMainPhoto(),               // placeholder image
                                     property.name,                        // address string
-                                    detail, // property type as detail
+                                    detail,// property type as detail
                                     "1.200 km",                          // no distance available
                                     "Available now",                 // placeholder date range
-                                    formattedPrice,                 // formatted price
+                                    normal_Price,
                                     property.total_reviews,
                                     property.avg_ratings,
                                     property.amenities,
                                     property.sub_photos
                             );
+
                             postList.add(post);
                             fullPostList.add(post);
                         }

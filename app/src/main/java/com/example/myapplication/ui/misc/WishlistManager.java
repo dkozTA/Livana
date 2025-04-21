@@ -36,18 +36,6 @@ public class WishlistManager {
     }
 
 
-    public void removeFromRecentlyView(Post post) {
-        if (recentViewedFolder.getPosts().contains(post)) {
-            recentViewedFolder.removePost(post);
-        }
-    }
-
-
-    // Kiểm tra post có trong folder wishlist nào không (trừ "Recently viewed")
-    public boolean isPostInRecentlyWishlist(Post post) {
-        return recentViewedFolder.getPosts().contains(post);
-    }
-
     // Thêm vào 'Mục yêu thích"
     public void addToInterestedView(Post post) {
         interestedFolder.getPosts().add(0, post);
