@@ -2,21 +2,31 @@ package com.example.myapplication.data.Repository.User;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
+import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.FirebaseService;
+import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class UserRepository {
     private final FirebaseFirestore db;
     private final StorageRepository storageRepository;
+    private final PropertyRepository propertyRepository;
+
     public UserRepository(Context context) {
         db = FirebaseService.getInstance(context).getFireStore();
         storageRepository = new StorageRepository(context);
+        propertyRepository = new PropertyRepository(context);
     }
 
     // ➕ Tạo user mới
@@ -72,6 +82,7 @@ public class UserRepository {
             onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
             return;
         }
+
         this.db.collection("users").document(userUID).update("rentingHistory", FieldValue.arrayUnion(propertyID))
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
@@ -82,17 +93,141 @@ public class UserRepository {
             onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
             return;
         }
-        this.db.collection("users").document(userUID).update("recent_list", FieldValue.arrayUnion(propertyID))
-                .addOnSuccessListener(onSuccess)
-                .addOnFailureListener(onFailure);
+        List<String> recent_list = new ArrayList<>();
+        this.getUserByUid(userUID,
+                user -> {
+                    recent_list.addAll(user.recent_list);
+                    recent_list.remove(propertyID);
+                    recent_list.add(propertyID);
+                    this.db.collection("users").document(userUID).update("recent_list", recent_list)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(onFailure);
+                },
+                onFailure);
     }
     public void addToWishList(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
             onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
             return;
         }
-        this.db.collection("users").document(userUID).update("wish_list", FieldValue.arrayUnion(propertyID))
+        List<String> wish_list = new ArrayList<>();
+        this.getUserByUid(userUID,
+                user -> {
+                    wish_list.addAll(user.wish_list);
+                    wish_list.remove(propertyID);
+                    wish_list.add(propertyID);
+                    this.db.collection("users").document(userUID).update("wish_list", wish_list)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(onFailure);
+                },
+                onFailure);
+    }
+
+    public void removeFromWishList(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
+            onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
+            return;
+        }
+        this.db.collection("users").document(userUID).update("wish_list", FieldValue.arrayRemove(propertyID))
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
+    }
+
+    public void removeFromRecentList(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
+            onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
+            return;
+        }
+        this.db.collection("users").document(userUID).update("recent_list", FieldValue.arrayRemove(propertyID))
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
+    public void getPropertyInUserWishList(String userID, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        if (userID == null || userID.isEmpty()) {
+            onFailure.onFailure(new IllegalArgumentException("userUID cannot be null or empty"));
+            return;
+        }
+        this.getUserByUid(userID,
+                user -> {
+                    List<Property> properties = new ArrayList<>();
+                    List<String> faultPropertyIDs = new ArrayList<>();
+
+                    if (user.wish_list == null || user.wish_list.isEmpty()) {
+                        onSuccess.onSuccess(properties);
+                        return;
+                    }
+
+                    AtomicInteger pendingCount  = new AtomicInteger(user.wish_list.size());
+                    for(String propertyID: user.wish_list) {
+                        this.propertyRepository.getPropertyById(propertyID,
+                                property -> {
+                                    synchronized (properties) {
+                                        properties.add(property);
+                                    }
+
+                                    if (pendingCount.decrementAndGet() == 0) {
+                                        onSuccess.onSuccess(properties);
+                                    }
+                                },
+                                e -> {
+                                    // Lưu lại ID property gây lỗi
+                                    synchronized (faultPropertyIDs) {
+                                        faultPropertyIDs.add(propertyID);
+                                    }
+
+                                    if (pendingCount.decrementAndGet() == 0) {
+                                        // Có thể log lỗi hoặc thông báo về các property bị lỗi
+                                        Log.e("PropertyWishList", "Failed to fetch " + faultPropertyIDs.size() + " properties");
+                                        onSuccess.onSuccess(properties);
+                                    }
+                                });
+                    };
+                },
+                onFailure);
+    }
+
+    public void getPropertyInUserRecentList(String userID, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        if (userID == null || userID.isEmpty()) {
+            onFailure.onFailure(new IllegalArgumentException("userUID cannot be null or empty"));
+            return;
+        }
+        this.getUserByUid(userID,
+                user -> {
+                    List<Property> properties = new ArrayList<>();
+                    List<String> faultPropertyIDs = new ArrayList<>();
+
+                    if (user.recent_list == null || user.recent_list.isEmpty()) {
+                        onSuccess.onSuccess(properties);
+                        return;
+                    }
+
+                    AtomicInteger pendingCount  = new AtomicInteger(user.recent_list.size());
+                    for(String propertyID: user.recent_list) {
+                        this.propertyRepository.getPropertyById(propertyID,
+                                property -> {
+                                    synchronized (properties) {
+                                        properties.add(property);
+                                    }
+
+                                    if (pendingCount.decrementAndGet() == 0) {
+                                        onSuccess.onSuccess(properties);
+                                    }
+                                },
+                                e -> {
+                                    // Lưu lại ID property gây lỗi
+                                    synchronized (faultPropertyIDs) {
+                                        faultPropertyIDs.add(propertyID);
+                                    }
+
+                                    if (pendingCount.decrementAndGet() == 0) {
+                                        // Có thể log lỗi hoặc thông báo về các property bị lỗi
+                                        Log.e("PropertyWishList", "Failed to fetch " + faultPropertyIDs.size() + " properties");
+                                        onSuccess.onSuccess(properties);
+                                    }
+                                });
+                    };
+                },
+                onFailure);
     }
 }
