@@ -165,5 +165,4 @@ public class PropertyRepository {
             onFailure.onFailure(e);
         }
     }
-
 }
