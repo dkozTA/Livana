@@ -16,7 +16,7 @@
 
         <!--
            <activity
-                android:name=".ui.TestActivity"
+                android:name=".ui.auth.LoginActivity"
                 android:exported="true">
                 <intent-filter>
                     <action android:name="android.intent.action.MAIN" />
@@ -37,7 +37,7 @@
         </activity>
 
         <activity
-            android:name=".ui.auth.LoginActivity"
+            android:name=".ui.TestActivity"
             android:exported="true">
             <!-- change this to other activity if want to test that activity -->
             <intent-filter>

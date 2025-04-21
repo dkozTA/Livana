@@ -16,6 +16,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class UserRepository {
@@ -148,41 +151,61 @@ public class UserRepository {
             onFailure.onFailure(new IllegalArgumentException("userUID cannot be null or empty"));
             return;
         }
+
         this.getUserByUid(userID,
                 user -> {
-                    List<Property> properties = new ArrayList<>();
-                    List<String> faultPropertyIDs = new ArrayList<>();
-
+                    // Xử lý trường hợp danh sách wish_list trống
                     if (user.wish_list == null || user.wish_list.isEmpty()) {
-                        onSuccess.onSuccess(properties);
+                        onSuccess.onSuccess(new ArrayList<>());
                         return;
                     }
 
-                    AtomicInteger pendingCount  = new AtomicInteger(user.wish_list.size());
-                    for(String propertyID: user.wish_list) {
+                    // Sử dụng Map để lưu trữ properties theo propertyID
+                    final Map<String, Property> propertyMap = new ConcurrentHashMap<>();
+                    final Set<String> failedPropertyIDs = ConcurrentHashMap.newKeySet();
+                    AtomicInteger pendingCount = new AtomicInteger(user.wish_list.size());
+
+                    for (String propertyID : user.wish_list) {
                         this.propertyRepository.getPropertyById(propertyID,
                                 property -> {
-                                    synchronized (properties) {
-                                        properties.add(property);
-                                    }
+                                    propertyMap.put(propertyID, property);
 
                                     if (pendingCount.decrementAndGet() == 0) {
-                                        onSuccess.onSuccess(properties);
+                                        // Khi tất cả các yêu cầu đã hoàn thành, tạo danh sách theo đúng thứ tự
+                                        List<Property> orderedProperties = new ArrayList<>();
+                                        for (String id : user.wish_list) {
+                                            Property prop = propertyMap.get(id);
+                                            if (prop != null) {
+                                                orderedProperties.add(prop);
+                                            }
+                                        }
+                                        onSuccess.onSuccess(orderedProperties);
+
+                                        // Log các property bị lỗi nếu có
+                                        if (!failedPropertyIDs.isEmpty()) {
+                                            Log.e("PropertyWishList", "Failed to fetch properties: " + failedPropertyIDs);
+                                        }
                                     }
                                 },
                                 e -> {
-                                    // Lưu lại ID property gây lỗi
-                                    synchronized (faultPropertyIDs) {
-                                        faultPropertyIDs.add(propertyID);
-                                    }
+                                    failedPropertyIDs.add(propertyID);
 
                                     if (pendingCount.decrementAndGet() == 0) {
-                                        // Có thể log lỗi hoặc thông báo về các property bị lỗi
-                                        Log.e("PropertyWishList", "Failed to fetch " + faultPropertyIDs.size() + " properties");
-                                        onSuccess.onSuccess(properties);
+                                        // Khi tất cả các yêu cầu đã hoàn thành, tạo danh sách theo đúng thứ tự
+                                        List<Property> orderedProperties = new ArrayList<>();
+                                        for (String id : user.wish_list) {
+                                            Property prop = propertyMap.get(id);
+                                            if (prop != null) {
+                                                orderedProperties.add(prop);
+                                            }
+                                        }
+                                        onSuccess.onSuccess(orderedProperties);
+
+                                        // Log các property bị lỗi
+                                        Log.e("PropertyWishList", "Failed to fetch properties: " + failedPropertyIDs);
                                     }
                                 });
-                    };
+                    }
                 },
                 onFailure);
     }
