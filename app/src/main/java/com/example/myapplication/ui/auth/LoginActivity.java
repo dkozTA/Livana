@@ -35,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private TextView tvRegister;
     private TextView tvForgotPassword;
-    private FirebaseAuth firebaseAuth;
     private UserRepository userRepository;
     private AuthRepository authRepository;
     private static final int RC_GOOGLE_SIGN_IN = 1001;
@@ -134,23 +133,20 @@ public class LoginActivity extends AppCompatActivity {
         boolean isNew = authResult.getAdditionalUserInfo().isNewUser();
         FirebaseUser fbUser = authResult.getUser();
         if (isNew && fbUser != null) {
-            //goToCompleteProfile(fbUser);
+            goToCompleteProfile(fbUser);
             Toast.makeText(this, "Tài khoản mới đăng kí thành công", Toast.LENGTH_SHORT).show();
         } else {
             goToMain();
         }
     }
 
-    /*
+
     private void goToCompleteProfile(FirebaseUser fbUser) {
-        Intent i = new Intent(this, CompleteProfileActivity.class);
-        i.putExtra(CompleteProfileActivity.EXTRA_UID, fbUser.getUid());
-        i.putExtra(CompleteProfileActivity.EXTRA_NAME, fbUser.getDisplayName());
-        i.putExtra(CompleteProfileActivity.EXTRA_EMAIL, fbUser.getEmail());
+        Intent i = new Intent(LoginActivity.this, CompleteProfile.class);
         startActivity(i);
         finish();
     }
-     */
+
 
     private void goToMain() {
         Intent intent = new Intent(this, MainActivity.class);

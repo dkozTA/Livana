@@ -37,7 +37,7 @@
         </activity>
 
         <activity
-            android:name=".ui.TestActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="true">
             <!-- change this to other activity if want to test that activity -->
             <intent-filter>
@@ -49,6 +49,10 @@
 
         <activity
             android:name=".ui.auth.RegisterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.CompleteProfile"
             android:exported="false" />
 
         <activity
