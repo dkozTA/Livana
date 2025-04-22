@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.myapplication.ui.fragments.SetAmenitiesFragment;
 import com.example.myapplication.ui.fragments.SetInfoFragment;
 import com.example.myapplication.ui.fragments.SetPropertyType;
 
@@ -23,7 +24,7 @@ public class TestActivity extends FragmentActivity {
         // Gắn fragment
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(container.getId(), new SetInfoFragment())
+                .replace(container.getId(), new SetAmenitiesFragment())
                 .commitNow();
     }
 
