@@ -77,6 +77,9 @@ public class AuthRepository {
         return this.firebaseAuth.getUid();
     }
 
+    public FirebaseUser getCurrentUser() {
+        return this.firebaseAuth.getCurrentUser();
+    }
     public boolean checkLogin() {
         return this.firebaseAuth.getCurrentUser() != null;
     }

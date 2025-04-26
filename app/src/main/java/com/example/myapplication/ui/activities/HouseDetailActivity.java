@@ -7,11 +7,13 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -71,6 +73,7 @@ public class HouseDetailActivity extends AppCompatActivity {
         post = getIntent().getParcelableExtra("post");
         if (post != null) {
             TextView title = findViewById(R.id.title);
+            //ImageView postImageView = findViewById(R.id.post_image);
             ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
 
             TextView location = findViewById(R.id.location);
@@ -115,6 +118,26 @@ public class HouseDetailActivity extends AppCompatActivity {
             updateHeartIcon();
 
             heartButton.setOnClickListener(v -> handleHeartClick());
+        }
+
+        Button btnBooking = findViewById(R.id.btnBooking);
+        btnBooking.setOnClickListener(v -> navigateToBooking());
+    }
+
+    private void navigateToBooking() {
+        if (post != null) {
+            Intent intent = new Intent(this, BookingActivity.class);
+            // Pass data
+            intent.putExtra("propertyId", post.getId());
+            intent.putExtra("hostId", post.getHostId());
+            intent.putExtra("propertyTitle", post.getTitle());
+            intent.putExtra("propertyLocation", post.getLocation());
+            intent.putExtra("price", post.getNormal_price());
+            intent.putExtra("propertyRating", post.getAvgRatings());
+            intent.putExtra("totalReviews", post.getTotalReview());
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "Không thể đặt phòng lúc này", Toast.LENGTH_SHORT).show();
         }
     }
 

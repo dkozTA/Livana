@@ -16,6 +16,7 @@ public class Post implements Parcelable {
     private double avg_ratings;
     private Amenities amenities;
     public String normal_price;
+    private String hostId;
 
 
     private List<String> sub_photos; // ảnh phụ (URLs)
@@ -34,10 +35,11 @@ public class Post implements Parcelable {
         this.avg_ratings = avg_ratings;
         this.amenities = amenities;
         this.sub_photos = sub_photos;
-        this.id = id;
     }
 
     protected Post(Parcel in) {
+        id = in.readString();
+        hostId = in.readString();
         title = in.readString();
         imageResId = in.readString();
         location = in.readString();
@@ -49,7 +51,6 @@ public class Post implements Parcelable {
         avg_ratings = in.readDouble();
         amenities = in.readParcelable(Amenities.class.getClassLoader());
         sub_photos = in.createStringArrayList();
-        id = in.readString();
     }
 
     public static final Creator<Post> CREATOR = new Creator<Post>() {
@@ -66,6 +67,8 @@ public class Post implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(hostId);
         dest.writeString(title);
         dest.writeString(imageResId);
         dest.writeString(location);
@@ -78,16 +81,11 @@ public class Post implements Parcelable {
         dest.writeDouble(avg_ratings);
         dest.writeParcelable(amenities, flags);
         dest.writeStringList(sub_photos);
-        dest.writeString(id);
     }
 
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    public String getId() {
-        return id;
     }
 
     // Getters
@@ -131,6 +129,23 @@ public class Post implements Parcelable {
         return amenities;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public String getHostId() {
+        return hostId;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setHostId(String hostId) {
+        this.hostId = hostId;
+    }
+
+
     // Getter
     public List<String> getSub_photos() {
         Log.d("Post", "getSub_photos size: " + (sub_photos != null ? sub_photos.size() : 0));
@@ -138,11 +153,12 @@ public class Post implements Parcelable {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Post post = (Post) o;
-        return id.equals(post.id); // Giả sử Post có trường id duy nhất
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Post other = (Post) obj;
+        // Add null check for id
+        return id != null && id.equals(other.id);
     }
 
     @Override

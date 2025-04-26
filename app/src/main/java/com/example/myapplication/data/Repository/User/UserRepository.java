@@ -80,13 +80,13 @@ public class UserRepository {
         );
     }
 
-    public void addRentingHistory(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
+    public void addRentingHistory(String userUID, String bookingID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        if (userUID == null || userUID.isEmpty() || bookingID == null || bookingID.isEmpty()) {
             onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
             return;
         }
 
-        this.db.collection("users").document(userUID).update("rentingHistory", FieldValue.arrayUnion(propertyID))
+        this.db.collection("users").document(userUID).update("rentingHistory", FieldValue.arrayUnion(bookingID))
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }

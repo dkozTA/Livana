@@ -29,10 +29,6 @@
         <activity
             android:name=".ui.activities.MainActivity"
             android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
         </activity>
 
         <activity
@@ -56,10 +52,18 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.auth.CompleteProfile"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.activities.ProfileInfoActivity"
             android:exported="false" />
 
         <activity android:name=".ui.activities.PersonalInfoActivity" />
+
+        <activity
+            android:name=".ui.activities.BookingActivity"
+            android:exported="false" />
 
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
