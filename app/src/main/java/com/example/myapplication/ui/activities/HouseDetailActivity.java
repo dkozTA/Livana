@@ -20,10 +20,12 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.AmenityStatus;
+import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.adapters.PostImageAdapter;
 import com.example.myapplication.ui.misc.Amenity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -126,10 +128,10 @@ public class HouseDetailActivity extends AppCompatActivity {
         boolean isInWishlist = WishlistManager.getInstance().isPostInInterestedWishlist(post);
 
         if (!isInWishlist) {
-            WishlistManager.getInstance().addToInterestedView(post);
+            WishlistManager.getInstance().addToInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(this));
             updateHeartIcon();
         } else {
-            WishlistManager.getInstance().removeFromInterestedView(post);
+            WishlistManager.getInstance().removeFromInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(this));
             updateHeartIcon();
         }
     }

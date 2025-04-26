@@ -29,7 +29,7 @@ public class FolderDetailFragment extends Fragment {
         folderNameText.setText(folder.getName());
 
         RecyclerView recyclerView = view.findViewById(R.id.houses_recycler);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
         PostAdapter adapter = new PostAdapter(getContext(), folder.getPosts(), true);
         recyclerView.setAdapter(adapter);
 

@@ -13,9 +13,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.activities.HouseDetailActivity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.List;
 
@@ -56,7 +58,7 @@ public class PostImageAdapter extends RecyclerView.Adapter<PostImageAdapter.Imag
         if (isClickable) {
             holder.itemView.setOnClickListener(v -> {
                 Log.d("PostImageAdapter", "Image clicked at position: " + position);
-                WishlistManager.getInstance().addToRecentlyViewed(post);
+                WishlistManager.getInstance().addToRecentlyViewed(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(context));
                 Intent intent = new Intent(context, HouseDetailActivity.class);
                 intent.putExtra("post", post);
                 context.startActivity(intent);

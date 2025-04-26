@@ -14,6 +14,14 @@ public class WishlistFolder {
 
     public String getName() { return name; }
     public List<Post> getPosts() { return posts; }
+
+    public void setPosts(List<Post> newPosts) {
+        posts.clear();
+        posts.addAll(newPosts);
+    }
+
     public void addPost(Post post) { posts.add(post); }
-    public void removePost(Post post) { posts.remove(post); }
+    public void removePost(Post post) {
+        posts.remove(post);
+    }
 }

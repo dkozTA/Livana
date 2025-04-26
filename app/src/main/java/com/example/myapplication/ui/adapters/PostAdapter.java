@@ -11,9 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.ui.activities.HouseDetailActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -72,11 +74,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             boolean isCurrentlySaved = WishlistManager.getInstance().isPostInInterestedWishlist(post);
 
             if (!isCurrentlySaved) {
-                WishlistManager.getInstance().addToInterestedView(post);
+                WishlistManager.getInstance().addToInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(context));
                 holder.heartButton.setImageResource(R.drawable.ic_heart_filled);
 
             } else {
-                WishlistManager.getInstance().removeFromInterestedView(post);
+                WishlistManager.getInstance().removeFromInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(context));
                 notifyItemChanged(holder.getAdapterPosition()); // Cập nhật lại icon
                 holder.heartButton.setImageResource(R.drawable.ic_heart_outline);
             }
@@ -84,7 +86,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         // Xử lý click vào item để xem chi tiết
         holder.itemView.setOnClickListener(v -> {
-            WishlistManager.getInstance().addToRecentlyViewed(post);
+            WishlistManager.getInstance().addToRecentlyViewed(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(context));
 
             Intent intent = new Intent(context, HouseDetailActivity.class);
             intent.putExtra("post", post);
