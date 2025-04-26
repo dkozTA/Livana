@@ -16,16 +16,6 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ConversationRepository conversationRepository = new ConversationRepository(this);
-        AuthRepository authRepository = new AuthRepository(this);
-        conversationRepository.getAllConversationByHostID(authRepository.getUserUid(),
-                conversations -> {
-                    for(Conversation conversation : conversations) {
-                        Log.d("Conversation", "Conversation: " + conversation.id);
-                    }
-                },
-                e -> {
-                    Log.d("Conversation", Objects.requireNonNull(e.getMessage()));
-                });
+
     }
 }

@@ -79,10 +79,7 @@ public class ConversationRepository {
     public void sendMessage(String conversationID, Message message, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.db.collection(COLLECTION_NAME)
                 .document(conversationID)
-                .collection("messages")
-                .add(message)
-                .addOnSuccessListener(documentReference -> onSuccess.onSuccess(null))
-                .addOnFailureListener(onFailure);
+                .update("messages", FieldValue.arrayUnion(message));
     }
 
     public void deleteConversation(String conversationID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
@@ -91,23 +88,24 @@ public class ConversationRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    public ListenerRegistration listenForMessages(String conversationID, OnSuccessListener<Message> onNewMessage, OnFailureListener onFailure) {
+    public ListenerRegistration listenForNewMessages(String conversationID, OnSuccessListener<Message> onNewMessage, OnFailureListener onFailure) {
+        // Lắng nghe sự thay đổi trong tài liệu Conversation
         return db.collection(COLLECTION_NAME)
                 .document(conversationID)
-                .collection("messages")
-                .orderBy("time", Query.Direction.ASCENDING)
-                .addSnapshotListener((querySnapshot, error) -> {
+                .addSnapshotListener((documentSnapshot, error) -> {
                     if (error != null) {
                         onFailure.onFailure(error);
                         return;
                     }
 
-                    if (querySnapshot != null) {
-                        for (DocumentChange dc : querySnapshot.getDocumentChanges()) {
-                            if (dc.getType() == DocumentChange.Type.ADDED) {
-                                Message newMessage = dc.getDocument().toObject(Message.class);
-                                onNewMessage.onSuccess(newMessage);
-                            }
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        // Lấy dữ liệu Conversation từ documentSnapshot
+                        Conversation conversation = documentSnapshot.toObject(Conversation.class);
+                        if (conversation != null && conversation.messages != null) {
+                            // Kiểm tra xem có tin nhắn mới trong danh sách messages không
+                            Message lastMessage = conversation.messages.get(conversation.messages.size() - 1);
+                            // Gọi callback trả về tin nhắn mới
+                            onNewMessage.onSuccess(lastMessage);
                         }
                     }
                 });

@@ -4,28 +4,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Conversation.Message;
+
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
-    private final List<Message> messages;
 
-    public MessageAdapter(List<Message> messages) {
-        this.messages = messages;
-    }
+    private final List<Message> messageList;
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
 
-    public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        TextView tvMessage, tvSender, tvTime;
-
-        public MessageViewHolder(View itemView) {
-            super(itemView);
-            tvMessage = itemView.findViewById(R.id.tvMessage);
-            tvSender = itemView.findViewById(R.id.tvSender);
-            tvTime = itemView.findViewById(R.id.tvTime);
-        }
+    public MessageAdapter(List<Message> messageList) {
+        this.messageList = messageList;
     }
 
     @NonNull
@@ -38,14 +34,27 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
-        Message message = messages.get(position);
-        holder.tvMessage.setText(message.message_content);
-        holder.tvSender.setText(message.sender_id);
-        holder.tvTime.setText(message.time.toString());
+        Message message = messageList.get(position);
+        holder.textMessage.setText(message.message_content);
+        if (message.time != null) {
+            holder.textTime.setText(timeFormat.format(message.time));
+        } else {
+            holder.textTime.setText("");
+        }
     }
 
     @Override
     public int getItemCount() {
-        return messages.size();
+        return messageList.size();
+    }
+
+    static class MessageViewHolder extends RecyclerView.ViewHolder {
+        TextView textMessage, textTime;
+
+        public MessageViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textMessage = itemView.findViewById(R.id.textMessage);
+            textTime = itemView.findViewById(R.id.textTime);
+        }
     }
 }
