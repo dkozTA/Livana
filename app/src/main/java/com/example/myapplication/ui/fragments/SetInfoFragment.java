@@ -9,6 +9,7 @@ import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -48,6 +49,26 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
     public void applyData() {
         Property value = viewModel.getPropertyData().getValue();
 
+        if (value.getAddress() != null) {
+            Address addr = value.getAddress();
+
+            locationApi.getAllDistrictsInProvince(addr.city_code, new DistrictCallbackHandler());
+            locationApi.getAllWardsInDistrict(addr.district_code, new WardsCallbackHandler());
+
+            actProvince.setText(addr.city_name, false);
+            actDistrict.setText(addr.district_name, false);
+            actWard.setText(addr.ward_name, false);
+
+            selectedProvince = new Province(addr.city_name, addr.city_code, null, null, -1, null);
+            selectedDistrict = new District(addr.district_name, addr.district_code, null, null, -1, null);
+            selectedWard = new Ward(addr.ward_name, addr.ward_code, null, null, -1);
+
+            actDistrict.setEnabled(true);
+            actWard.setEnabled(true);
+
+            detailAddress.setText(addr.detailed_address);
+        }
+
         if (value.name != null) {
             nameEditText.setText(value.name);
         }
@@ -60,8 +81,13 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
 
         newValue.name = nameEditText.getText().toString();
 
-        if (isValidAddress())
-            newValue.address = new Address(selectedProvince.code, selectedDistrict.code, selectedWard.code, detailAddress.getText().toString());
+        if (isValidAddress()) {
+            newValue.address = new Address(selectedProvince.code, selectedDistrict.code, selectedWard.code,
+                    selectedProvince.name, selectedDistrict.name, selectedWard.name,
+                    detailAddress.getText().toString());
+        } else {
+            Toast.makeText(getContext(), "Save Address failed", Toast.LENGTH_SHORT).show();
+        }
 
         viewModel.setPropertyData(newValue);
     }

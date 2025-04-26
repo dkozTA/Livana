@@ -62,8 +62,6 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
         AmenitySetupAdapter adapter = new AmenitySetupAdapter(amenityList);
         amenityRecycler.setAdapter(adapter);
 
-        Log.d("Adapter", "" + amenityRecycler.getItemDecorationCount());
-
         viewModel = new ViewModelProvider(requireActivity()).get(PropertyViewModel.class);
 
         applyData();

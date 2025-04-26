@@ -30,7 +30,7 @@
 
         <!-- Main activity, entry point of the app
            <activity
-                android:name=".ui.TestActivity"
+                android:name=".ui.auth.LoginActivity"
                 android:exported="true">
                 <intent-filter>
                     <action android:name="android.intent.action.MAIN" />
@@ -66,6 +66,10 @@
 
         <activity
             android:name=".ui.auth.RegisterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.auth.CompleteProfile"
             android:exported="false" />
 
         <activity

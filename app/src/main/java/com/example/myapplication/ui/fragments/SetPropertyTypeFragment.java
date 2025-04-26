@@ -70,11 +70,9 @@ public class SetPropertyTypeFragment extends Fragment implements IStepValidator 
             recyclerView.post(() -> {
                 RecyclerView.ViewHolder holder = recyclerView.findViewHolderForAdapterPosition(property.getProperty_type().ordinal());
 
-                Toast.makeText(getContext(), "VALUE PROPERTY NOT NULL " + property.property_type.ordinal() + " " + (holder == null), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), "VALUE PROPERTY NOT NULL " + property.property_type.ordinal() + " " + (holder == null), Toast.LENGTH_SHORT).show();
                 if (holder != null) {
                     // làm việc với holder
-
-                    Toast.makeText(getContext(), "Apply DATA FOR PROPERTYTYPE", Toast.LENGTH_SHORT).show();
                     RoomTypeAdapter.RoomTypeViewHolder viewHolder = (RoomTypeAdapter.RoomTypeViewHolder)  holder;
                     viewHolder.radioButton.performClick();
 
