@@ -1,33 +1,82 @@
 package com.example.myapplication.ui.fragments;
 
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Location.District;
 import com.example.myapplication.data.Model.Location.Province;
 import com.example.myapplication.data.Model.Location.Ward;
+import com.example.myapplication.data.Model.Property.Address;
+import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Location.LocationAPIClient;
 import com.example.myapplication.data.Repository.Location.LocationAPIService;
+import com.example.myapplication.interfaces.IStepValidator;
+import com.example.myapplication.ui.misc.PropertyViewModel;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
-public class SetInfoFragment extends Fragment {
+public class SetInfoFragment extends Fragment implements IStepValidator {
 
     private LocationAPIClient locationApi;
     private AutoCompleteTextView actProvince, actDistrict, actWard;
+    private EditText detailAddress;
+    private TextInputEditText nameEditText;
     private Province selectedProvince = null;
     private District selectedDistrict = null;
     private Ward selectedWard = null;
+
+
+    private PropertyViewModel viewModel;
+
+    @Override
+    public void applyData() {
+        Property value = viewModel.getPropertyData().getValue();
+
+        if (value.name != null) {
+            nameEditText.setText(value.name);
+        }
+    }
+
+    @Override
+    public void save() {
+        Property newValue = viewModel.getPropertyData().getValue();
+        if(newValue == null) newValue = new Property();
+
+        newValue.name = nameEditText.getText().toString();
+
+        if (isValidAddress())
+            newValue.address = new Address(selectedProvince.code, selectedDistrict.code, selectedWard.code, detailAddress.getText().toString());
+
+        viewModel.setPropertyData(newValue);
+    }
+
+    @Override
+    public boolean validate(String warning) {
+//        if (!isValidAddress()) {
+//            warning = new String("Địa chỉ không hợp lệ");
+//            return false;
+//        }
+        return true;
+    }
+
+    @Override
+    public int getStepIndex() {return 1;}
 
     class ProvincesCallbackHandler implements LocationAPIClient.OnProvinceListCallback {
         @Override
@@ -91,6 +140,8 @@ public class SetInfoFragment extends Fragment {
         actProvince = view.findViewById(R.id.actProvince);
         actDistrict = view.findViewById(R.id.actDistrict);
         actWard = view.findViewById(R.id.actWard);
+        detailAddress = view.findViewById(R.id.detailAdress);
+        nameEditText = view.findViewById(R.id.nameEditText);
 
         locationApi = new LocationAPIClient();
 
@@ -101,6 +152,9 @@ public class SetInfoFragment extends Fragment {
         locationApi.getAllProvinces(new ProvincesCallbackHandler());
         setupProvince();
 
+        viewModel = new ViewModelProvider(requireActivity()).get(PropertyViewModel.class);
+
+        applyData();
         return view;
     }
 
@@ -133,7 +187,7 @@ public class SetInfoFragment extends Fragment {
     }
 
     public boolean isValidAddress() {
-        return selectedProvince != null && selectedDistrict != null && selectedWard != null;
+        return selectedProvince != null && selectedDistrict != null && selectedWard != null && !detailAddress.getText().toString().equals(new String(""));
     }
 
     public int getProvinceCode() { return selectedProvince != null ? selectedProvince.code : null; }

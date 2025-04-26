@@ -4,12 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".ui.fragments.SetPropertyType">
+    tools:context=".ui.fragments.SetPropertyTypeFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:background="#FFFFFF"
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,12 +25,11 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
+                android:fontFamily="@font/roboto_bold"
                 android:text="Loại hình cho thuê của bạn"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display2"
                 android:textColor="#242424"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+                android:textSize="28sp"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView"
@@ -37,7 +37,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
                 android:isScrollContainer="false"
-                android:nestedScrollingEnabled="false" />
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:scrollbars="none" />
 
         </LinearLayout>
     </ScrollView>

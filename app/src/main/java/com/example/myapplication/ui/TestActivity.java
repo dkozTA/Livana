@@ -4,12 +4,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.myapplication.ui.fragments.SetAmenitiesFragment;
-import com.example.myapplication.ui.fragments.SetInfoFragment;
-import com.example.myapplication.ui.fragments.SetPropertyType;
 
 
 // cai nay de ben backend test data thoi khong quan trong dau

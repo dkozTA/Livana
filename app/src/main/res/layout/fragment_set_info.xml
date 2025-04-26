@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".ui.fragments.SetPropertyType">
+    tools:context=".ui.fragments.SetInfoFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:background="#FFFFFF"
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,21 +27,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
-                android:fontFamily="sans-serif-light"
+                android:fontFamily="@font/roboto_bold"
                 android:text="Thông tin cho thuê của bạn"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display2"
                 android:textColor="#242424"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+                android:textSize="28sp"/>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
+                android:fontFamily="@font/roboto_bold"
                 android:text="Tên"
                 android:textColor="#000000"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textSize="22sp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
@@ -50,6 +50,7 @@
                 app:suffixTextColor="#7C3EC3">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/nameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Tên nơi cho thuê"
@@ -62,10 +63,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
+                android:fontFamily="@font/roboto_bold"
                 android:text="Địa chỉ"
                 android:textColor="#000000"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textSize="22sp" />
 
             <AutoCompleteTextView
                 android:id="@+id/actProvince"
@@ -73,7 +74,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="50dp"
                 android:hint="Tỉnh / Thành phố"
+                android:maxLines="1"
                 android:popupBackground="#E6E6E6"
+                android:textColorHint="#D7D7D7"
                 app:dropDownBackgroundTint="#D7D7D7" />
 
             <AutoCompleteTextView
@@ -83,7 +86,9 @@
                 android:layout_marginBottom="50dp"
                 android:enabled="false"
                 android:hint="Quận / Huyện"
+                android:maxLines="1"
                 android:popupBackground="#E6E6E6"
+                android:textColorHint="#D7D7D7"
                 app:dropDownBackgroundTint="#E2E2E2" />
 
             <AutoCompleteTextView
@@ -93,16 +98,19 @@
                 android:layout_marginBottom="50dp"
                 android:enabled="false"
                 android:hint="Phường / Xã"
+                android:maxLines="1"
                 android:popupBackground="#E6E6E6"
+                android:textColorHint="#D7D7D7"
                 app:dropDownBackgroundTint="#E2E2E2" />
 
             <EditText
-                android:id="@+id/editTextTextPostalAddress"
+                android:id="@+id/detailAdress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Số nhà, Tên đường"
-                android:inputType="textPostalAddress" />
+                android:inputType="textPostalAddress"
+                android:textColorHint="#D7D7D7" />
 
 
         </LinearLayout>

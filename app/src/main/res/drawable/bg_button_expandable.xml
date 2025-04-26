@@ -3,7 +3,7 @@
     android:shape="rectangle">
     <corners android:radius="10dp"/>
     <stroke
-        android:width="2dp"
-        android:color="#DEE0E0E0"/> <!-- Màu xám nhạt -->
+        android:width="1.7dp"
+        android:color="#FCAFAFAF"/> <!-- Màu xám nhạt -->
     <solid android:color="#FFFFFF"/> <!-- Màu nền trắng -->
 </shape>

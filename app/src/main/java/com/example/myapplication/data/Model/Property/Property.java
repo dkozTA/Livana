@@ -57,6 +57,36 @@ public class Property {
         this.updated_at = new Date();
     }
 
+    //Pass null parameter to init value
+    public Property(Property property) {
+        if (property == null) {
+            this.id = "";
+            this.host_id = "";
+            this.name = "";
+            this.property_type = null;
+            this.status = null;
+            this.address = null;
+            this.rooms = null;
+            this.max_guess = 0;
+            this.amenities = null;
+            this.main_photo = "";
+            this.sub_photos =  new ArrayList<>();
+            this.normal_price = 0;
+            this.weekend_price = 0;
+            this.holiday_price = 0;
+            this.deposit = 0;
+            this.booked_date = new ArrayList<>();
+            this.total_reviews = 0;
+            this.avg_ratings = 0;
+            this.created_at = new Date();
+            this.updated_at = new Date();
+        }
+    }
+
+
+
+
+
     // --- GETTERS ---
     public String getId() {
         return id;

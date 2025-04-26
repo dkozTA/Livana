@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    tools:context=".ui.fragments.SetPropertyType">
+    tools:context=".ui.fragments.SetAmenitiesFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#FFFFFF">
+        android:background="#FFFFFF"
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -26,89 +27,87 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
-                android:fontFamily="sans-serif-light"
+                android:fontFamily="@font/roboto_bold"
                 android:text="Nơi ở của bạn có gì"
-                android:textAppearance="@style/TextAppearance.AppCompat.Display2"
                 android:textColor="#242424"
-                android:textSize="28sp"
-                android:textStyle="bold" />
+                android:textSize="28sp" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="@font/roboto_bold"
                 android:text="Phòng"
                 android:textColor="#000000"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textSize="22sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="204dp"
+                    android:layout_width="205dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/afacad_medium"
+                    android:fontFamily="@font/afacad"
                     android:text="Phòng ngủ"
-                    android:textColor="#2F2F2F"
-                    android:textSize="24sp" />
+                    android:textColor="#404040"
+                    android:textSize="22sp" />
 
                 <com.example.myapplication.ui.customviews.NumberSelectorView
                     android:id="@+id/numBedroom"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_width="126dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="50dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="204dp"
+                    android:layout_width="205dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/afacad_medium"
+                    android:fontFamily="@font/afacad"
                     android:text="Phòng khách"
-                    android:textColor="#2F2F2F"
-                    android:textSize="24sp" />
+                    android:textColor="#404040"
+                    android:textSize="22sp" />
 
                 <com.example.myapplication.ui.customviews.NumberSelectorView
                     android:id="@+id/numLivingroom"
-                    android:layout_width="100dp"
+                    android:layout_width="126dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="0" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="50dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="204dp"
+                    android:layout_width="205dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/afacad_medium"
+                    android:fontFamily="@font/afacad"
                     android:text="Phòng tắm"
-                    android:textColor="#2F2F2F"
-                    android:textSize="24sp" />
+                    android:textColor="#404040"
+                    android:textSize="22sp" />
 
                 <com.example.myapplication.ui.customviews.NumberSelectorView
                     android:id="@+id/numBathroom"
-                    android:layout_width="100dp"
+                    android:layout_width="126dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="0" />
 
             </LinearLayout>
 
@@ -126,32 +125,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:fontFamily="sans-serif-black"
+                android:fontFamily="@font/roboto_bold"
                 android:text="Công suất"
                 android:textColor="#000000"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textSize="22sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="45dp"
+                android:layout_height="50dp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="204dp"
+                    android:layout_width="205dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:fontFamily="@font/afacad_medium"
+                    android:fontFamily="@font/afacad"
                     android:text="Số khách tối đa"
-                    android:textColor="#2F2F2F"
-                    android:textSize="24sp" />
+                    android:textColor="#404040"
+                    android:textSize="22sp" />
 
                 <com.example.myapplication.ui.customviews.NumberSelectorView
                     android:id="@+id/maxGuess"
-                    android:layout_width="100dp"
+                    android:layout_width="126dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="0" />
 
             </LinearLayout>
 
@@ -164,6 +162,23 @@
                 android:layout_marginRight="7dp"
                 android:layout_marginBottom="16dp"
                 android:background="#CACACA" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/roboto_bold"
+                android:text="Tiện ích"
+                android:textColor="#000000"
+                android:textSize="22sp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/amenityRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
+                android:scrollbars="none" />
 
 
         </LinearLayout>

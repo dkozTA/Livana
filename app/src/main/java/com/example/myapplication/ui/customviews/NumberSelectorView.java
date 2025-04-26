@@ -57,7 +57,6 @@ public class NumberSelectorView extends LinearLayout {
             if (count < max) {
                 count++;
                 tvCount.setText(String.valueOf(count));
-                Toast.makeText(context, "plusButton clicked", Toast.LENGTH_SHORT).show();
             }
 
             CheckButtonEnable();
@@ -75,9 +74,9 @@ public class NumberSelectorView extends LinearLayout {
 
     private void CheckButtonEnable() {
         btnDecrease.setEnabled(count > min);
-        btnDecrease.setAlpha(count > min ? 1f : 0.6f);
+        btnDecrease.setAlpha(count > min ? 1f : 0.2f);
         btnIncrease.setEnabled(count < max);
-        btnIncrease.setAlpha(count < max ? 1f : 0.6f);
+        btnIncrease.setAlpha(count < max ? 1f : 0.2f);
     }
 
     public int getCount() {
@@ -88,6 +87,8 @@ public class NumberSelectorView extends LinearLayout {
         if (count >= min && count <= max) {
             this.count = count;
             tvCount.setText(String.valueOf(count));
+
+            CheckButtonEnable();
         }
     }
 

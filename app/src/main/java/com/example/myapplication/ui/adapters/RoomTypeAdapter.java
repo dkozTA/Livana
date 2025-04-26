@@ -44,7 +44,7 @@ public class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeAdapter.RoomTy
     @Override
     public void onBindViewHolder(@NonNull RoomTypeViewHolder holder, int position) {
         PropertyType roomType = roomTypeList.get(position);
-        holder.bind(roomType, position, selectedPosition, listener);
+
 
         View.OnClickListener clickListener = v -> {
             int currentPos = position;
@@ -57,8 +57,12 @@ public class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeAdapter.RoomTy
                 if (oldPosition != -1) notifyItemChanged(oldPosition);
                 notifyItemChanged(selectedPosition);
             }
+
+            listener.onRoomTypeSelected(roomType);
         };
-        holder.radioButton.setOnClickListener(clickListener);
+
+        holder.bind(roomType, position, selectedPosition, clickListener);
+        //holder.radioButton.setOnClickListener(clickListener);
     }
 
     @Override
@@ -72,9 +76,8 @@ public class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeAdapter.RoomTy
         notifyDataSetChanged();
     }
 
-    static class RoomTypeViewHolder extends RecyclerView.ViewHolder {
-        MotionLayout motionLayout;
-        AppCompatRadioButton radioButton;
+    public static class RoomTypeViewHolder extends RecyclerView.ViewHolder {
+        public AppCompatRadioButton radioButton;
         ImageView icon;
         TextView title;
         TextView description;
@@ -90,7 +93,7 @@ public class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeAdapter.RoomTy
         }
 
         void bind(PropertyType roomType, int position, int selectedPosition,
-                  OnRoomTypeSelectedListener listener) {
+                  View.OnClickListener listener) {
             icon.setImageResource(roomType.getIconResId());
             title.setText(roomType.toString());
             description.setText(roomType.getDescription());
@@ -103,11 +106,7 @@ public class RoomTypeAdapter extends RecyclerView.Adapter<RoomTypeAdapter.RoomTy
             border.setBackgroundResource(isSelected ? R.drawable.bg_button_expandable_selected : R.drawable.bg_button_expandable);
 
             // Handle click
-            itemView.setOnClickListener(v -> {
-                if (listener != null) {
-                    listener.onRoomTypeSelected(roomType);
-                }
-            });
+            radioButton.setOnClickListener(listener);
         }
     }
 }
