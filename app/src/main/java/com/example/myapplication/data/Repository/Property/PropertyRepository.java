@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 
-import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
@@ -66,6 +65,25 @@ public class PropertyRepository {
                 .set(updatedProperty)
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
+    }
+
+    public void updatePropertyAvgRatings(String id, int point ,OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getPropertyById(id,
+                property -> {
+                    double avg_rating = property.avg_ratings;
+                    double total_point = avg_rating * property.total_reviews;
+                    double new_avg_rating = (total_point + point) / (property.total_reviews + 1);
+                    db.collection(COLLECTION_NAME).document(id).update("avg_ratings", new_avg_rating)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(onFailure);
+                },
+                onFailure);
+    }
+
+    public void updatePropertyTotalReviews(String id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        db.collection(COLLECTION_NAME).document(id).update("total_reviews", FieldValue.increment(1))
+                .addOnFailureListener(onFailure)
+                .addOnSuccessListener(onSuccess);
     }
 
     public void deleteProperty(String id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
@@ -137,7 +155,7 @@ public class PropertyRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    // Lưu theo định dạng dd-MM-yyyy
+    // Lưu theo định dạng dd-MM-yyyy - Front end check xem ngày Start có lớn hơn ngày End không
     public void updateBookedDate(String propertyId, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         Set<String> bookedDates = new HashSet<>();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
