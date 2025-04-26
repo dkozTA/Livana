@@ -37,7 +37,7 @@
         </activity>
 
         <activity
-            android:name=".ui.auth.LoginActivity"
+            android:name=".ui.ChatActivity"
             android:exported="true">
             <!-- change this to other activity if want to test that activity -->
             <intent-filter>

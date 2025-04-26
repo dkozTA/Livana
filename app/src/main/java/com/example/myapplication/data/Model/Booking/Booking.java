@@ -18,6 +18,8 @@ public class Booking {
     public Date created_at;
     public Date updated_at;
 
+    public Booking() {};
+
     public Booking(String property_id, String guest_id, String host_id, String check_in_day, String check_out_day, double total_price, String guest_note) {
         this.id = UUID.randomUUID().toString();
         this.property_id = property_id;
