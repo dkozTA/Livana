@@ -15,7 +15,8 @@ public class User {
     public List<String> rentingHistory;
     public List<String> wish_list;
     public Date created_at;
-
+    public List<String> recent_list;
+    public List<String> wishlist;
     public User() {} // FireStore cần constructor rỗng
 
     public User(String uid, String full_name, String phone_number) {
@@ -27,6 +28,8 @@ public class User {
         this.rentingHistory = new ArrayList<>();
         this.wish_list = new ArrayList<>();
         this.avatar_link = "";
+        this.recent_list = new ArrayList<>();
+        this.wishlist = new ArrayList<>();
     }
 
     public void setAvatar_link(String avatar_link) {

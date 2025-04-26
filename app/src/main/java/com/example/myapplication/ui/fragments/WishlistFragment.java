@@ -33,8 +33,8 @@ public class WishlistFragment extends Fragment implements WishlistFolderAdapter.
         );
         foldersRecycler.setAdapter(folderAdapter);
 
-        FloatingActionButton fab = view.findViewById(R.id.fab_add_folder);
-        fab.setOnClickListener(v -> showCreateFolderDialog());
+        //FloatingActionButton fab = view.findViewById(R.id.fab_add_folder);
+        //fab.setOnClickListener(v -> showCreateFolderDialog());
 
         return view;
     }
@@ -47,21 +47,5 @@ public class WishlistFragment extends Fragment implements WishlistFolderAdapter.
                 .replace(R.id.fragment_container, FolderDetailFragment.newInstance(folder))
                 .addToBackStack(null)
                 .commit();
-    }
-
-    private void showCreateFolderDialog() {
-        EditText input = new EditText(getContext());
-        new MaterialAlertDialogBuilder(requireContext())
-                .setTitle("Create New Folder")
-                .setView(input)
-                .setPositiveButton("Create", (dialog, which) -> {
-                    String folderName = input.getText().toString();
-                    if (!folderName.isEmpty()) {
-                        WishlistManager.getInstance().createFolder(folderName);
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
     }
 }

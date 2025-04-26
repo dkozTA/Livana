@@ -11,11 +11,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.example.myapplication.ui.activities.HouseDetailActivity;
-import com.example.myapplication.utils.DialogUtils;
-import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,41 +54,39 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
 
         PostImageAdapter imageAdapter = new PostImageAdapter(context, imageUrls, post, true);
+        //holder.postImage.setImageResource(post.getImageResId());
         holder.imageViewPager.setAdapter(imageAdapter);
-
         holder.location.setText(post.getLocation());
         holder.dateRange.setText(post.getDateRange());
-        holder.price.setText(post.getPrice());
+        holder.price.setText(post.getNormal_price());
 
         if (!isWishlistView) {
             holder.distance.setText(post.getDistance());
         }
 
         // 1. Cập nhật icon trái tim theo trạng thái wishlist
-        boolean isInWishlist = WishlistManager.getInstance().isPostInAnyWishlist(post);
+        boolean isInWishlist = WishlistManager.getInstance().isPostInInterestedWishlist(post);
         holder.heartButton.setImageResource(isInWishlist ?
                 R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
 
         // 2. Xử lý khi người dùng nhấn vào trái tim
         holder.heartButton.setOnClickListener(v -> {
-            boolean isCurrentlySaved = WishlistManager.getInstance().isPostInAnyWishlist(post);
+            boolean isCurrentlySaved = WishlistManager.getInstance().isPostInInterestedWishlist(post);
 
             if (!isCurrentlySaved) {
-                // Nếu post chưa có trong wishlist nào → mở dialog tạo folder
-                DialogUtils.showCreateWishlistDialog(context, post, () -> {
-                    notifyItemChanged(holder.getAdapterPosition());
-                });
+                WishlistManager.getInstance().addToInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(context));
+                holder.heartButton.setImageResource(R.drawable.ic_heart_filled);
 
             } else {
-                // Nếu đã có trong wishlist → xoá khỏi tất cả folder (trừ Recently Viewed)
-                WishlistManager.getInstance().removePostFromWishlists(post);
+                WishlistManager.getInstance().removeFromInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(context));
                 notifyItemChanged(holder.getAdapterPosition()); // Cập nhật lại icon
+                holder.heartButton.setImageResource(R.drawable.ic_heart_outline);
             }
         });
 
         // Xử lý click vào item để xem chi tiết
         holder.itemView.setOnClickListener(v -> {
-            WishlistManager.getInstance().addToRecentlyViewed(post);
+            WishlistManager.getInstance().addToRecentlyViewed(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(context));
 
             Intent intent = new Intent(context, HouseDetailActivity.class);
             intent.putExtra("post", post);
@@ -114,6 +112,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
+            //postImage = itemView.findViewById(R.id.post_image);
             location = itemView.findViewById(R.id.location);
             distance = itemView.findViewById(R.id.distance);
             dateRange = itemView.findViewById(R.id.date_range);

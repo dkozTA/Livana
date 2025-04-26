@@ -17,17 +17,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.AmenityStatus;
+import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.adapters.PostImageAdapter;
 import com.example.myapplication.ui.misc.Amenity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
-import com.example.myapplication.utils.DialogUtils;
-
-import org.w3c.dom.Text;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +71,6 @@ public class HouseDetailActivity extends AppCompatActivity {
         post = getIntent().getParcelableExtra("post");
         if (post != null) {
             TextView title = findViewById(R.id.title);
-            //ImageView postImageView = findViewById(R.id.post_image);
             ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
 
             TextView location = findViewById(R.id.location);
@@ -100,7 +97,7 @@ public class HouseDetailActivity extends AppCompatActivity {
             location.setText(post.getLocation());
             detail.setText(post.getDetail());
             dateRange.setText(post.getDateRange());
-            price.setText(post.getPrice());
+            price.setText(post.getNormal_price());
             avg_ratings.setText(post.getAvgRatings() + " ⭐ ");
             total_reviews.setText(post.getTotalReview() + " đánh giá");
             if (post.getAmenities() != null && post.getAmenities().houseRules != null) {
@@ -128,18 +125,19 @@ public class HouseDetailActivity extends AppCompatActivity {
     }
 
     private void handleHeartClick() {
-        boolean isInWishlist = WishlistManager.getInstance().isPostInAnyWishlist(post);
+        boolean isInWishlist = WishlistManager.getInstance().isPostInInterestedWishlist(post);
 
         if (!isInWishlist) {
-            DialogUtils.showCreateWishlistDialog(this, post, this::updateHeartIcon);
+            WishlistManager.getInstance().addToInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(this));
+            updateHeartIcon();
         } else {
-            WishlistManager.getInstance().removePostFromWishlists(post);
+            WishlistManager.getInstance().removeFromInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(this));
             updateHeartIcon();
         }
     }
 
     private void updateHeartIcon() {
-        boolean isInWishlist = WishlistManager.getInstance().isPostInAnyWishlist(post);
+        boolean isInWishlist = WishlistManager.getInstance().isPostInInterestedWishlist(post);
         heartButton.setImageResource(isInWishlist ?
                 R.drawable.ic_heart_filled : R.drawable.ic_heart_outline);
     }
@@ -150,7 +148,7 @@ public class HouseDetailActivity extends AppCompatActivity {
         String shareText = "Check out this house!\n"
                 + post.getTitle() + "\n"
                 + post.getLocation() + "\n"
-                + "Price: " + post.getPrice();
+                + "Price: " + post.getNormal_price();
 
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
