@@ -79,7 +79,9 @@ public class ConversationRepository {
     public void sendMessage(String conversationID, Message message, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.db.collection(COLLECTION_NAME)
                 .document(conversationID)
-                .update("messages", FieldValue.arrayUnion(message));
+                .update("messages", FieldValue.arrayUnion(message))
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
     }
 
     public void deleteConversation(String conversationID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {

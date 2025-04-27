@@ -32,15 +32,16 @@ public class ChatActivity extends AppCompatActivity {
     private Button buttonSend;
 
     private String conversationID = "ZRw1V7w6VdW6Uafb7DMC"; // <-- thay id thật vào đây
-    private String sender_ID = "";
-    private AuthRepository authRepository;
+    private String sender_ID = "o1ZjOF1m0sXY966Rcvq4r5hX7xz2";
+
+    //private AuthRepository authRepository;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        authRepository = new AuthRepository(this);
-        this.sender_ID = authRepository.getUserUid();
+        //authRepository = new AuthRepository(this);
+        //this.sender_ID = authRepository.getUserUid();
 
         recyclerMessages = findViewById(R.id.recyclerMessages);
         conversationRepository = new ConversationRepository(this);
@@ -50,7 +51,7 @@ public class ChatActivity extends AppCompatActivity {
         conversationRepository.getConversationById(conversationID, conversation -> {
             if (conversation != null && conversation.messages != null) {
                 messageList = conversation.messages;
-                messageAdapter = new MessageAdapter(messageList);
+                messageAdapter = new MessageAdapter(messageList, conversation.host_id, conversation.guest_id);
                 recyclerMessages.setAdapter(messageAdapter);
             } else {
                 Toast.makeText(this, "No messages found", Toast.LENGTH_SHORT).show();
@@ -103,4 +104,3 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 }
-
