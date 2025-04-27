@@ -2,6 +2,8 @@ package com.example.myapplication.ui;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -11,8 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Conversation.Message;
+import com.example.myapplication.data.Repository.Auth.AuthRepository;
 import com.example.myapplication.data.Repository.Conversation.ConversationRepository;
 import com.example.myapplication.ui.adapters.MessageAdapter;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.List;
 
@@ -22,25 +26,30 @@ public class ChatActivity extends AppCompatActivity {
     private MessageAdapter messageAdapter;
     private List<Message> messageList;
     private ConversationRepository conversationRepository;
+    private ListenerRegistration messageListener;
+
+    private EditText editMessage;
+    private Button buttonSend;
 
     private String conversationID = "ZRw1V7w6VdW6Uafb7DMC"; // <-- thay id thật vào đây
+    private String sender_ID = "";
+    private AuthRepository authRepository;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+        authRepository = new AuthRepository(this);
+        this.sender_ID = authRepository.getUserUid();
 
         recyclerMessages = findViewById(R.id.recyclerMessages);
         conversationRepository = new ConversationRepository(this);
 
-        // Setup RecyclerView
         recyclerMessages.setLayoutManager(new LinearLayoutManager(this));
 
-        // Step 1: Lấy Conversation từ Firestore
         conversationRepository.getConversationById(conversationID, conversation -> {
-            // Step 2: Lấy danh sách tin nhắn từ Conversation
             if (conversation != null && conversation.messages != null) {
-                messageList = conversation.messages; // Lấy danh sách tin nhắn
+                messageList = conversation.messages;
                 messageAdapter = new MessageAdapter(messageList);
                 recyclerMessages.setAdapter(messageAdapter);
             } else {
@@ -50,20 +59,48 @@ public class ChatActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to load conversation!", Toast.LENGTH_SHORT).show();
         });
 
-        // Lắng nghe tin nhắn mới
-        conversationRepository.listenForNewMessages(conversationID,
+        messageListener = conversationRepository.listenForNewMessages(
+                conversationID,
                 newMessage -> {
-                    // Cập nhật danh sách tin nhắn khi có tin nhắn mới
                     if (messageList != null) {
-                        messageList.add(newMessage); // Thêm tin nhắn mới vào danh sách
-                        messageAdapter.notifyItemInserted(messageList.size() - 1); // Thông báo cho adapter về tin nhắn mới
-                        recyclerMessages.smoothScrollToPosition(messageList.size() - 1); // Cuộn xuống cuối danh sách
+                        messageList.add(newMessage);
+                        messageAdapter.notifyItemInserted(messageList.size() - 1);
+                        recyclerMessages.smoothScrollToPosition(messageList.size() - 1);
                     }
                 },
                 error -> {
-                    // Xử lý lỗi
                     Log.e("Firestore", "Error listening for new messages", error);
                 }
         );
+        editMessage = findViewById(R.id.editMessage);
+        buttonSend = findViewById(R.id.buttonSend);
+
+        buttonSend.setOnClickListener(v -> {
+            String content = editMessage.getText().toString().trim();
+            if (!content.isEmpty()) {
+                Message newMessage = new Message(content, sender_ID);
+                conversationRepository.sendMessage(conversationID, newMessage,
+                        unused -> {
+                            // Gửi thành công
+                            editMessage.setText(""); // Xóa ô nhập sau khi gửi
+                        },
+                        e -> {
+                            // Gửi thất bại
+                            Toast.makeText(this, "Gửi tin nhắn thất bại", Toast.LENGTH_SHORT).show();
+                        }
+                );
+            }
+        });
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (messageListener != null) {
+            messageListener.remove();
+            messageListener = null;
+        }
     }
 }
+
