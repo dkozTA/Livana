@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -30,9 +31,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private EditText editMessage;
     private Button buttonSend;
+    private TextView title;
 
     private String conversationID = "ZRw1V7w6VdW6Uafb7DMC"; // <-- thay id thật vào đây
-    private String sender_ID = "o1ZjOF1m0sXY966Rcvq4r5hX7xz2";
+    private String sender_ID = "v4528ioquLTQbtmKYieS3quQUsp2";
 
     //private AuthRepository authRepository;
 
@@ -46,13 +48,16 @@ public class ChatActivity extends AppCompatActivity {
         recyclerMessages = findViewById(R.id.recyclerMessages);
         conversationRepository = new ConversationRepository(this);
 
+        title = findViewById(R.id.textTitle);
+
         recyclerMessages.setLayoutManager(new LinearLayoutManager(this));
 
         conversationRepository.getConversationById(conversationID, conversation -> {
             if (conversation != null && conversation.messages != null) {
                 messageList = conversation.messages;
-                messageAdapter = new MessageAdapter(messageList, conversation.host_id, conversation.guest_id);
+                messageAdapter = new MessageAdapter(messageList, sender_ID , conversation.host_id, conversation.guest_id);
                 recyclerMessages.setAdapter(messageAdapter);
+                title.setText(conversation.name);
             } else {
                 Toast.makeText(this, "No messages found", Toast.LENGTH_SHORT).show();
             }

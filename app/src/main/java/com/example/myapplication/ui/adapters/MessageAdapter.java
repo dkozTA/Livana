@@ -18,21 +18,39 @@ import java.util.Locale;
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageViewHolder> {
 
     private final List<Message> messageList;
-    private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+    private final String currentUserId; // userId hiện tại
     private final String hostId;
     private final String guestId;
+    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault());
 
-    public MessageAdapter(List<Message> messageList, String hostId, String guestId) {
+    public MessageAdapter(List<Message> messageList, String currentUserId, String hostId, String guestId) {
         this.messageList = messageList;
+        this.currentUserId = currentUserId;
         this.hostId = hostId;
         this.guestId = guestId;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        Message message = messageList.get(position);
+        if (message.sender_id != null && message.sender_id.equals(currentUserId)) {
+            return 1; // Tin nhắn mình gửi
+        } else {
+            return 2; // Tin nhắn người khác gửi
+        }
     }
 
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_message, parent, false);
+        View view;
+        if (viewType == 1) {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_sent, parent, false);
+        } else {
+            view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_message_received, parent, false);
+        }
         return new MessageViewHolder(view);
     }
 
@@ -40,7 +58,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
         Message message = messageList.get(position);
 
-        // Xác định vai trò người gửi
+        // Xác định người gửi là Host hay Guest
         String senderRole;
         if (message.sender_id != null) {
             if (message.sender_id.equals(hostId)) {
@@ -58,7 +76,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         holder.textMessage.setText(message.message_content);
 
         if (message.time != null) {
-            holder.textTime.setText(timeFormat.format(message.time));
+            holder.textTime.setText(dateTimeFormat.format(message.time));
         } else {
             holder.textTime.setText("");
         }
