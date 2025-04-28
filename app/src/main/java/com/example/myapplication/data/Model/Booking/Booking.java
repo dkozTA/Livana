@@ -33,4 +33,16 @@ public class Booking {
         this.created_at = new Date();
         this.updated_at = new Date();
     }
+
+    public Booking_status getBooking_status() {
+        return status;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getProperty_id() {
+        return property_id;
+    }
 }

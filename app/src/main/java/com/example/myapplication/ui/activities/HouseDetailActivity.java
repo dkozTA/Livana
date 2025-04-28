@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.activities;
 
 import android.animation.ObjectAnimator;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -9,9 +10,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -122,6 +125,13 @@ public class HouseDetailActivity extends AppCompatActivity {
             heartButton.setOnClickListener(v -> handleHeartClick());
         }
 
+        boolean showReview = getIntent().getBooleanExtra("show_review", false);
+        String bookingId = getIntent().getStringExtra("booking_id");
+
+        if (showReview && bookingId != null) {
+            showReviewDialog(bookingId);
+        }
+
         Button btnBooking = findViewById(R.id.btnBooking);
         btnBooking.setOnClickListener(v -> navigateToBooking());
     }
@@ -230,5 +240,29 @@ public class HouseDetailActivity extends AppCompatActivity {
         }
     }
 
+
+    private void showReviewDialog(String bookingId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_review, null);
+
+        EditText reviewText = dialogView.findViewById(R.id.review_text);
+        RatingBar ratingBar = dialogView.findViewById(R.id.rating_bar);
+
+        builder.setView(dialogView)
+                .setTitle("Đánh giá")
+                .setPositiveButton("Gửi", (dialog, which) -> {
+                    float rating = ratingBar.getRating();
+                    String comment = reviewText.getText().toString();
+                    submitReview(bookingId, rating, comment);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+    }
+
+    private void submitReview(String bookingId, float rating, String comment) {
+        // Implement review submission using ReviewRepository
+        // You can add this functionality when needed
+        Toast.makeText(this, "Cảm ơn bạn đã đánh giá!", Toast.LENGTH_SHORT).show();
+    }
 
 }
