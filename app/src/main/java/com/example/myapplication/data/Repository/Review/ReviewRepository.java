@@ -35,6 +35,7 @@ public class ReviewRepository {
     }
 
     // user danh gia 1 phong sau khi da hoan thanh 1 booking = tao ra danh gia cho 1 booking -> cap nhat total review cua 1 nha va cap nhat avg rating
+    // ben fe goi ham nay nhe
     public void guestReviewBooking(Review review, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.bookingRepository.getBookingById(review.booking_id,
                 booking -> {
@@ -66,9 +67,20 @@ public class ReviewRepository {
                 });
     }
 
-    // sua so diem hoac noi dung cua Review
-    public void updateReview(Review review, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        this.db.collection(COLLECTION_NAME).document(review.id).set(review).addOnSuccessListener(onSuccess).addOnFailureListener(onFailure);
+    // sua so diem hoac noi dung cua Review - tao 1 class Review moi voi thong tin da duoc sua la duoc
+    public void updateReview(Review oldReview, Review new_review, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.propertyRepository.updatePropertyAvgRatingWhenReviewModified(oldReview.property_id, oldReview.point, new_review.point,
+                unused -> {
+                    new_review.id = oldReview.id;
+                    this.db.collection(COLLECTION_NAME).document(oldReview.id).set(new_review)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(e -> {
+                                onFailure.onFailure(new Exception("Không thể thêm vào DB Review mới"));
+                            });
+                },
+                e -> {
+                    onFailure.onFailure(new Exception("Không tìm thấy Review với id để cập nhật " + e.getMessage()));
+                });
     }
 
     // xoa Review

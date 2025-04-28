@@ -59,9 +59,10 @@ public class PropertyRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    public void updateProperty(String id, Property updatedProperty, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+    public void updateProperty(String oldProperty_ID, Property updatedProperty, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        updatedProperty.id = oldProperty_ID;
         db.collection(COLLECTION_NAME)
-                .document(id)
+                .document(oldProperty_ID)
                 .set(updatedProperty)
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
@@ -73,6 +74,19 @@ public class PropertyRepository {
                     double avg_rating = property.avg_ratings;
                     double total_point = avg_rating * property.total_reviews;
                     double new_avg_rating = (total_point + point) / (property.total_reviews + 1);
+                    db.collection(COLLECTION_NAME).document(id).update("avg_ratings", new_avg_rating)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(onFailure);
+                },
+                onFailure);
+    }
+
+    public void updatePropertyAvgRatingWhenReviewModified(String id, int old_point, int new_point ,OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getPropertyById(id,
+                property -> {
+                    double avg_rating = property.avg_ratings;
+                    double total_point = avg_rating * property.total_reviews;
+                    double new_avg_rating = (total_point + new_point - old_point) / (property.total_reviews);
                     db.collection(COLLECTION_NAME).document(id).update("avg_ratings", new_avg_rating)
                             .addOnSuccessListener(onSuccess)
                             .addOnFailureListener(onFailure);

@@ -15,6 +15,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class BookingRepository {
     private final FirebaseFirestore db;
@@ -30,12 +31,32 @@ public class BookingRepository {
 
     public void createBooking(Booking booking, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.db.collection(COLLECTION_NAME).document(booking.id).set(booking)
-                .addOnSuccessListener(onSuccess)
+                .addOnSuccessListener(unused -> {
+                    this.propertyRepository.updateBookedDate(booking.property_id, booking.check_in_day, booking.check_out_day,
+                            onSuccess, e -> {
+                                onFailure.onFailure(new Exception("Can not add booked date to Property"));
+                            });
+                })
+                .addOnFailureListener(e -> {
+                    onFailure.onFailure(new Exception("Can not create Booking"));
+                });
+    }
+
+    public void getAllBookingsByHostID(String userID, OnSuccessListener<List<Booking>> onSuccess, OnFailureListener onFailure) {
+        this.db.collection(COLLECTION_NAME).whereEqualTo("host_id", userID).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Booking> bookingList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        Booking property = document.toObject(Booking.class);
+                        bookingList.add(property);
+                    }
+                    onSuccess.onSuccess(bookingList);
+                })
                 .addOnFailureListener(onFailure);
     }
 
-    public void getAllBookingsByUserID(String userID, OnSuccessListener<List<Booking>> onSuccess, OnFailureListener onFailure) {
-        this.db.collection(COLLECTION_NAME).whereEqualTo("host_id", userID).get()
+    public void getAllBookingByGuestID(String userID, OnSuccessListener<List<Booking>> onSuccess, OnFailureListener onFailure) {
+        this.db.collection(COLLECTION_NAME).whereEqualTo("guest_id", userID).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Booking> bookingList = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
@@ -66,37 +87,12 @@ public class BookingRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    // host accept booking
-    public void acceptBooking(String userID, String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+    // Host confirm that guest start the booking
+    public void InProgressBooking(String currentUserID, String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.getBookingById(bookingId,
                 booking -> {
-                    if(booking.status == Booking_status.PENDING && booking.host_id.equals(userID)) {
-                        this.propertyRepository.updateBookedDate(booking.property_id, booking.check_in_day, booking.check_out_day,
-                                unused -> {
-                                    this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.ACCEPTED)
-                                            .addOnSuccessListener(onSuccess)
-                                            .addOnFailureListener(e -> {
-                                                onFailure.onFailure(new Exception("Added booked date into property but can not update status" + e.getMessage()));
-                                            });
-                                },
-                                e -> {
-                                    onFailure.onFailure(new Exception("Can not update booked date in property: " + e.getMessage()));
-                                });
-                    } else {
-                        onFailure.onFailure(new Exception("Booking status must be PENDING"));
-                    }
-                },
-                e -> {
-                    onFailure.onFailure(new Exception("Can not get Booking by ID"));
-                });
-    }
-
-    // host reject booking
-    public void rejectBooking(String userID, String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        this.getBookingById(bookingId,
-                booking -> {
-                    if(booking.status == Booking_status.PENDING && booking.host_id.equals(userID)) {
-                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.REJECTED)
+                    if(booking.status != Booking_status.ACCEPTED && Objects.equals(booking.host_id, currentUserID)) {
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.IN_PROGRESS)
                                 .addOnSuccessListener(onSuccess)
                                 .addOnFailureListener(onFailure);
                     } else {
@@ -106,25 +102,7 @@ public class BookingRepository {
                 onFailure);
     }
 
-    // booking complete: unknown who to confirm host
-    public void completeBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        this.getBookingById(bookingId,
-                booking -> {
-                    if(booking.status == Booking_status.IN_PROGRESS) {
-                        this.userRepository.addRentingHistory(booking.guest_id, booking.id,
-                                onSuccess,
-                                e -> {
-                                    onFailure.onFailure(new Exception("Can not add to user Renting History: " + e.getMessage()));
-                                });
-
-                    } else {
-                        onFailure.onFailure(new Exception("Booking status must be ACCEPTED"));
-                    }
-                },
-                onFailure);
-    }
-
-    // host or guest cancel booking
+    // host or guest cancel booking -> Xóa những ngày đã đặt khỏi PropertyID.
     public void cancelBooking(String userID, String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.getBookingById(bookingId,
                 booking -> {
@@ -141,16 +119,19 @@ public class BookingRepository {
                 onFailure);
     }
 
-    // Guest start their holiday Host confirm
-    public void InProgressBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+    // booking complete: host to confirm
+    public void completeBooking(String currentUserID, String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.getBookingById(bookingId,
                 booking -> {
-                    if(booking.status != Booking_status.ACCEPTED) {
-                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.IN_PROGRESS)
-                                .addOnSuccessListener(onSuccess)
-                                .addOnFailureListener(onFailure);
+                    if(booking.status == Booking_status.IN_PROGRESS && Objects.equals(booking.host_id, currentUserID)) {
+                        this.userRepository.addRentingHistory(booking.guest_id, booking.id,
+                                onSuccess,
+                                e -> {
+                                    onFailure.onFailure(new Exception("Can not add to user Renting History: " + e.getMessage()));
+                                });
+
                     } else {
-                        onFailure.onFailure(new Exception("Booking status must be PENDING"));
+                        onFailure.onFailure(new Exception("Booking status must be ACCEPTED"));
                     }
                 },
                 onFailure);

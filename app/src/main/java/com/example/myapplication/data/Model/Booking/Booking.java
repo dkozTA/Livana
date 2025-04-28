@@ -25,7 +25,7 @@ public class Booking {
         this.property_id = property_id;
         this.guest_id = guest_id;
         this.host_id = host_id;
-        this.status = Booking_status.PENDING;
+        this.status = Booking_status.ACCEPTED;
         this.check_in_day = check_in_day;
         this.check_out_day = check_out_day;
         this.total_price = total_price;
