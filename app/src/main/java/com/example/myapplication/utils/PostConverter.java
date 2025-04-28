@@ -39,6 +39,7 @@ public class PostConverter {
         String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
         return new Post(
                 property.id,
+                property.getHost_id(),
                 title,                    // title
                 property.getMainPhoto(),               // placeholder image
                 property.name,                        // address string

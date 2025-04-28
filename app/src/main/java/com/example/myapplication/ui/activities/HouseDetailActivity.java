@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -42,6 +43,7 @@ public class HouseDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // ko lay dc propertyId
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_house_detail);
         getWindow().setBackgroundDrawableResource(android.R.color.white);
@@ -136,6 +138,17 @@ public class HouseDetailActivity extends AppCompatActivity {
             intent.putExtra("propertyRating", post.getAvgRatings());
             intent.putExtra("totalReviews", post.getTotalReview());
             startActivity(intent);
+
+            // Log all data
+            Log.d("House DetailActivity", "Navigating to BookingActivity with data:");
+            Log.d("House DetailActivity", "Property ID: " + post.getId());
+            Log.d("House DetailActivity", "Host ID: " + post.getHostId());
+            Log.d("House DetailActivity", "Property Title: " + post.getTitle());
+            Log.d("House DetailActivity", "Property Location: " + post.getLocation());
+            Log.d("House DetailActivity", "Price: " + post.getNormal_price());
+            Log.d("House DetailActivity", "Property Rating: " + post.getAvgRatings());
+            Log.d("House DetailActivity", "Total Reviews: " + post.getTotalReview());
+
         } else {
             Toast.makeText(this, "Không thể đặt phòng lúc này", Toast.LENGTH_SHORT).show();
         }

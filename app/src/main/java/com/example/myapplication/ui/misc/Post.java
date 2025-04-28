@@ -21,9 +21,11 @@ public class Post implements Parcelable {
 
     private List<String> sub_photos; // ảnh phụ (URLs)
 
-    public Post(String id, String title, String imageResId, String location, String detail,
+    public Post(String id, String hostId, String title, String imageResId, String location, String detail,
                 String distance, String dateRange, String normal_price,
                 int total_review, double avg_ratings, Amenities amenities, List<String> sub_photos) {
+        this.id = id;
+        this.hostId = hostId;
         this.title = title;
         this.imageResId = imageResId;
         this.location = location;
