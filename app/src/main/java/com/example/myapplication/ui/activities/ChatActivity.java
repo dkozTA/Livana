@@ -1,4 +1,4 @@
-package com.example.myapplication.ui;
+package com.example.myapplication.ui.activities;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Conversation.Message;
-import com.example.myapplication.data.Repository.Auth.AuthRepository;
 import com.example.myapplication.data.Repository.Conversation.ConversationRepository;
 import com.example.myapplication.ui.adapters.MessageAdapter;
 import com.google.firebase.firestore.ListenerRegistration;
