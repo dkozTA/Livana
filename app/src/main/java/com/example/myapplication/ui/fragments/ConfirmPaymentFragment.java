@@ -29,7 +29,6 @@ public class ConfirmPaymentFragment extends Fragment {
     private TextView selectedPaymentMethodText;
     private Button payButton;
     private BookingRepository bookingRepository;
-
     private String propertyId;
     private String hostId;
     private String propertyTitle;
@@ -39,6 +38,9 @@ public class ConfirmPaymentFragment extends Fragment {
     private String checkOutDay;
     private double totalPrice;
     private String paymentMethod;
+    private TextView paymentScheduleText;
+    private String paymentTiming;
+    private String guestNote;
 
     public ConfirmPaymentFragment() {
         super(R.layout.fragment_confirm_payment);
@@ -47,6 +49,7 @@ public class ConfirmPaymentFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        bookingRepository = new BookingRepository(requireContext());
         initializeViews(view);
         getArgumentData();
         setupViews();
@@ -62,6 +65,7 @@ public class ConfirmPaymentFragment extends Fragment {
         selectedPaymentMethodText = view.findViewById(R.id.selected_payment_method);
         payButton = view.findViewById(R.id.next_button);
         bookingRepository = new BookingRepository(requireContext());
+        paymentScheduleText = view.findViewById(R.id.payment_schedule);
     }
 
     private void getArgumentData() {
@@ -76,6 +80,8 @@ public class ConfirmPaymentFragment extends Fragment {
             checkOutDay = args.getString("checkOutDay", "");
             totalPrice = args.getDouble("totalPrice", 0.0);
             paymentMethod = args.getString("paymentMethod", "");
+            paymentTiming = args.getString("paymentTiming", "");
+            guestNote = args.getString("guestNote", "");
         }
     }
 
@@ -89,6 +95,7 @@ public class ConfirmPaymentFragment extends Fragment {
         dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
         totalPriceText.setText(String.format("%,.0fđ", totalPrice));
         selectedPaymentMethodText.setText(paymentMethod);
+        paymentScheduleText.setText(paymentTiming);
 
         if (!propertyImage.isEmpty()) {
             Glide.with(requireContext())
@@ -99,37 +106,27 @@ public class ConfirmPaymentFragment extends Fragment {
 
     private void handlePayment() {
         String currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String bookingId = FirebaseFirestore.getInstance()
-                .collection("bookings")
-                .document()
-                .getId();
+        Booking booking = new Booking(
+                propertyId,      // property_id
+                currentUserId,   // guest_id
+                hostId,         // host_id
+                checkInDay,      // check_in_day
+                checkOutDay,     // check_out_day
+                totalPrice,      // total_price
+                guestNote        // guest_note
+        );
 
-        Map<String, Object> bookingData = new HashMap<>();
-        bookingData.put("id", bookingId);
-        bookingData.put("propertyId", propertyId);
-        bookingData.put("guestId", currentUserId);
-        bookingData.put("hostId", hostId);
-        bookingData.put("checkInDay", checkInDay);
-        bookingData.put("checkOutDay", checkOutDay);
-        bookingData.put("totalPrice", totalPrice);
-        bookingData.put("paymentMethod", paymentMethod);
-        bookingData.put("note", "");
-        bookingData.put("status", Booking_status.PENDING.toString());
-
-        FirebaseFirestore.getInstance()
-                .collection("bookings")
-                .document(bookingId)
-                .set(bookingData)
-                .addOnSuccessListener(unused -> {
+        // Use BookingRepository to create the booking
+        bookingRepository.createBooking(booking,
+                unused -> {
                     Toast.makeText(requireContext(),
                             "Đặt phòng thành công!",
                             Toast.LENGTH_SHORT).show();
                     requireActivity().finish();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(requireContext(),
-                                "Đặt phòng thất bại: " + e.getMessage(),
-                                Toast.LENGTH_SHORT).show()
-                );
+                },
+                e -> Toast.makeText(requireContext(),
+                        "Đặt phòng thất bại: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show()
+        );
     }
 }

@@ -58,7 +58,7 @@
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:scaleType="centerCrop"
-                            android:src="@drawable/trolllivana"
+                            android:src="@drawable/troll_livana"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent" />
 
@@ -194,6 +194,21 @@
                             android:textAllCaps="false"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintBottom_toBottomOf="@id/total_price" />
+
+                        <!-- Add this inside the property_card, before the payment options -->
+                        <EditText
+                            android:id="@+id/guest_note_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="72dp"
+                            android:background="@drawable/edit_text_background"
+                            android:gravity="top"
+                            android:hint="Ghi chú cho chủ nhà"
+                            android:maxLines="4"
+                            android:minLines="2"
+                            android:padding="12dp"
+                            app:layout_constraintTop_toBottomOf="@id/divider_2"
+                            tools:layout_editor_absoluteX="16dp" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </androidx.cardview.widget.CardView>
 
