@@ -61,10 +61,10 @@ public class UserRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    public void updateUser(User user, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        String uid = user.uid;
+    // Không sử dụng cho avatar nhé
+    public void updateUser(String uid, String field_name, String new_field_value, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         db.collection("users").document(uid)
-                .set(user)
+                .update(field_name, new_field_value)
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
