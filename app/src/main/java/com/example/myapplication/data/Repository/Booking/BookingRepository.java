@@ -8,7 +8,9 @@ import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.data.Repository.User.UserRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import android.content.Context;
@@ -135,5 +137,28 @@ public class BookingRepository {
                     }
                 },
                 onFailure);
+    }
+
+    // kiểm tra xem lệu guest có đang hoặc đã đặt phòng nào của host không ?
+    public void checkGuestIsBookingHostProperty(String guestID, String hostID, OnSuccessListener<Booking_status> onSuccess, OnFailureListener onFailure) {
+       this.db.collection(COLLECTION_NAME).whereEqualTo("host_id", hostID)
+               .whereEqualTo("guest_id", guestID)
+               .orderBy("updated_at", Query.Direction.DESCENDING)
+               .limit(1) // Chỉ lấy 1 cái mới nhất
+               .get()
+               .addOnSuccessListener(queryDocumentSnapshots -> {
+                   if (!queryDocumentSnapshots.isEmpty()) {
+                       DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                       Booking booking = documentSnapshot.toObject(Booking.class);
+                       if (booking != null) {
+                           onSuccess.onSuccess(booking.status);
+                       } else {
+                           onFailure.onFailure(new Exception("Booking is null"));
+                       }
+                   } else {
+                       onSuccess.onSuccess(Booking_status.COMPLETED);
+                   }
+               })
+               .addOnFailureListener(onFailure);
     }
 }
