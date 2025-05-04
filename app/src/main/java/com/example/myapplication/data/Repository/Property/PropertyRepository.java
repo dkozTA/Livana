@@ -229,8 +229,11 @@ public class PropertyRepository {
                         if(dateSeries.isEmpty()) {
                             onFailure.onFailure(new Exception("Can not generate booked Date"));
                         } else {
-                            if(validateBookedDate(property.booked_date, dateSeries)) {
-                                this.db.collection(COLLECTION_NAME).document(propertyId).update("booked_date", FieldValue.arrayUnion(dateSeries.toArray()));
+                            if (validateBookedDate(property.booked_date, dateSeries)) {
+                                this.db.collection(COLLECTION_NAME).document(propertyId)
+                                        .update("booked_date", FieldValue.arrayUnion(dateSeries.toArray()))
+                                        .addOnSuccessListener(onSuccess)
+                                        .addOnFailureListener(onFailure);
                             } else {
                                 onFailure.onFailure(new Exception("Booked date is invalid"));
                             }

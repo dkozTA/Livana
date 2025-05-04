@@ -122,7 +122,20 @@ public class ConfirmPaymentFragment extends Fragment {
                     Toast.makeText(requireContext(),
                             "Đặt phòng thành công!",
                             Toast.LENGTH_SHORT).show();
-                    requireActivity().finish();
+                    new android.os.Handler().postDelayed(
+                            () -> requireActivity().getSupportFragmentManager()
+                                    .beginTransaction()
+                                    .setCustomAnimations(
+                                            R.anim.slide_in_right,
+                                            R.anim.slide_out_left,
+                                            R.anim.slide_in_left,
+                                            R.anim.slide_out_right
+                                    )
+                                    .replace(R.id.fragment_container, new com.example.myapplication.ui.fragments.TripsFragment())
+                                    .addToBackStack(null)
+                                    .commit(),
+                            1000 // 1 second delay
+                    );
                 },
                 e -> Toast.makeText(requireContext(),
                         "Đặt phòng thất bại: " + e.getMessage(),

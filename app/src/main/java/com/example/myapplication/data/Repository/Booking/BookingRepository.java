@@ -16,6 +16,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -160,5 +161,24 @@ public class BookingRepository {
                    }
                })
                .addOnFailureListener(onFailure);
+    }
+
+    // lấy booking theo propertyID
+    public void getBookingsByPropertyId(String propertyId, OnSuccessListener<List<Booking>> onSuccess, OnFailureListener onFailure) {
+        db.collection("bookings")
+                .whereEqualTo("property_id", propertyId)
+                .whereIn("status", Arrays.asList(Booking_status.ACCEPTED, Booking_status.IN_PROGRESS))
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Booking> bookings = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        Booking booking = document.toObject(Booking.class);
+                        if (booking != null) {
+                            bookings.add(booking);
+                        }
+                    }
+                    onSuccess.onSuccess(bookings);
+                })
+                .addOnFailureListener(onFailure);
     }
 }

@@ -19,16 +19,22 @@ import androidx.fragment.app.Fragment;
 import android.util.Log;
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.data.Enum.Booking_status;
 import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Repository.Booking.BookingRepository;
 import com.example.myapplication.ui.misc.Post;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import android.os.Parcel;
+import com.google.android.material.datepicker.CalendarConstraints.DateValidator;
 
 public class RoomBookingFragment extends Fragment {
     private Button nextButton;
@@ -163,6 +169,18 @@ public class RoomBookingFragment extends Fragment {
         });
     }
 
+    private String convertDateFormat(String dateStr, String fromFormat, String toFormat) {
+        try {
+            SimpleDateFormat src = new SimpleDateFormat(fromFormat, Locale.getDefault());
+            SimpleDateFormat dest = new SimpleDateFormat(toFormat, Locale.getDefault());
+            Date date = src.parse(dateStr);
+            return dest.format(date);
+        } catch (Exception e) {
+            Log.e("RoomBookingFragment", "Date format conversion error: " + e.getMessage());
+            return dateStr;
+        }
+    }
+
     private void showDateAndGuestPicker() {
         // Create and show a bottom sheet dialog
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_date_guest_picker, null);
@@ -184,16 +202,81 @@ public class RoomBookingFragment extends Fragment {
 
         datePickerBtn.setOnClickListener(v -> {
             MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
-            MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
+            CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
 
-            picker.addOnPositiveButtonClickListener(selection -> {
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                checkInDay = sdf.format(new Date(selection.first));
-                checkOutDay = sdf.format(new Date(selection.second));
-                dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
-            });
+            // Set start date to today
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            long today = calendar.getTimeInMillis();
 
-            picker.show(getChildFragmentManager(), picker.toString());
+            // Get booked dates and create validator
+            bookingRepository.getBookingsByPropertyId(propertyId,
+                    bookings -> {
+                        CalendarConstraints.DateValidator bookedDatesValidator = new DateValidator() {
+                            @Override
+                            public boolean isValid(long date) {
+                                // Don't allow dates before today
+                                if (date < today) {
+                                    return false;
+                                }
+
+                                Calendar cal = Calendar.getInstance();
+                                cal.setTimeInMillis(date);
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                                String dateStr = sdf.format(cal.getTime());
+
+                                // Check if date is booked
+                                for (Booking booking : bookings) {
+                                    if (booking.status == Booking_status.ACCEPTED ||
+                                            booking.status == Booking_status.IN_PROGRESS) {
+                                        try {
+                                            Date bookedStart = sdf.parse(booking.check_in_day);
+                                            Date bookedEnd = sdf.parse(booking.check_out_day);
+                                            Date selectedDate = sdf.parse(dateStr);
+
+                                            // If date falls within a booked period, it's invalid
+                                            if (!selectedDate.before(bookedStart) && !selectedDate.after(bookedEnd)) {
+                                                return false;
+                                            }
+                                        } catch (ParseException e) {
+                                            Log.e("RoomBookingFragment", "Date parsing error: " + e.getMessage());
+                                        }
+                                    }
+                                }
+                                return true;
+                            }
+
+                            @Override
+                            public int describeContents() {
+                                return 0;
+                            }
+
+                            @Override
+                            public void writeToParcel(Parcel dest, int flags) {
+                            }
+                        };
+
+                        constraintsBuilder.setStart(today);
+                        constraintsBuilder.setValidator(bookedDatesValidator);
+                        builder.setCalendarConstraints(constraintsBuilder.build());
+
+                        MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
+                        picker.addOnPositiveButtonClickListener(selection -> {
+                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+                            checkInDay = sdf.format(new Date(selection.first));
+                            checkOutDay = sdf.format(new Date(selection.second));
+                            dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
+                        });
+
+                        picker.show(getChildFragmentManager(), picker.toString());
+                    },
+                    e -> Toast.makeText(requireContext(),
+                            "Lỗi tải thông tin đặt phòng: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show()
+            );
         });
 
         decreaseBtn.setOnClickListener(v -> {
@@ -217,6 +300,73 @@ public class RoomBookingFragment extends Fragment {
         });
 
         dialog.show();
+    }
+
+    // kiểm tra xem ngày đã được đặt hay chưa và k cho chọn ngày trong quá khứ
+    private void checkDateAvailability(Long startDate, Long endDate, TextView dateRangeText) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String checkIn = sdf.format(new Date(startDate));
+        String checkOut = sdf.format(new Date(endDate));
+
+        // First check if selected start date is before today
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+
+        try {
+            Date selectedStart = sdf.parse(checkIn);
+            if (selectedStart.before(today.getTime())) {
+                Toast.makeText(requireContext(),
+                        "Không thể chọn ngày trong quá khứ",
+                        Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Continue with availability check
+            bookingRepository.getBookingsByPropertyId(propertyId,
+                    bookings -> {
+                        boolean isAvailable = true;
+                        for (Booking booking : bookings) {
+                            if (booking.status == Booking_status.ACCEPTED ||
+                                    booking.status == Booking_status.IN_PROGRESS) {
+                                try {
+                                    Date bookedStart = sdf.parse(booking.check_in_day);
+                                    Date bookedEnd = sdf.parse(booking.check_out_day);
+                                    Date selectedEnd = sdf.parse(checkOut);
+
+                                    // Check for any overlap
+                                    boolean overlap = !(selectedEnd.before(bookedStart) || selectedStart.after(bookedEnd));
+                                    boolean containsBookedDates = selectedStart.before(bookedStart) && selectedEnd.after(bookedEnd);
+
+                                    if (overlap || containsBookedDates) {
+                                        isAvailable = false;
+                                        break;
+                                    }
+                                } catch (ParseException e) {
+                                    Log.e("RoomBookingFragment", "Date parsing error: " + e.getMessage());
+                                }
+                            }
+                        }
+
+                        if (isAvailable) {
+                            checkInDay = checkIn;
+                            checkOutDay = checkOut;
+                            dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
+                        } else {
+                            Toast.makeText(requireContext(),
+                                    "Ngày đã được đặt. Vui lòng chọn ngày khác.",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    },
+                    e -> Toast.makeText(requireContext(),
+                            "Lỗi kiểm tra ngày: " + e.getMessage(),
+                            Toast.LENGTH_SHORT).show()
+            );
+        } catch (ParseException e) {
+            Log.e("RoomBookingFragment", "Date parsing error: " + e.getMessage());
+        }
     }
 
     private void updateDatesAndGuestsDisplay() {
@@ -243,17 +393,20 @@ public class RoomBookingFragment extends Fragment {
         TextView locationView = getView().findViewById(R.id.property_location);
         ImageView imageView = getView().findViewById(R.id.property_image);
 
-
         long nights = calculateNights(checkInDay, checkOutDay);
         double finalPrice = totalPrice * nights;
+
+        // Convert date format before passing to next fragment
+        String checkInDayFormatted = convertDateFormat(checkInDay, "dd/MM/yyyy", "dd-MM-yyyy");
+        String checkOutDayFormatted = convertDateFormat(checkOutDay, "dd/MM/yyyy", "dd-MM-yyyy");
 
         args.putString("propertyId", propertyId);
         args.putString("hostId", hostId);
         args.putString("propertyTitle", titleView != null ? titleView.getText().toString() : "");
         args.putString("propertyLocation", locationView != null ? locationView.getText().toString() : "");
         args.putString("propertyImage", imageView != null && imageView.getTag() != null ? imageView.getTag().toString() : "");
-        args.putString("checkInDay", checkInDay);
-        args.putString("checkOutDay", checkOutDay);
+        args.putString("checkInDay", checkInDayFormatted);
+        args.putString("checkOutDay", checkOutDayFormatted);
         args.putDouble("totalPrice", finalPrice);
         args.putString("paymentTiming", selectedPaymentTiming);
         args.putInt("guestCount", guestCount);

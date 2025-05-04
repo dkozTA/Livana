@@ -1,6 +1,8 @@
 package com.example.myapplication.data.Model.Booking;
 
 import com.example.myapplication.data.Enum.Booking_status;
+import com.google.firebase.firestore.Exclude;
+import com.google.firebase.firestore.PropertyName;
 
 import java.util.Date;
 import java.util.UUID;
@@ -10,6 +12,7 @@ public class Booking {
     public String property_id;
     public String guest_id;
     public String host_id;
+    @PropertyName("status")
     public Booking_status status;
     public String check_in_day;
     public String check_out_day;
@@ -34,15 +37,17 @@ public class Booking {
         this.updated_at = new Date();
     }
 
-    public Booking_status getBooking_status() {
-        return status;
-    }
-
     public String getId() {
         return id;
     }
 
-    public String getProperty_id() {
-        return property_id;
+    @Exclude
+    public Booking_status getBooking_status() {
+        return status;
+    }
+
+    @PropertyName("status")
+    public void setStatus(Booking_status status) {
+        this.status = status;
     }
 }
