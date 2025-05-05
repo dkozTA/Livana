@@ -7,6 +7,7 @@ import android.widget.FrameLayout;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.myapplication.ui.fragments.SetAmenitiesFragment;
+import com.example.myapplication.ui.fragments.SetPicturesFragment;
 
 
 // cai nay de ben backend test data thoi khong quan trong dau
@@ -21,7 +22,7 @@ public class TestActivity extends FragmentActivity {
         // Gắn fragment
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(container.getId(), new SetAmenitiesFragment())
+                .replace(container.getId(), new SetPicturesFragment())
                 .commitNow();
     }
 

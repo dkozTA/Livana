@@ -39,7 +39,7 @@
                 android:layout_marginBottom="15dp"
                 android:fontFamily="@font/roboto_bold"
                 android:text="Tên"
-                android:textColor="#000000"
+                android:textColor="#353535"
                 android:textSize="22sp"/>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -54,7 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Tên nơi cho thuê"
-                    android:textColor="#000000"
+                    android:textColor="#353535"
                     android:textColorHint="#43F0F0F0" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -65,7 +65,7 @@
                 android:layout_marginBottom="30dp"
                 android:fontFamily="@font/roboto_bold"
                 android:text="Địa chỉ"
-                android:textColor="#000000"
+                android:textColor="#353535"
                 android:textSize="22sp" />
 
             <AutoCompleteTextView
