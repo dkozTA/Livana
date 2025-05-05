@@ -13,12 +13,16 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class PropertyRepository {
@@ -247,5 +251,47 @@ public class PropertyRepository {
 
     public void removeBookedDate(String propertyID, String date, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
 
+    }
+
+    public void clearBookedDates(String propertyId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        db.collection("properties").document(propertyId)
+                .update("booked_date", new ArrayList<String>())
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
+    public void removeBookedDates(String propertyId, String checkIn, String checkOut, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        // Fetch property, remove dates in range [checkIn, checkOut] from booked_date, and update
+        db.collection("properties").document(propertyId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    List<String> bookedDates = (List<String>) documentSnapshot.get("booked_date");
+                    if (bookedDates == null) bookedDates = new ArrayList<>();
+                    List<String> toRemove = getDateRange(checkIn, checkOut); // implement this utility
+                    bookedDates.removeAll(toRemove);
+                    db.collection("properties").document(propertyId)
+                            .update("booked_date", bookedDates)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(onFailure);
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    // Utility to get all dates between checkIn and checkOut (inclusive) in dd-MM-yyyy format
+    private List<String> getDateRange(String start, String end) {
+        List<String> dates = new ArrayList<>();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            Date startDate = sdf.parse(start);
+            Date endDate = sdf.parse(end);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startDate);
+            while (!cal.getTime().after(endDate)) {
+                dates.add(sdf.format(cal.getTime()));
+                cal.add(Calendar.DATE, 1);
+            }
+        } catch (Exception e) {
+            // handle parse error
+        }
+        return dates;
     }
 }

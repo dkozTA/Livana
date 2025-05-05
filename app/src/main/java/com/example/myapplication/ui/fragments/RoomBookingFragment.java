@@ -53,6 +53,7 @@ public class RoomBookingFragment extends Fragment {
     private EditText guestNoteInput;
     private int guestCount = 1;
     private TextView guestsCountText;
+    private java.util.List<String> bookedDates = new java.util.ArrayList<>();
 
     public RoomBookingFragment() {
         super(R.layout.fragment_room_booking);
@@ -165,6 +166,29 @@ public class RoomBookingFragment extends Fragment {
                 Toast.makeText(requireContext(), "Vui lòng chọn cách thanh toán", Toast.LENGTH_SHORT).show();
                 return;
             }
+
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            Calendar cal = Calendar.getInstance();
+            boolean overlap = false;
+            try {
+                Date start = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(checkInDay);
+                Date end = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(checkOutDay);
+                for (long date = start.getTime(); date <= end.getTime(); date += 24 * 60 * 60 * 1000) {
+                    cal.setTimeInMillis(date);
+                    String dateStr = sdf.format(cal.getTime());
+                    // Fetch bookedDates from property (cache it after picker)
+                    if (bookedDates != null && bookedDates.contains(dateStr)) {
+                        overlap = true;
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                overlap = true;
+            }
+            if (overlap) {
+                Toast.makeText(requireContext(), "Khoảng ngày đã chọn có ngày đã được đặt. Vui lòng chọn lại.", Toast.LENGTH_SHORT).show();
+                return;
+            }
             navigateToPaymentMethod();
         });
     }
@@ -182,29 +206,29 @@ public class RoomBookingFragment extends Fragment {
     }
 
     private void showDateAndGuestPicker() {
-        // Create and show a bottom sheet dialog
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_date_guest_picker, null);
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
         dialog.setContentView(dialogView);
 
-        // Initialize date picker button
         Button datePickerBtn = dialogView.findViewById(R.id.date_picker_button);
         TextView dateRangeText = dialogView.findViewById(R.id.date_range_text);
         if (!checkInDay.isEmpty() && !checkOutDay.isEmpty()) {
             dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
         }
 
-        // Initialize guest counter
         TextView guestCountText = dialogView.findViewById(R.id.guest_count_text);
         Button decreaseBtn = dialogView.findViewById(R.id.decrease_guest_button);
         Button increaseBtn = dialogView.findViewById(R.id.increase_guest_button);
         guestCountText.setText(String.valueOf(guestCount));
 
+        // Use PropertyRepository to get property and booked_date
+        com.example.myapplication.data.Repository.Property.PropertyRepository propertyRepository =
+                new com.example.myapplication.data.Repository.Property.PropertyRepository(requireContext());
+
         datePickerBtn.setOnClickListener(v -> {
             MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
             CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
 
-            // Set start date to today
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, 0);
             calendar.set(Calendar.MINUTE, 0);
@@ -212,71 +236,53 @@ public class RoomBookingFragment extends Fragment {
             calendar.set(Calendar.MILLISECOND, 0);
             long today = calendar.getTimeInMillis();
 
-            // Get booked dates and create validator
-            bookingRepository.getBookingsByPropertyId(propertyId,
-                    bookings -> {
-                        CalendarConstraints.DateValidator bookedDatesValidator = new DateValidator() {
-                            @Override
-                            public boolean isValid(long date) {
-                                // Don't allow dates before today
-                                if (date < today) {
-                                    return false;
-                                }
+            propertyRepository.getPropertyById(propertyId, property -> {
+                bookedDates = property.booked_date != null ? property.booked_date : new java.util.ArrayList<>(); // dd-MM-yyyy
 
-                                Calendar cal = Calendar.getInstance();
-                                cal.setTimeInMillis(date);
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                                String dateStr = sdf.format(cal.getTime());
+                CalendarConstraints.DateValidator bookedDatesValidator = new DateValidator() {
+                    @Override
+                    public boolean isValid(long date) {
+                        if (date < today) return false;
+                        Calendar cal = Calendar.getInstance();
+                        cal.setTimeInMillis(date);
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.getDefault());
+                        String dateStr = sdf.format(cal.getTime());
+                        return bookedDates == null || !bookedDates.contains(dateStr);
+                    }
+                    @Override public int describeContents() { return 0; }
+                    @Override public void writeToParcel(android.os.Parcel dest, int flags) {}
+                };
 
-                                // Check if date is booked
-                                for (Booking booking : bookings) {
-                                    if (booking.status == Booking_status.ACCEPTED ||
-                                            booking.status == Booking_status.IN_PROGRESS) {
-                                        try {
-                                            Date bookedStart = sdf.parse(booking.check_in_day);
-                                            Date bookedEnd = sdf.parse(booking.check_out_day);
-                                            Date selectedDate = sdf.parse(dateStr);
+                constraintsBuilder.setStart(today);
+                constraintsBuilder.setValidator(bookedDatesValidator);
+                builder.setCalendarConstraints(constraintsBuilder.build());
 
-                                            // If date falls within a booked period, it's invalid
-                                            if (!selectedDate.before(bookedStart) && !selectedDate.after(bookedEnd)) {
-                                                return false;
-                                            }
-                                        } catch (ParseException e) {
-                                            Log.e("RoomBookingFragment", "Date parsing error: " + e.getMessage());
-                                        }
-                                    }
-                                }
-                                return true;
-                            }
+                MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
+                picker.addOnPositiveButtonClickListener(selection -> {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.getDefault());
+                    Calendar cal = Calendar.getInstance();
+                    boolean overlap = false;
+                    for (long date = selection.first; date <= selection.second; date += 24 * 60 * 60 * 1000) {
+                        cal.setTimeInMillis(date);
+                        String dateStr = sdf.format(cal.getTime());
+                        if (bookedDates != null && bookedDates.contains(dateStr)) {
+                            overlap = true;
+                            break;
+                        }
+                    }
+                    if (overlap) {
+                        Toast.makeText(requireContext(), "Khoảng ngày đã chọn có ngày đã được đặt. Vui lòng chọn lại.", Toast.LENGTH_SHORT).show();
+                    } else {
+                        // Only update if no overlap
+                        sdf = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+                        checkInDay = sdf.format(new java.util.Date(selection.first));
+                        checkOutDay = sdf.format(new java.util.Date(selection.second));
+                        dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
+                    }
+                });
 
-                            @Override
-                            public int describeContents() {
-                                return 0;
-                            }
-
-                            @Override
-                            public void writeToParcel(Parcel dest, int flags) {
-                            }
-                        };
-
-                        constraintsBuilder.setStart(today);
-                        constraintsBuilder.setValidator(bookedDatesValidator);
-                        builder.setCalendarConstraints(constraintsBuilder.build());
-
-                        MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
-                        picker.addOnPositiveButtonClickListener(selection -> {
-                            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
-                            checkInDay = sdf.format(new Date(selection.first));
-                            checkOutDay = sdf.format(new Date(selection.second));
-                            dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
-                        });
-
-                        picker.show(getChildFragmentManager(), picker.toString());
-                    },
-                    e -> Toast.makeText(requireContext(),
-                            "Lỗi tải thông tin đặt phòng: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show()
-            );
+                picker.show(getChildFragmentManager(), picker.toString());
+            }, e -> Toast.makeText(requireContext(), "Failed to load booked dates", Toast.LENGTH_SHORT).show());
         });
 
         decreaseBtn.setOnClickListener(v -> {
@@ -287,7 +293,7 @@ public class RoomBookingFragment extends Fragment {
         });
 
         increaseBtn.setOnClickListener(v -> {
-            if (guestCount < 10) {  // Maximum 10 guests
+            if (guestCount < 10) {
                 guestCount++;
                 guestCountText.setText(String.valueOf(guestCount));
             }
@@ -301,6 +307,7 @@ public class RoomBookingFragment extends Fragment {
 
         dialog.show();
     }
+
 
     // kiểm tra xem ngày đã được đặt hay chưa và k cho chọn ngày trong quá khứ
     private void checkDateAvailability(Long startDate, Long endDate, TextView dateRangeText) {

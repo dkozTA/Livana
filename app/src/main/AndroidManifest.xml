@@ -36,16 +36,14 @@
             android:exported="false">
         </activity>
 
-<!--        <activity-->
-<!--            android:name=".ui.TestActivity"-->
-<!--            android:exported="true">-->
-<!--&lt;!&ndash;             change this to other activity if want to test that activity &ndash;&gt;-->
+        <activity
+            android:name=".ui.TestActivity"
+            android:exported="true">
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->
 <!--                <category android:name="android.intent.category.LAUNCHER" />-->
 <!--            </intent-filter>-->
-
-<!--        </activity>-->
+        </activity>
 
         <activity
             android:name=".ui.auth.RegisterActivity"

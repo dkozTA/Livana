@@ -113,7 +113,16 @@ public class BookingRepository {
                             && booking.status != Booking_status.IN_PROGRESS
                             && (booking.host_id.equals(userID) || booking.guest_id.equals(userID))) {
                         this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.CANCELLED)
-                                .addOnSuccessListener(onSuccess)
+                                .addOnSuccessListener(unused -> {
+                                    // Remove booked dates from property
+                                    propertyRepository.removeBookedDates(
+                                            booking.property_id,
+                                            booking.check_in_day,
+                                            booking.check_out_day,
+                                            onSuccess,
+                                            onFailure
+                                    );
+                                })
                                 .addOnFailureListener(onFailure);
                     } else {
                         onFailure.onFailure(new Exception("Booking status must be PENDING"));
