@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background circle -->
+    <circle cx="100" cy="100" r="100" fill="#4CAF50" />
+
+    <!-- House icon for the avatar -->
+    <g transform="translate(40, 40) scale(1.2)">
+        <!-- House body -->
+        <rect x="25" y="40" width="50" height="40" fill="white" />
+
+        <!-- House roof -->
+        <polygon points="15,40 50,10 85,40" fill="white" />
+
+        <!-- Door -->
+        <rect x="42.5" y="55" width="15" height="25" fill="#4CAF50" />
+
+        <!-- Window left -->
+        <rect x="30" y="45" width="10" height="10" fill="#4CAF50" />
+
+        <!-- Window right -->
+        <rect x="60" y="45" width="10" height="10" fill="#4CAF50" />
+    </g>
+</svg>
