@@ -1,23 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <!-- Background circle -->
-    <circle cx="100" cy="100" r="100" fill="#4CAF50" />
-
-    <!-- House icon for the avatar -->
-    <g transform="translate(40, 40) scale(1.2)">
-        <!-- House body -->
-        <rect x="25" y="40" width="50" height="40" fill="white" />
-
-        <!-- House roof -->
-        <polygon points="15,40 50,10 85,40" fill="white" />
-
-        <!-- Door -->
-        <rect x="42.5" y="55" width="15" height="25" fill="#4CAF50" />
-
-        <!-- Window left -->
-        <rect x="30" y="45" width="10" height="10" fill="#4CAF50" />
-
-        <!-- Window right -->
-        <rect x="60" y="45" width="10" height="10" fill="#4CAF50" />
-    </g>
-</svg>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#E0E0E0" />
+        </shape>
+    </item>
+    <item android:width="24dp" android:height="24dp" android:gravity="center">
+        <vector
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="24"
+            android:viewportHeight="24">
+            <path
+                android:fillColor="#9E9E9E"
+                android:pathData="M12,12c2.21,0 4,-1.79 4,-4s-1.79,-4 -4,-4 -4,1.79 -4,4 1.79,4 4,4zM12,14c-2.67,0 -8,1.34 -8,4v2h16v-2c0,-2.66 -5.33,-4 -8,-4z"/>
+        </vector>
+    </item>
+</layer-list>

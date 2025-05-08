@@ -3,6 +3,7 @@ package com.example.myapplication.ui.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -30,6 +31,10 @@ public class ConversationListActivity extends AppCompatActivity implements Conve
     private SwipeRefreshLayout swipeRefreshLayout;
     private String currentUserId; // Should be obtained from authentication
     private boolean isHost; // Flag to determine if user is host or guest
+
+    ImageView menuIcon;
+    ImageView searchIcon;
+    ImageView moreIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,22 @@ public class ConversationListActivity extends AppCompatActivity implements Conve
 
         // Load conversations
         loadConversations();
+
+        menuIcon = findViewById(R.id.menuIcon);
+        searchIcon = findViewById(R.id.searchIcon);
+        moreIcon = findViewById(R.id.moreIcon);
+
+        menuIcon.setOnClickListener(v -> {
+            // Xử lý khi click vào icon menu
+        });
+
+        searchIcon.setOnClickListener(v -> {
+            // Xử lý khi click vào icon tìm kiếm
+        });
+
+        moreIcon.setOnClickListener(v -> {
+            // Xử lý khi click vào icon more options
+        });
     }
 
     private void setupRecyclerView() {
