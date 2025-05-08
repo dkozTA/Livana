@@ -89,7 +89,7 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
 
     @Override
     public boolean validate(String warning) {
-        return false;
+        return true;
     }
 
     @Override

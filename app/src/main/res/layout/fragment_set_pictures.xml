@@ -28,7 +28,6 @@
             android:paddingBottom="30dp">
 
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="30dp"
@@ -47,12 +46,12 @@
                 android:textSize="22sp" />
 
             <TextView
-                android:id="@+id/textView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:fontFamily="@font/afacad_medium"
                 android:text="Tải lên một bức ảnh làm đại diện"
-                android:textColor="#525252"
+                android:textColor="#262626"
                 android:textSize="16sp" />
 
             <ImageButton
@@ -72,7 +71,8 @@
                 android:id="@+id/mainPhotoInclude"
                 layout="@layout/item_photo"
                 android:layout_width="match_parent"
-                android:layout_height="210dp"
+                android:layout_height="190dp"
+                android:layout_margin="2dp"
                 android:visibility="gone" />
 
             <View
@@ -98,11 +98,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/afacad_medium"
                 android:text="Thêm nhưng bức ảnh khác về chỗ ở của bạn"
-                android:textColor="#525252"
+                android:textColor="#262626"
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/textView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/afacad_medium"
@@ -115,7 +114,6 @@
                 android:layout_width="100dp"
                 android:layout_height="130dp"
                 android:layout_marginTop="-10dp"
-                android:layout_marginBottom="-10dp"
                 android:backgroundTint="#10DEDEDE"
                 android:scaleType="centerCrop"
                 android:scaleX="1"
@@ -124,11 +122,11 @@
                 android:transformPivotX="170dp"
                 android:transformPivotY="80dp" />
 
-            <!-- ✅ Divider -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/SubPhotoRecycler"
+                android:id="@+id/subPhotoRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="50dp"
                 android:nestedScrollingEnabled="false" />
 
 

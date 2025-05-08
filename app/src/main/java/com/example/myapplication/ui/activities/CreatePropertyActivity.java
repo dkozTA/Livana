@@ -18,7 +18,7 @@ import com.google.android.material.button.MaterialButton;
 import java.util.List;
 
 public class CreatePropertyActivity extends AppCompatActivity {
-    private static final int TOTAL_STEP = 3;
+    private static final int TOTAL_STEP = 4;
     private PropertyViewModel viewModel;
     private NavHostFragment navigator;
     private NavController navController;
@@ -27,7 +27,8 @@ public class CreatePropertyActivity extends AppCompatActivity {
 
     private final int[] stepNextTrans = {
             R.id.t01,
-            R.id.t12
+            R.id.t12,
+            R.id.t23
     };
 
     @Override

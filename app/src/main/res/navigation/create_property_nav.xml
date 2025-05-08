@@ -35,5 +35,18 @@
         android:id="@+id/setAmenitiesFragment"
         android:name="com.example.myapplication.ui.fragments.SetAmenitiesFragment"
         android:label="fragment_set_amentities"
-        tools:layout="@layout/fragment_set_amentities" />
+        tools:layout="@layout/fragment_set_amentities" >
+        <action
+            android:id="@+id/t23"
+            app:destination="@id/setPicturesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/setPicturesFragment"
+        android:name="com.example.myapplication.ui.fragments.SetPicturesFragment"
+        android:label="fragment_set_pictures"
+        tools:layout="@layout/fragment_set_pictures" />
 </navigation>
