@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Conversation.Conversation;
 import com.example.myapplication.data.Model.Conversation.Message;
@@ -78,8 +79,17 @@ public class ConversationListAdapter extends RecyclerView.Adapter<ConversationLi
             // Set the conversation name
             nameTextView.setText(conversation.name);
 
-            // Set avatar (for now using a placeholder)
-            avatarImageView.setImageResource(R.drawable.avatar_placeholder);
+            // Set avatar using Glide
+            if (conversation.avatar_url != null && !conversation.avatar_url.isEmpty()) {
+                Glide.with(avatarImageView.getContext())
+                        .load(conversation.avatar_url)
+                        .placeholder(R.drawable.avatar_placeholder)
+                        .error(R.drawable.avatar_placeholder) // Fallback image khi load lỗi
+                        .circleCrop() // Optional: Crop ảnh thành hình tròn
+                        .into(avatarImageView);
+            } else {
+                avatarImageView.setImageResource(R.drawable.avatar_placeholder);
+            }
 
             // Get the last message if available
             if (conversation.messages != null && !conversation.messages.isEmpty()) {

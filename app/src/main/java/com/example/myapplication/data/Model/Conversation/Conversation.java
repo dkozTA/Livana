@@ -11,13 +11,15 @@ public class Conversation {
     public String guest_id;
     public String host_id;
     public List<Message> messages;
+    public String avatar_url;
     public Conversation() {}
 
-    public Conversation(String name, String guest_id, String host_id) {
+    public Conversation(String name, String guest_id, String host_id, String image_url) {
         this.id = UUID.randomUUID().toString();
         this.guest_id = guest_id;
         this.name = name;
         this.host_id = host_id;
         this.messages = new ArrayList<>();
+        this.avatar_url = image_url;
     }
 }
