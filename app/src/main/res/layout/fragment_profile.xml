@@ -21,7 +21,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Notification Icon -->
+        <!-- NotificationRepository Icon -->
         <ImageButton
             android:id="@+id/notification_icon"
             android:layout_width="48dp"

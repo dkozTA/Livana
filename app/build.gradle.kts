@@ -67,6 +67,8 @@ dependencies {
 
     implementation ("de.hdodenhof:circleimageview:3.1.0")
 
+    // notification
+    implementation("com.google.firebase:firebase-messaging")
 }
 
 apply(plugin = "com.google.gms.google-services")
