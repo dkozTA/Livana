@@ -46,7 +46,11 @@ public class ReviewRepository {
                                     this.propertyRepository.updatePropertyAvgRatings(review.property_id, review.point,
                                             unused1 -> {
                                                 this.propertyRepository.updatePropertyTotalReviews(review.property_id,
-                                                        onSuccess,
+                                                        unused2 -> {
+                                                            this.bookingRepository.setReviewedBooking(review.booking_id, onSuccess, e -> {
+                                                                onFailure.onFailure(new Exception("Can not set booking status to REVIEWED: " + e.getMessage()));
+                                                            });
+                                                        },
                                                         e -> {
                                                             onFailure.onFailure(new Exception("Average rating updated but can not add up total review: " + e.getMessage()));
                                                         });

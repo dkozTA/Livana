@@ -81,10 +81,10 @@ public class BookingRepository {
                         if (booking != null) {
                             onSuccess.onSuccess(booking);
                         } else {
-                            onFailure.onFailure(new Exception("Property is null"));
+                            onFailure.onFailure(new Exception("Booking is null"));
                         }
                     } else {
-                        onFailure.onFailure(new Exception("Property not found"));
+                        onFailure.onFailure(new Exception("Booking not found"));
                     }
                 })
                 .addOnFailureListener(onFailure);
@@ -100,6 +100,20 @@ public class BookingRepository {
                                 .addOnFailureListener(onFailure);
                     } else {
                         onFailure.onFailure(new Exception("Booking status must be PENDING"));
+                    }
+                },
+                onFailure);
+    }
+
+    public void setReviewedBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getBookingById(bookingId,
+                booking -> {
+                    if(booking.status == Booking_status.COMPLETED) {
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.REVIEWED)
+                                .addOnSuccessListener(onSuccess)
+                                .addOnFailureListener(onFailure);
+                    } else {
+                        onFailure.onFailure(new Exception("Booking status must be COMPLETED"));
                     }
                 },
                 onFailure);
@@ -176,7 +190,23 @@ public class BookingRepository {
     public void getBookingsByPropertyId(String propertyId, OnSuccessListener<List<Booking>> onSuccess, OnFailureListener onFailure) {
         db.collection("bookings")
                 .whereEqualTo("property_id", propertyId)
-                .whereIn("status", Arrays.asList(Booking_status.ACCEPTED, Booking_status.IN_PROGRESS))
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Booking> bookings = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        Booking booking = document.toObject(Booking.class);
+                        if (booking != null) {
+                            bookings.add(booking);
+                        }
+                    }
+                    onSuccess.onSuccess(bookings);
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void getCompletedBooking(OnSuccessListener<List<Booking>> onSuccess, OnFailureListener onFailure) {
+        db.collection("bookings")
+                .whereEqualTo("status", Booking_status.COMPLETED)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     List<Booking> bookings = new ArrayList<>();

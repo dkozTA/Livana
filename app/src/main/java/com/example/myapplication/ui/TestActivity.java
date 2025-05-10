@@ -2,116 +2,58 @@ package com.example.myapplication.ui;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myapplication.R;
-import com.example.myapplication.data.Model.Property.SearchProperty;
-import com.example.myapplication.data.Model.Search.SearchField;
-import com.example.myapplication.data.Model.Search.SearchResponse;
-import com.example.myapplication.data.Repository.Search.PropertyAPIClient;
-
-import java.util.List;
+import com.example.myapplication.data.Model.Booking.Booking;
+import com.example.myapplication.data.Model.Review.Review;
+import com.example.myapplication.data.Repository.Booking.BookingRepository;
+import com.example.myapplication.data.Repository.Review.ReviewRepository;
 
 public class TestActivity extends AppCompatActivity {
     private static final String TAG = "SearchTestActivity";
 
-    private EditText etSearchQuery;
-    private Button btnSearch;
-    private TextView tvResults;
-    private PropertyAPIClient apiClient;
+    private BookingRepository bookingRepository;
+    private ReviewRepository reviewRepository;
+    private Random random;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search_test);
+        this.bookingRepository = new BookingRepository(this);
+        this.reviewRepository = new ReviewRepository(this);
+        this.random = new Random();
 
-        // Khởi tạo các view
-        etSearchQuery = findViewById(R.id.etSearchQuery);
-        btnSearch = findViewById(R.id.btnSearch);
-        tvResults = findViewById(R.id.tvResults);
+        AtomicInteger index = new AtomicInteger();
 
-        // Khởi tạo API client
-        apiClient = new PropertyAPIClient();
+        // Mảng 12 giá trị rating từ 1-5
+        int[] ratings = {
+                5, 4, 5, 3, 4, 5, 2, 1, 3, 4, 5, 2
+        };
 
-        // Thiết lập sự kiện click cho nút tìm kiếm
-        btnSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                performSearch();
-            }
-        });
-    }
+        // Mảng 12 nội dung đánh giá tương ứng
+        String[] reviewContents = {
+                "Tuyệt vời! Phòng đẹp, sạch sẽ và đầy đủ tiện nghi. Vị trí trung tâm, thuận tiện di chuyển.",             // 5 sao
+                "Rất hài lòng với chỗ ở này. Chủ nhà thân thiện, nhiệt tình hỗ trợ mọi vấn đề.",                          // 4 sao
+                "Xuất sắc! Căn hộ đúng như hình ảnh, view đẹp, nội thất mới. Sẽ quay lại lần sau.",                       // 5 sao
+                "Ở mức trung bình, không có gì đặc biệt. Phòng sạch nhưng thiết bị hơi cũ.",                              // 3 sao
+                "Khá tốt, giá cả hợp lý cho chất lượng nhận được. Vị trí thuận tiện.",                                    // 4 sao
+                "Trải nghiệm tuyệt vời! Căn hộ rộng rãi, sạch sẽ và đầy đủ tiện nghi. Chủ nhà cực kỳ chu đáo.",          // 5 sao
+                "Chưa đáp ứng kỳ vọng. Phòng nhỏ hơn trong hình và thiếu một số tiện nghi đã hứa.",                       // 2 sao
+                "Thất vọng toàn tập. Phòng bẩn, ẩm mốc và không như mô tả. Chủ nhà không hỗ trợ khi yêu cầu.",           // 1 sao
+                "Ổn, phòng đầy đủ tiện nghi cơ bản. Tuy nhiên hơi ồn vào buổi tối vì gần đường lớn.",                    // 3 sao
+                "Rất tốt, chủ nhà thân thiện. Vị trí gần trung tâm, xung quanh nhiều tiện ích, dễ dàng di chuyển.",       // 4 sao
+                "Hoàn hảo! Căn hộ sang trọng, sạch sẽ và đầy đủ tiện nghi. Chủ nhà rất thân thiện và chuyên nghiệp.",    // 5 sao
+                "Nhiều vấn đề cần cải thiện. Vị trí xa trung tâm, thiếu tiện nghi cơ bản như đã quảng cáo."              // 2 sao
+        };
 
-    private void performSearch() {
-        String query = etSearchQuery.getText().toString().trim();
-        if (query.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập từ khóa tìm kiếm", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Hiển thị trạng thái đang tìm kiếm
-        tvResults.setText("Đang tìm kiếm...");
-
-        // Tạo đối tượng tìm kiếm với Builder pattern
-        SearchField searchField = new SearchField.Builder()
-                .propertyName(query)  // Tìm theo tên property
-                .cityCode(26)
-                .pagination(0, 10)    // Lấy trang đầu tiên với 10 kết quả
-                .build();
-
-        // Gọi API tìm kiếm
-        apiClient.searchProperties(searchField, new PropertyAPIClient.OnPropertyCallback() {
-            @Override
-            public void onSuccess(SearchResponse response) {
-                if (response.isSuccess() && response.getResults() != null) {
-                    // Lấy danh sách kết quả
-                    List<SearchProperty> properties = response.getResults().getHits();
-
-                    // Hiển thị kết quả
-                    displayResults(properties);
-                } else {
-                    runOnUiThread(() -> {
-                        tvResults.setText("Không tìm thấy kết quả hoặc có lỗi xảy ra");
-                    });
-                }
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                Log.e(TAG, "Search error: " + errorMessage);
-                runOnUiThread(() -> {
-                    tvResults.setText("Lỗi: " + errorMessage);
-                });
-            }
-        });
-    }
-
-    private void displayResults(List<SearchProperty> properties) {
-        runOnUiThread(() -> {
-            if (properties == null || properties.isEmpty()) {
-                tvResults.setText("Không tìm thấy kết quả nào");
-                return;
-            }
-
-            StringBuilder result = new StringBuilder();
-            result.append("Tìm thấy ").append(properties.size()).append(" kết quả:\n\n");
-
-            for (SearchProperty property : properties) {
-                result.append("ObjectID: ").append(property.getObjectID()).append("\n");
-                result.append("Tên: ").append(property.getPropertyName()).append("\n");
-                result.append("Giá: ").append(property.getPrice()).append("\n");
-                result.append("Số phòng ngủ: ").append(property.getBed_rooms()).append("\n");
-                result.append("Số khách tối đa: ").append(property.getMax_guest()).append("\n");
-                result.append("---------------------------------------\n");
-            }
-
-            tvResults.setText(result.toString());
+        Review review = new Review("b42befb8-ee89-45a0-b79f-35777ee9d87f", "0d95b196-5340-41bd-9694-d6644736f8aa", ratings[5], reviewContents[5]);
+        this.reviewRepository.guestReviewBooking(review, unused -> {
+            Log.d(TAG, "Review created successfully");
+        }, e -> {
+            Log.e(TAG, "Error creating review: " + e.getMessage());
         });
     }
 }
