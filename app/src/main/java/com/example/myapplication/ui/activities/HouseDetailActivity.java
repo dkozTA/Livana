@@ -21,13 +21,18 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.AmenityStatus;
+import com.example.myapplication.data.Model.Review.Review;
+import com.example.myapplication.data.Repository.Review.ReviewRepository;
 import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.adapters.PostImageAdapter;
+import com.example.myapplication.ui.adapters.ReviewAdapter;
 import com.example.myapplication.ui.misc.Amenity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
@@ -41,7 +46,9 @@ public class HouseDetailActivity extends AppCompatActivity {
     private ImageButton heartButton;
     private Post post;
 
-    //doi mau 
+    RecyclerView reviewRecyclerView;
+
+    //doi mau
     private boolean isTopBarWhite = false;
 
     @Override
@@ -125,7 +132,31 @@ public class HouseDetailActivity extends AppCompatActivity {
             updateHeartIcon();
 
             heartButton.setOnClickListener(v -> handleHeartClick());
+
+            reviewRecyclerView = findViewById(R.id.reviewRecyclerView);
+
+            ReviewRepository reviewRepository = new ReviewRepository(this); // hoặc getContext() nếu trong Fragment
+
+            reviewRepository.getAllReviewByPropertyID(post.getId(),
+                    reviews -> {
+                        Log.d("HouseDetail", "Loaded reviews: " + reviews.size());
+                        // Gán adapter để hiển thị trong RecyclerView
+                        ReviewAdapter review_adapter = new ReviewAdapter(reviews);
+                        reviewRecyclerView.setLayoutManager(new LinearLayoutManager(this)); // hoặc getContext()
+                        reviewRecyclerView.setAdapter(review_adapter);
+                    },
+                    e -> {
+                        Log.e("HouseDetail", "Failed to load reviews: " + e.getMessage());
+                    }
+            );
+
+
+//            RecyclerView recyclerView = findViewById(R.id.reviewRecyclerView);
+//            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+//            loadReviews(recyclerView);
         }
+
+
 
         boolean showReview = getIntent().getBooleanExtra("show_review", false);
         String bookingId = getIntent().getStringExtra("booking_id");
@@ -137,6 +168,30 @@ public class HouseDetailActivity extends AppCompatActivity {
         Button btnBooking = findViewById(R.id.btnBooking);
         btnBooking.setOnClickListener(v -> navigateToBooking());
     }
+
+//    private void loadReviews(RecyclerView recyclerView) {
+//        List<Review> reviews;
+//
+////        if (post != null && post.getReviews() != null && !post.getReviews().isEmpty()) {
+////            reviews = post.getReviews();
+////        } else {
+////            reviews = loadMockReviews(); // fallback nếu không có review thật
+////        }
+//
+//        reviews = loadMockReviews();
+//        Log.d("HouseDetail", "Loaded reviews: " + reviews.size());
+//
+//        ReviewAdapter adapter = new ReviewAdapter(reviews);
+//        recyclerView.setAdapter(adapter);
+//    }
+
+//    private List<Review> loadMockReviews() {
+//        List<Review> mock = new ArrayList<>();
+//        mock.add(new Review("Huy", "1 tuần trước", 4, "Tôi rất thích nơi này"));
+//        mock.add(new Review("Princess", "tháng 4 năm 2025", 5, "Nơi này là một nơi nghỉ ngơi yên bình..."));
+//        return mock;
+//    }
+
 
     private void navigateToBooking() {
         if (post != null) {

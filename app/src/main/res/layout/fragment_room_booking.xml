@@ -26,13 +26,13 @@
                 android:id="@+id/review_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="180dp"
+                android:layout_marginTop="8dp"
                 android:text="Xem lại và tiếp tục"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintHorizontal_bias="0.055"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -128,6 +128,7 @@
                             android:text="Chi tiết chuyến đi"
                             android:textSize="16sp"
                             android:textStyle="bold"
+                            android:textColor="@color/black"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/divider_1" />
 
@@ -136,6 +137,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
+                            android:textColor="@color/black"
                             android:text="Ngày 20-22 tháng 5 · 2 khách"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toStartOf="@id/change_button"
@@ -168,6 +170,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Tổng tiền"
+                            android:textColor="@color/black"
                             android:textStyle="bold"
                             android:textSize="16sp"
                             app:layout_constraintStart_toStartOf="parent"
@@ -178,6 +181,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="5.500.000đ"
+                            android:textColor="@color/black"
                             android:layout_marginTop="8dp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintEnd_toStartOf="@id/price_detail_button"
@@ -203,6 +207,7 @@
                             android:layout_marginTop="72dp"
                             android:background="@drawable/edit_text_background"
                             android:gravity="top"
+                            android:textColor="@color/black"
                             android:hint="Ghi chú cho chủ nhà"
                             android:maxLines="4"
                             android:minLines="2"
@@ -236,6 +241,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Chọn cách thanh toán"
+                            android:textColor="@color/black"
                             android:textSize="20sp"
                             android:textStyle="bold" />
 
@@ -249,6 +255,7 @@
                                 android:id="@+id/full_payment_option"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/black"
                                 android:text="Thanh toán toàn bộ (5.500.000đ)"
                                 android:padding="8dp" />
 
@@ -262,6 +269,7 @@
                                 android:id="@+id/partial_payment_option"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/black"
                                 android:text="Thanh toán một phần bây giờ, phần còn lại sau"
                                 android:padding="8dp" />
                         </RadioGroup>

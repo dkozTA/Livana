@@ -40,6 +40,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
+    implementation(libs.swiperefreshlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -66,6 +67,9 @@ dependencies {
     implementation("com.google.android.material:material:1.9.0")
 
     implementation ("de.hdodenhof:circleimageview:3.1.0")
+
+    // notification
+    implementation("com.google.firebase:firebase-messaging")
 }
 
 apply(plugin = "com.google.gms.google-services")

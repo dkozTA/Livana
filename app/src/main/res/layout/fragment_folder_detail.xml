@@ -12,6 +12,9 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:padding="16dp"
+        android:background="@android:color/white"
+        android:elevation="4dp"
+        android:clipToPadding="false"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">

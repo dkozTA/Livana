@@ -6,4 +6,17 @@
     <color name="colorPrimary">#2196F3</color>
     <color name="light_gray">#FFF5F5F5</color>
     <color name="divider_gray">#FFE0E0E0</color>
+
+    <color name="colorPrimaryDark">#1976D2</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <color name="textColorPrimary">#212121</color>
+    <color name="textColorSecondary">#757575</color>
+    <color name="textColorTertiary">#9E9E9E</color>
+
+    <color name="backgroundColor">#F5F5F5</color>
+    <color name="cardBackground">#FFFFFF</color>
+    <color name="dividerColor">#E0E0E0</color>
+
+    <color name="onlineIndicator">#4CAF50</color>
 </resources>
