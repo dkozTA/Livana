@@ -30,12 +30,10 @@ public class PropertyRepository {
     private final FirebaseFirestore db;
     private final StorageRepository storageRepository;
     private final String COLLECTION_NAME = "properties"; // Tên collection trong Firestore
-    private final UserRepository userRepository;
 
     public PropertyRepository(Context context) {
         this.db = FirebaseService.getInstance(context).getFireStore();
         this.storageRepository = new StorageRepository(context);
-        this.userRepository = new UserRepository(context);
     }
 
     public void addProperty(Property property, Uri main_image ,List<Uri> sub_images , OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
@@ -252,9 +250,16 @@ public class PropertyRepository {
                 });
     }
 
-    public void removeBookedDate(String propertyID, String date, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-
+    /*
+    public void removeBookedDate(String propertyID, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        List<String> dates = this.getDateRange(startDate, endDate);
+        this.db.collection("properties")
+                .document(propertyID)
+                .update("booked_date", FieldValue.arrayRemove(dates.toArray()))
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
     }
+    */
 
     public void clearBookedDates(String propertyId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         db.collection("properties").document(propertyId)
@@ -298,16 +303,5 @@ public class PropertyRepository {
         return dates;
     }
 
-    public void getHostNameByPropertyID(String propertyID, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
-        this.getPropertyById(propertyID, property -> {
-            this.userRepository.getUserByUid(property.host_id,
-                    host -> {
-                        onSuccess.onSuccess(host.full_name);
-                    }, e -> {
-                        onFailure.onFailure(new Exception("Can not get host name"));
-                    });
-        }, e-> {
-            onFailure.onFailure(new Exception("Can not get property"));
-        });
-    }
+
 }

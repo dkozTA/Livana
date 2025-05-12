@@ -301,4 +301,17 @@ public class UserRepository {
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
+
+    public void getHostNameByPropertyID(String propertyID, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
+        propertyRepository.getPropertyById(propertyID, property -> {
+            this.getUserByUid(property.host_id,
+                    host -> {
+                        onSuccess.onSuccess(host.full_name);
+                    }, e -> {
+                        onFailure.onFailure(new Exception("Can not get host name"));
+                    });
+        }, e-> {
+            onFailure.onFailure(new Exception("Can not get property"));
+        });
+    }
 }
