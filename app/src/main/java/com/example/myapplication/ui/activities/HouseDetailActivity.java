@@ -89,6 +89,7 @@ public class HouseDetailActivity extends AppCompatActivity {
             TextView total_reviews = findViewById(R.id.total_reviews);
             TextView house_rule = findViewById(R.id.house_rule);
             TextView special_feature = findViewById(R.id.special_feature);
+            TextView titleRiview = findViewById(R.id.reviewTitle);
             showAmenities(post);
             heartButton = findViewById(R.id.heart_button);
 
@@ -108,6 +109,7 @@ public class HouseDetailActivity extends AppCompatActivity {
             price.setText(post.getNormal_price());
             avg_ratings.setText(post.getAvgRatings() + " ⭐ ");
             total_reviews.setText(post.getTotalReview() + " đánh giá");
+            titleRiview.setText("Đánh giá (" + post.getTotalReview() + ")");
             if (post.getAmenities() != null && post.getAmenities().houseRules != null) {
                 house_rule.setText(post.getAmenities().houseRules);
             } else {
