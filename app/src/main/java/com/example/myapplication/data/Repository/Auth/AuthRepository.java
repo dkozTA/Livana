@@ -1,21 +1,17 @@
 package com.example.myapplication.data.Repository.Auth;
 
 import android.content.Context;
-import android.content.Intent;
 
-import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Auth.AuthLogin;
 import com.example.myapplication.data.Model.Auth.AuthRegister;
 import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.FirebaseService;
+import com.example.myapplication.data.Repository.Notification.NotificationRepository;
 import com.example.myapplication.data.Repository.User.UserRepository;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -25,10 +21,12 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class AuthRepository {
     private final FirebaseAuth firebaseAuth;
     private final UserRepository userRepository;
+    private final NotificationRepository notificationRepository;
 
     public AuthRepository(Context context) {
         this.firebaseAuth = FirebaseService.getInstance(context).getAuth();
         this.userRepository = new UserRepository(context);
+        this.notificationRepository = new NotificationRepository(context);
     }
 
     // Đăng ký
@@ -95,5 +93,7 @@ public class AuthRepository {
 
     public void logout() {
         firebaseAuth.signOut();
+        this.notificationRepository.deleteFCMToken(this.getUserUid());
     }
+
 }
