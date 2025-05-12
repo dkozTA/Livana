@@ -68,7 +68,7 @@ public class ExploreFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterPosts(s.toString()); // Gọi hàm lọc mỗi khi thay đổi
+                filterPosts(s.toString()); // Gọi hàm tim kiem mỗi khi thay đổi
             }
 
             @Override
@@ -159,6 +159,7 @@ public class ExploreFragment extends Fragment {
         );
     }
 
+    //ham tim kiem don gian
     private void filterPosts(String query) {
         postList.clear();
         if (query.isEmpty()) {
