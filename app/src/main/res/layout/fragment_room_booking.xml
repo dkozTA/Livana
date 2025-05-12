@@ -60,7 +60,10 @@
                             android:scaleType="centerCrop"
                             android:src="@drawable/troll_livana"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:background="@drawable/rounded_image_bg"
+                            android:clipToOutline="true"
+                            android:outlineProvider="background" />
 
                         <TextView
                             android:id="@+id/property_title"

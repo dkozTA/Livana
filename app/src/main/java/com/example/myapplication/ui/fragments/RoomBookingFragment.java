@@ -18,6 +18,8 @@ import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Enum.Booking_status;
 import com.example.myapplication.data.Model.Booking.Booking;
@@ -77,6 +79,15 @@ public class RoomBookingFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+
+        TextView datesGuestsText = view.findViewById(R.id.dates_guests);
+        // get default date to today and 1 guest
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        Calendar calendar = Calendar.getInstance();
+        String today = sdf.format(calendar.getTime());
+        datesGuestsText.setText(String.format("%s · 1 khách", today));
+
         initializeViews(view);
         updateUI(view);
         setupListeners();
@@ -127,14 +138,28 @@ public class RoomBookingFragment extends Fragment {
             ratingBar.setRating((float) avgRating);
             ratingText.setText(String.format("%.1f (%d đánh giá)", avgRating, totalReviews));
 
-            // Load image
-            String imageUrl = args.getString("propertyImage", "");
-            if (!imageUrl.isEmpty()) {
-                Glide.with(requireContext())
-                        .load(imageUrl)
-                        .into(propertyImageView);
-                propertyImageView.setTag(imageUrl);
-            }
+            // Fetch and load property image from backend
+            com.example.myapplication.data.Repository.Property.PropertyRepository propertyRepository =
+                    new com.example.myapplication.data.Repository.Property.PropertyRepository(requireContext());
+
+            propertyRepository.getPropertyById(propertyId, property -> {
+                if (property.main_photo != null && !property.main_photo.isEmpty()) {
+                    Glide.with(requireContext())
+                            .load(property.main_photo)
+                            .into(propertyImageView);
+
+                    propertyImageView.setTag(property.main_photo);
+                }
+            }, e -> {
+                String imageUrl = args.getString("propertyImage", "");
+                if (!imageUrl.isEmpty()) {
+                    Glide.with(requireContext())
+                            .load(imageUrl)
+                            .into(propertyImageView);
+                    propertyImageView.setTag(imageUrl);
+                }
+                Log.e("RoomBookingFragment", "Failed to load property image: " + e.getMessage());
+            });
 
             // Update payment options
             RadioButton fullPaymentOption = view.findViewById(R.id.full_payment_option);
@@ -377,6 +402,18 @@ public class RoomBookingFragment extends Fragment {
     }
 
     private void updateDatesAndGuestsDisplay() {
+        if (checkInDay.isEmpty() || checkOutDay.isEmpty()) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+            Calendar calendar = Calendar.getInstance();
+
+            // Set check-in day to today
+            checkInDay = sdf.format(calendar.getTime());
+
+            // Set check-out day to tomorrow
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+            checkOutDay = sdf.format(calendar.getTime());
+        }
+
         String guestText = guestCount == 1 ? "1 khách" : guestCount + " khách";
         datesGuestsText.setText(String.format("%s - %s • %s", checkInDay, checkOutDay, guestText));
 
