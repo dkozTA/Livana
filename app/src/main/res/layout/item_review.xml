@@ -23,6 +23,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Princess"
+        android:layout_marginTop="8dp"
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="16dp"

@@ -48,6 +48,8 @@ public class HouseDetailActivity extends AppCompatActivity {
 
     RecyclerView reviewRecyclerView;
 
+    UserRepository userRepository;
+
     //doi mau
     private boolean isTopBarWhite = false;
 
@@ -87,7 +89,8 @@ public class HouseDetailActivity extends AppCompatActivity {
             TextView title = findViewById(R.id.title);
             //ImageView postImageView = findViewById(R.id.post_image);
             ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
-
+            RatingBar ratingBar = findViewById(R.id.review_rating_bar);
+            TextView hostName = findViewById(R.id.host_name);
             TextView location = findViewById(R.id.location);
             TextView detail = findViewById(R.id.details);
             TextView dateRange = findViewById(R.id.date_range);
@@ -114,9 +117,10 @@ public class HouseDetailActivity extends AppCompatActivity {
             detail.setText(post.getDetail());
             dateRange.setText(post.getDateRange());
             price.setText(post.getNormal_price());
-            avg_ratings.setText(post.getAvgRatings() + " ⭐ ");
+            avg_ratings.setText(post.getAvgRatings() + "");
             total_reviews.setText(post.getTotalReview() + " đánh giá");
             titleRiview.setText("Đánh giá (" + post.getTotalReview() + ")");
+            ratingBar.setRating((float) post.getAvgRatings());
             if (post.getAmenities() != null && post.getAmenities().houseRules != null) {
                 house_rule.setText(post.getAmenities().houseRules);
             } else {
@@ -132,6 +136,19 @@ public class HouseDetailActivity extends AppCompatActivity {
             updateHeartIcon();
 
             heartButton.setOnClickListener(v -> handleHeartClick());
+
+            UserRepository userRepository = new UserRepository(this);
+            userRepository.getHostNameByPropertyID(post.getId(),
+                    hostNameStr -> {
+                        hostName.setText("Host: " + hostNameStr);
+                    },
+                    e -> {
+                        hostName.setText("Không rõ chủ nhà");
+                    }
+            );
+
+
+
 
             reviewRecyclerView = findViewById(R.id.reviewRecyclerView);
 
@@ -149,11 +166,6 @@ public class HouseDetailActivity extends AppCompatActivity {
                         Log.e("HouseDetail", "Failed to load reviews: " + e.getMessage());
                     }
             );
-
-
-//            RecyclerView recyclerView = findViewById(R.id.reviewRecyclerView);
-//            recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//            loadReviews(recyclerView);
         }
 
 
@@ -168,30 +180,6 @@ public class HouseDetailActivity extends AppCompatActivity {
         Button btnBooking = findViewById(R.id.btnBooking);
         btnBooking.setOnClickListener(v -> navigateToBooking());
     }
-
-//    private void loadReviews(RecyclerView recyclerView) {
-//        List<Review> reviews;
-//
-////        if (post != null && post.getReviews() != null && !post.getReviews().isEmpty()) {
-////            reviews = post.getReviews();
-////        } else {
-////            reviews = loadMockReviews(); // fallback nếu không có review thật
-////        }
-//
-//        reviews = loadMockReviews();
-//        Log.d("HouseDetail", "Loaded reviews: " + reviews.size());
-//
-//        ReviewAdapter adapter = new ReviewAdapter(reviews);
-//        recyclerView.setAdapter(adapter);
-//    }
-
-//    private List<Review> loadMockReviews() {
-//        List<Review> mock = new ArrayList<>();
-//        mock.add(new Review("Huy", "1 tuần trước", 4, "Tôi rất thích nơi này"));
-//        mock.add(new Review("Princess", "tháng 4 năm 2025", 5, "Nơi này là một nơi nghỉ ngơi yên bình..."));
-//        return mock;
-//    }
-
 
     private void navigateToBooking() {
         if (post != null) {

@@ -109,8 +109,8 @@ public class RoomBookingFragment extends Fragment {
         Bundle args = getArguments();
         if (args != null) {
             // Update property details
-            TextView titleView = view.findViewById(R.id.property_title);
-            TextView locationView = view.findViewById(R.id.property_location);
+            TextView titleView = view.findViewById(R.id.property_location);
+            TextView locationView = view.findViewById(R.id.property_title);
             TextView priceView = view.findViewById(R.id.total_price);
             RatingBar ratingBar = view.findViewById(R.id.rating_bar);
             TextView ratingText = view.findViewById(R.id.rating_text);
