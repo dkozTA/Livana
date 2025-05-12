@@ -7,6 +7,7 @@ import android.os.Build;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
+import com.example.myapplication.data.Repository.User.UserRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FieldValue;
@@ -29,10 +30,12 @@ public class PropertyRepository {
     private final FirebaseFirestore db;
     private final StorageRepository storageRepository;
     private final String COLLECTION_NAME = "properties"; // Tên collection trong Firestore
+    private final UserRepository userRepository;
 
     public PropertyRepository(Context context) {
         this.db = FirebaseService.getInstance(context).getFireStore();
         this.storageRepository = new StorageRepository(context);
+        this.userRepository = new UserRepository(context);
     }
 
     public void addProperty(Property property, Uri main_image ,List<Uri> sub_images , OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
@@ -293,5 +296,18 @@ public class PropertyRepository {
             // handle parse error
         }
         return dates;
+    }
+
+    public void getHostNameByPropertyID(String propertyID, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
+        this.getPropertyById(propertyID, property -> {
+            this.userRepository.getUserByUid(property.host_id,
+                    host -> {
+                        onSuccess.onSuccess(host.full_name);
+                    }, e -> {
+                        onFailure.onFailure(new Exception("Can not get host name"));
+                    });
+        }, e-> {
+            onFailure.onFailure(new Exception("Can not get property"));
+        });
     }
 }
