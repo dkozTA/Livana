@@ -49,11 +49,21 @@ public class TestActivity extends AppCompatActivity {
                 "Nhiều vấn đề cần cải thiện. Vị trí xa trung tâm, thiếu tiện nghi cơ bản như đã quảng cáo."              // 2 sao
         };
 
-        Review review = new Review("b42befb8-ee89-45a0-b79f-35777ee9d87f", "0d95b196-5340-41bd-9694-d6644736f8aa", ratings[5], reviewContents[5]);
-        this.reviewRepository.guestReviewBooking(review, unused -> {
-            Log.d(TAG, "Review created successfully");
-        }, e -> {
-            Log.e(TAG, "Error creating review: " + e.getMessage());
-        });
+        this.bookingRepository.getCompletedBooking(
+                bookings -> {
+                    int i = 7;
+                    for(Booking booking : bookings) {
+                        i++;
+                        Review review = new Review(booking.id, booking.property_id, ratings[i], reviewContents[i]);
+                        this.reviewRepository.guestReviewBooking(review, unused -> {
+                            Log.d(TAG, "Success: " + review.id);
+                        }, e -> {
+                            Log.e(TAG, "Error: " + e.getMessage());
+                        });
+                    }
+                }, e -> {
+                    Log.e(TAG, "Error: " + e.getMessage());
+                }
+        );
     }
 }
