@@ -12,13 +12,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Review.Review;
+import com.example.myapplication.data.Model.Review.ReviewWithReviewerName;
 
 import java.util.List;
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
-    private List<Review> reviewList;
+    private List<ReviewWithReviewerName> reviewList;
 
-    public ReviewAdapter(List<Review> reviewList) {
+    public ReviewAdapter(List<ReviewWithReviewerName> reviewList) {
         this.reviewList = reviewList;
     }
 
@@ -45,9 +46,9 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     @Override
     public void onBindViewHolder(@NonNull ReviewViewHolder holder, int position) {
-        Review review = reviewList.get(position);
+        ReviewWithReviewerName review = reviewList.get(position);
         Log.d("ReviewAdapter", "Binding review: " + review.booking_id + ", " + review.content);
-        holder.reviewerName.setText(review.booking_id);
+        holder.reviewerName.setText(review.reviewer_name);
         holder.reviewDate.setText(review.property_id);
         holder.reviewContent.setText(review.content);
         holder.ratingBar.setRating(review.point);
