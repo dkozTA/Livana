@@ -15,6 +15,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,10 +62,10 @@ public class UserRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    public void updateUser(User user, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        String uid = user.uid;
+    // Không sử dụng cho avatar nhé
+    public void updateUser(String uid, String field_name, String new_field_value, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         db.collection("users").document(uid)
-                .set(user)
+                .update(field_name, new_field_value)
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
@@ -272,5 +273,45 @@ public class UserRepository {
                     }
                 },
                 onFailure);
+    }
+
+    public void setFCMToken(String uid, String token, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.db.collection("users").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Document tồn tại, thực hiện update (sẽ thêm nếu chưa có, cập nhật nếu đã có)
+                        Map<String, Object> data = new HashMap<>();
+                        data.put("fcm_token", token);
+                        db.collection("users").document(uid)
+                                .set(data, com.google.firebase.firestore.SetOptions.merge())
+                                .addOnSuccessListener(onSuccess)
+                                .addOnFailureListener(onFailure);
+                    } else {
+                        // Document không tồn tại, gọi onFailure
+                        if (onFailure != null) {
+                            onFailure.onFailure(new Exception("User document not found"));
+                        }
+                    }
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void deleteFCMToken(String uid, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.db.collection("users").document(uid).update("fcm_token", null)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
+    public void getHostNameByPropertyID(String propertyID, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
+        propertyRepository.getPropertyById(propertyID, property -> {
+            this.getUserByUid(property.host_id,
+                    host -> {
+                        onSuccess.onSuccess(host.full_name);
+                    }, e -> {
+                        onFailure.onFailure(new Exception("Can not get host name"));
+                    });
+        }, e-> {
+            onFailure.onFailure(new Exception("Can not get property"));
+        });
     }
 }

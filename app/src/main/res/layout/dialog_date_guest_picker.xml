@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Chọn ngày và số khách"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Date Selection -->
+    <Button
+        android:id="@+id/date_picker_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Chọn ngày"
+        style="?attr/materialButtonOutlinedStyle"/>
+
+    <TextView
+        android:id="@+id/date_range_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"/>
+
+    <!-- Guest Counter -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Số khách:"
+            android:layout_weight="1"/>
+
+        <Button
+            android:id="@+id/decrease_guest_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="-"
+            style="?attr/materialButtonOutlinedStyle"/>
+
+        <TextView
+            android:id="@+id/guest_count_text"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/increase_guest_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:text="+"
+            style="?attr/materialButtonOutlinedStyle"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Xác nhận"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>

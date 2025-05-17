@@ -1,30 +1,24 @@
 package com.example.myapplication.ui;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.FrameLayout;
+import android.util.Log;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import androidx.fragment.app.FragmentActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.myapplication.ui.fragments.SetAmenitiesFragment;
-import com.example.myapplication.ui.fragments.SetPicturesFragment;
-import com.example.myapplication.ui.fragments.SetPricesFragment;
+import com.example.myapplication.data.Model.Booking.Booking;
+import com.example.myapplication.data.Model.Review.Review;
+import com.example.myapplication.data.Repository.Booking.BookingRepository;
+import com.example.myapplication.data.Repository.Review.ReviewRepository;
+
+public class TestActivity extends AppCompatActivity {
+    private static final String TAG = "SearchTestActivity";
 
 
-// cai nay de ben backend test data thoi khong quan trong dau
-public class TestActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FrameLayout container = new FrameLayout(this);
-        container.setId(View.generateViewId());
-        setContentView(container);
 
-        // Gắn fragment
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(container.getId(), new SetPricesFragment())
-                .commitNow();
     }
-
 }

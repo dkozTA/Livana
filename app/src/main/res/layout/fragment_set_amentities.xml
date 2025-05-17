@@ -99,12 +99,12 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:fontFamily="@font/afacad"
-                    android:text="Phòng tắm"
+                    android:text="Phòng bếp"
                     android:textColor="#404040"
                     android:textSize="22sp" />
 
                 <com.example.myapplication.ui.customviews.NumberSelectorView
-                    android:id="@+id/numBathroom"
+                    android:id="@+id/numKitchen"
                     android:layout_width="126dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0" />

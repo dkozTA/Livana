@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="160dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <!-- Close Button -->
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/confirm_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Xác nhận và thanh toán"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"  />
+
+            <!-- Booking Details Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/booking_details_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:foreground="@drawable/card_border"
+                app:layout_constraintTop_toBottomOf="@id/confirm_title">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:id="@+id/property_image"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:scaleType="centerCrop"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/property_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Tên nhà"
+                        android:textStyle="bold"
+                        android:textSize="18sp"
+                        app:layout_constraintStart_toEndOf="@id/property_image"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/property_image" />
+
+                    <TextView
+                        android:id="@+id/booking_dates"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Ngày 20-22 tháng 5 · 2 khách"
+                        app:layout_constraintStart_toStartOf="@id/property_title"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/property_title" />
+
+                    <TextView
+                        android:id="@+id/property_location"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="4dp"
+                        android:text="Địa điểm"
+                        app:layout_constraintStart_toEndOf="@id/property_image"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/booking_dates" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Payment Timing Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/payment_timing_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:foreground="@drawable/card_border"
+                app:layout_constraintTop_toBottomOf="@id/booking_details_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Khi nào bạn sẽ thanh toán"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/payment_schedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="Thanh toán toàn bộ hôm nay" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Selected Payment Method Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/selected_payment_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:foreground="@drawable/card_border"
+                app:layout_constraintTop_toBottomOf="@id/payment_timing_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Phương thức thanh toán"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/selected_payment_method"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:drawableStart="@drawable/ic_credit_card"
+                        android:drawablePadding="8dp"
+                        android:gravity="center_vertical"
+                        android:text="Visa ****1234" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Total Price -->
+            <LinearLayout
+                android:id="@+id/total_price_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal"
+                android:paddingHorizontal="4dp"
+                app:layout_constraintTop_toBottomOf="@id/selected_payment_card">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tổng tiền"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/total_price"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="5.500.000đ"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <!-- Price Details Button -->
+            <Button
+                android:id="@+id/price_details_button"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:strokeColor="@color/black"
+                android:text="Chi tiết giá"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toBottomOf="@id/total_price_container"
+                tools:layout_editor_absoluteX="16dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="8dp"
+        app:strokeWidth="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Progress Indicator -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:weightSum="3">
+
+                <View
+                    android:id="@+id/step_1"
+                    android:layout_width="0dp"
+                    android:layout_height="4dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:background="@color/black" />
+
+                <View
+                    android:id="@+id/step_2"
+                    android:layout_width="0dp"
+                    android:layout_height="4dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@color/black" />
+
+                <View
+                    android:id="@+id/step_3"
+                    android:layout_width="0dp"
+                    android:layout_height="4dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@color/black" />
+            </LinearLayout>
+
+            <!-- Next Button -->
+            <Button
+                android:id="@+id/next_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/black"
+                android:elevation="0dp"
+                android:padding="12dp"
+                android:text="Tiếp tục"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

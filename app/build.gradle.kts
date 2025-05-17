@@ -77,6 +77,12 @@ dependencies {
 
     // Mở Gallery
     implementation ("androidx.core:core:1.9.0")
+
+    implementation ("de.hdodenhof:circleimageview:3.1.0")
+
+    // notification
+    implementation("com.google.firebase:firebase-messaging")
+
 }
 
 apply(plugin = "com.google.gms.google-services")

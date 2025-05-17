@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="2dp"
+    android:paddingBottom="2dp"
+    android:paddingStart="16dp"
+    android:paddingEnd="8dp">
+
+    <TextView
+        android:id="@+id/textSender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Host"
+        android:textSize="13sp"
+        android:textColor="#2962FF"
+        android:textStyle="bold"
+        android:visibility="visible"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/messageContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/bg_message_sent"
+        android:padding="10dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textSender"
+        app:layout_constraintWidth_max="280dp">
+
+        <TextView
+            android:id="@+id/textMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nội dung tin nhắn"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10:00"
+        android:textSize="11sp"
+        android:textColor="#757575"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintEnd_toEndOf="@id/messageContainer"
+        app:layout_constraintTop_toBottomOf="@id/messageContainer"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

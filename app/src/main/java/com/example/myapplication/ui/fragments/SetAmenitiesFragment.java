@@ -49,6 +49,8 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
         View view = inflater.inflate(R.layout.fragment_set_amentities, container, false);
 
         numBedroom = view.findViewById(R.id.numBedroom);
+        numLivingroom = view.findViewById(R.id.numLivingroom);
+        numKitchen = view.findViewById(R.id.numKitchen);
         maxGuess = view.findViewById(R.id.maxGuess);
 
         //Amenity setup
@@ -79,9 +81,11 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
     public void applyData() {
         Property property = viewModel.getPropertyData().getValue();
         //room apply
-        if (property.getRooms() == null) property.rooms = new Rooms(0, AmenityStatus.Hidden, AmenityStatus.Hidden);
+        if (property.getRooms() == null) property.rooms = new Rooms(0, 0, 0);
 
         numBedroom.setCount(property.getRooms().bedRooms);
+        numLivingroom.setCount(property.getRooms().livingRooms);
+        numKitchen.setCount(property.getRooms().kitchen);
         maxGuess.setCount(property.getMax_guess());
         //need count for living room and kitchen
 
@@ -111,22 +115,26 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
         Property newValue = viewModel.getPropertyData().getValue();
         if(newValue == null) newValue = new Property();
 
-        newValue.rooms = new Rooms(numBedroom.getCount(), AmenityStatus.Hidden, AmenityStatus.Hidden);
+        newValue.rooms = new Rooms(numBedroom.getCount(), numLivingroom.getCount(), numKitchen.getCount());
+
+        newValue.max_guess = maxGuess.getCount();
 
         //amenities
         List<Amenity> amList = adapter.GetAmenities();
         newValue.amenities = new Amenities(
                 amList.get(0).status,
-                amList.get(0).status,
-                amList.get(0).status,
-                amList.get(0).status,
-                amList.get(0).status,
-                amList.get(0).status,
-                amList.get(0).status,
-                amList.get(0).status,
+                amList.get(1).status,
+                amList.get(2).status,
+                amList.get(3).status,
+                amList.get(4).status,
+                amList.get(5).status,
+                amList.get(6).status,
+                amList.get(7).status,
                 "more",
                 "rule"
         );
+
+        viewModel.setPropertyData(newValue);
     }
 
     @Override

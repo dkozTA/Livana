@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="160dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/payment_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Chọn phương thức thanh toán"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/payment_methods_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:foreground="@drawable/card_border"
+                app:layout_constraintTop_toBottomOf="@id/payment_title">
+
+                <RadioGroup
+                    android:id="@+id/payment_options_group"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <RadioButton
+                        android:id="@+id/credit_card_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Thẻ tín dụng/ghi nợ"
+                        android:drawableEnd="@drawable/ic_credit_card"
+                        android:padding="12dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E0E0E0"
+                        android:layout_marginVertical="8dp" />
+
+                    <RadioButton
+                        android:id="@+id/bank_transfer_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Chuyển khoản ngân hàng"
+                        android:drawableEnd="@drawable/ic_bank"
+                        android:padding="12dp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E0E0E0"
+                        android:layout_marginVertical="8dp" />
+
+                    <RadioButton
+                        android:id="@+id/ewallet_option"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ví điện tử"
+                        android:drawableEnd="@drawable/ic_wallet"
+                        android:padding="12dp" />
+
+                </RadioGroup>
+            </androidx.cardview.widget.CardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:cardBackgroundColor="@color/white"
+        app:cardElevation="8dp"
+        app:strokeWidth="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Progress Indicator -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:weightSum="3">
+
+                <View
+                    android:id="@+id/step_1"
+                    android:layout_width="0dp"
+                    android:layout_height="4dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="4dp"
+                    android:background="@color/black" />
+
+                <View
+                    android:id="@+id/step_2"
+                    android:layout_width="0dp"
+                    android:layout_height="4dp"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="4dp"
+                    android:background="@color/black" />
+
+                <View
+                    android:id="@+id/step_3"
+                    android:layout_width="0dp"
+                    android:layout_height="4dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
+                    android:background="@color/divider_gray" />
+            </LinearLayout>
+
+            <!-- Next Button -->
+            <Button
+                android:id="@+id/next_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:backgroundTint="@color/black"
+                android:elevation="0dp"
+                android:padding="12dp"
+                android:text="Tiếp tục"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

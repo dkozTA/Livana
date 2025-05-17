@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,20 +61,17 @@ public class ExploreFragment extends Fragment {
 
         // Initialize empty list and adapter
         postList = new ArrayList<>();
+        fullPostList = new ArrayList<>();
         postAdapter = new PostAdapter(getContext(), postList, false);
         recyclerView.setAdapter(postAdapter);
 
         // Create repository instance to interact with Firebase
         propertyRepository = new PropertyRepository(requireContext());
         // Start fetching data
+//        Log.d("ExploreFragment", "Starting data fetch");
         fetchBackendData();
 
-        postList = new ArrayList<>();
-        fullPostList = new ArrayList<>();
-        postAdapter = new PostAdapter(getContext(), postList, false);
-        recyclerView.setAdapter(postAdapter);
-
-// Bắt sự kiện khi người dùng nhập vào search bar
+        // Bắt sự kiện khi người dùng nhập vào search bar
         searchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -114,6 +112,7 @@ public class ExploreFragment extends Fragment {
                             String propertyType = property.property_type.toString();
                             int maxGuest = property.max_guess;
                             int bedRooms = property.rooms.bedRooms;
+                           /*
                             String livingRoomStatus = property.rooms.livingRooms.toString();
                             String kitchenStatus = property.rooms.kitchen.toString();
 
@@ -128,13 +127,16 @@ public class ExploreFragment extends Fragment {
                             if ("available".equalsIgnoreCase(kitchenStatus)) {
                                 livingRoomText = " · phòng bếp";
                             }
+                            */
 
                             // Ghép chuỗi mô tả chi tiết
-                            String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
+                            //String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
 
-
+                            String detail = "Để tạm ở đây cho đỡ lỗi thôi bro, nhớ sửa lại nhé, living room và kitchen sẽ là int nhé ông bạn";
                             // Create new Post object with property data
                             Post post = new Post(
+                                    property.getId(),
+                                    property.getHost_id(),
                                     title,                    // title
                                     property.getMainPhoto(),               // placeholder image
                                     property.name,                        // address string
@@ -147,6 +149,9 @@ public class ExploreFragment extends Fragment {
                                     property.amenities,
                                     property.sub_photos
                             );
+//                            Log.d("ExploreFragment", "Creating post with ID: " + property.getId() +
+//                                    ", Title: " + title);
+
                             postList.add(post);
                             fullPostList.add(post);
                         }

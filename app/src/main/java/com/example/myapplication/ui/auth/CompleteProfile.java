@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
+import com.example.myapplication.data.Repository.Notification.NotificationRepository;
 import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.activities.MainActivity;
 import com.google.android.material.textfield.TextInputLayout;
@@ -25,12 +26,14 @@ public class CompleteProfile extends AppCompatActivity {
 
     private AuthRepository authRepository;
     private UserRepository userRepository;
+    private NotificationRepository notificationRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.complete_profile);
 
+        notificationRepository = new NotificationRepository(this);
         authRepository = new AuthRepository(this);
         final String uID = authRepository.getUserUid();
         userRepository = new UserRepository(this);
@@ -54,6 +57,7 @@ public class CompleteProfile extends AppCompatActivity {
                     // Here you would typically save the data to your backend/database
                     userRepository.createUser(user,
                             unused -> {
+                                notificationRepository.fetchFCMToken(uID);
                                 Toast.makeText(CompleteProfile.this, "Profile update successfully!", Toast.LENGTH_SHORT).show();
                                 goToMain();
                             },

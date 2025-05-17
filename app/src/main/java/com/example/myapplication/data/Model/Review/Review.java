@@ -9,6 +9,8 @@ public class Review {
     public String property_id;
     public String content;
 
+    public Review() {};
+
     public Review(String booking_id, String property_id, int point, String content) {
         this.id = UUID.randomUUID().toString();
         this.point = point;

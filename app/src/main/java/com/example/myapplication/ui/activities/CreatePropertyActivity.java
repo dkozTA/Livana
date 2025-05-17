@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.interfaces.IStepValidator;
 import com.example.myapplication.ui.misc.PropertyViewModel;
 import com.google.android.material.button.MaterialButton;
@@ -58,13 +60,15 @@ public class CreatePropertyActivity extends AppCompatActivity {
     private void NextStep() {
         Fragment current = navigator.getChildFragmentManager().getFragments().get(0);
         if (stepIndex >= TOTAL_STEP - 1) {
-            nextButton.setText("Hoàn thành");
 
-
+            PropertyRepository propertyRepository = new PropertyRepository(this);
+            propertyRepository.add
 
             return;
         }
-        
+
+        if (stepIndex + 1 == TOTAL_STEP - 1) nextButton.setText("Hoàn thành");
+
         if (current instanceof IStepValidator) {
             String warning = null;
             if (((IStepValidator) current).validate(warning)) {
@@ -80,6 +84,8 @@ public class CreatePropertyActivity extends AppCompatActivity {
 
     private void PrevStep() {
         Fragment current = navigator.getChildFragmentManager().getFragments().get(0);
+        nextButton.setText("Tiếp theo");
+
         if (stepIndex <= 0) return;
 
         if (current instanceof IStepValidator) {

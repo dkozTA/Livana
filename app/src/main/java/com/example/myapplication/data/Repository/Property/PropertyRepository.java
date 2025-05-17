@@ -7,24 +7,30 @@ import android.os.Build;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
+import com.example.myapplication.data.Repository.User.UserRepository;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class PropertyRepository {
     private final FirebaseFirestore db;
     private final StorageRepository storageRepository;
     private final String COLLECTION_NAME = "properties"; // Tên collection trong Firestore
-
+    
     public PropertyRepository(Context context) {
         this.db = FirebaseService.getInstance(context).getFireStore();
         this.storageRepository = new StorageRepository(context);
@@ -59,9 +65,10 @@ public class PropertyRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    public void updateProperty(String id, Property updatedProperty, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+    public void updateProperty(String oldProperty_ID, Property updatedProperty, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        updatedProperty.id = oldProperty_ID;
         db.collection(COLLECTION_NAME)
-                .document(id)
+                .document(oldProperty_ID)
                 .set(updatedProperty)
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
@@ -73,6 +80,19 @@ public class PropertyRepository {
                     double avg_rating = property.avg_ratings;
                     double total_point = avg_rating * property.total_reviews;
                     double new_avg_rating = (total_point + point) / (property.total_reviews + 1);
+                    db.collection(COLLECTION_NAME).document(id).update("avg_ratings", new_avg_rating)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(onFailure);
+                },
+                onFailure);
+    }
+
+    public void updatePropertyAvgRatingWhenReviewModified(String id, int old_point, int new_point ,OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getPropertyById(id,
+                property -> {
+                    double avg_rating = property.avg_ratings;
+                    double total_point = avg_rating * property.total_reviews;
+                    double new_avg_rating = (total_point + new_point - old_point) / (property.total_reviews);
                     db.collection(COLLECTION_NAME).document(id).update("avg_ratings", new_avg_rating)
                             .addOnSuccessListener(onSuccess)
                             .addOnFailureListener(onFailure);
@@ -155,32 +175,133 @@ public class PropertyRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    // Lưu theo định dạng dd-MM-yyyy - Front end check xem ngày Start có lớn hơn ngày End không
-    public void updateBookedDate(String propertyId, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        Set<String> bookedDates = new HashSet<>();
+    private List<String> generateDateSeries(String startDay, String endDate) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            onFailure.onFailure(new Exception("Version is not supported"));
-            return;
+            return null;
         }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        List<String> dateSeries = new ArrayList<>();
+
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-            LocalDate start = LocalDate.parse(startDate, formatter);
+            LocalDate start = LocalDate.parse(startDay, formatter);
             LocalDate end = LocalDate.parse(endDate, formatter);
 
-            while (!start.isAfter(end)) {
-                bookedDates.add(start.format(formatter));
-                start = start.plusDays(1);
+            // Kiểm tra nếu ngày bắt đầu sau ngày kết thúc
+            if (start.isAfter(end)) {
+                return dateSeries; // Trả về danh sách rỗng
             }
 
-            // Cập nhật vào Firestore
-            db.collection(COLLECTION_NAME)
-                    .document(propertyId)
-                    .update("booked_date", FieldValue.arrayUnion(bookedDates.toArray()))
-                    .addOnSuccessListener(onSuccess)
-                    .addOnFailureListener(onFailure);
-
-        } catch (Exception e) {
-            onFailure.onFailure(e);
+            // Lặp từ ngày bắt đầu đến ngày kết thúc
+            while (!start.isAfter(end)) {
+                dateSeries.add(start.format(formatter));
+                start = start.plusDays(1); // Tăng thêm 1 ngày
+            }
+        } catch (DateTimeParseException e) {
+            System.err.println("Invalid date format. Please use dd-MM-yyyy.");
         }
+
+        return dateSeries;
     }
+
+    private boolean validateBookedDate(List<String> existingDates, List<String> targetDates) {
+        // Tạo Set để tối ưu việc kiểm tra tồn tại
+        Set<String> existingDateSet = new HashSet<>(existingDates);
+
+        // Nếu danh sách targetDates rỗng (ngày không hợp lệ hoặc startDate > endDate)
+        if (targetDates.isEmpty()) {
+            return false;
+        }
+
+        // Kiểm tra từng ngày trong targetDates
+        for (String date : targetDates) {
+            if (existingDateSet.contains(date)) {
+                return false; // Có ngày đã đặt → không hợp lệ
+            }
+        }
+
+        return true; // Không có ngày nào trùng → hợp lệ
+    }
+
+
+    // Lưu theo định dạng dd-MM-yyyy - Front end check xem ngày Start có lớn hơn ngày End không
+    public void updateBookedDate(String propertyId, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getPropertyById(propertyId,
+                property -> {
+                    List<String> dateSeries = this.generateDateSeries(startDate, endDate);
+                    if(dateSeries == null) {
+                        onFailure.onFailure(new Exception("Can not generate booked Date"));
+                    } else {
+                        if(dateSeries.isEmpty()) {
+                            onFailure.onFailure(new Exception("Can not generate booked Date"));
+                        } else {
+                            if (validateBookedDate(property.booked_date, dateSeries)) {
+                                this.db.collection(COLLECTION_NAME).document(propertyId)
+                                        .update("booked_date", FieldValue.arrayUnion(dateSeries.toArray()))
+                                        .addOnSuccessListener(onSuccess)
+                                        .addOnFailureListener(onFailure);
+                            } else {
+                                onFailure.onFailure(new Exception("Booked date is invalid"));
+                            }
+                        }
+                    }
+                },
+                e -> {
+                    onFailure.onFailure(new Exception("Property ID is invalid"));
+                });
+    }
+
+    /*
+    public void removeBookedDate(String propertyID, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        List<String> dates = this.getDateRange(startDate, endDate);
+        this.db.collection("properties")
+                .document(propertyID)
+                .update("booked_date", FieldValue.arrayRemove(dates.toArray()))
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+    */
+
+    public void clearBookedDates(String propertyId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        db.collection("properties").document(propertyId)
+                .update("booked_date", new ArrayList<String>())
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
+    public void removeBookedDates(String propertyId, String checkIn, String checkOut, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        // Fetch property, remove dates in range [checkIn, checkOut] from booked_date, and update
+        db.collection("properties").document(propertyId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    List<String> bookedDates = (List<String>) documentSnapshot.get("booked_date");
+                    if (bookedDates == null) bookedDates = new ArrayList<>();
+                    List<String> toRemove = getDateRange(checkIn, checkOut); // implement this utility
+                    bookedDates.removeAll(toRemove);
+                    db.collection("properties").document(propertyId)
+                            .update("booked_date", bookedDates)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(onFailure);
+                })
+                .addOnFailureListener(onFailure);
+    }
+
+    // Utility to get all dates between checkIn and checkOut (inclusive) in dd-MM-yyyy format
+    private List<String> getDateRange(String start, String end) {
+        List<String> dates = new ArrayList<>();
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            Date startDate = sdf.parse(start);
+            Date endDate = sdf.parse(end);
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(startDate);
+            while (!cal.getTime().after(endDate)) {
+                dates.add(sdf.format(cal.getTime()));
+                cal.add(Calendar.DATE, 1);
+            }
+        } catch (Exception e) {
+            // handle parse error
+        }
+        return dates;
+    }
+
+
 }

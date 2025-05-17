@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.data.Model.Auth.AuthLogin;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
+import com.example.myapplication.data.Repository.Notification.NotificationRepository;
 import com.example.myapplication.ui.activities.MainActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextView tvForgotPassword;
     private UserRepository userRepository;
     private AuthRepository authRepository;
+    private NotificationRepository notificationRepository;
     private static final int RC_GOOGLE_SIGN_IN = 1001;
     private GoogleSignInClient googleSignInClient;
     private SignInButton btnGoogleSignIn;
@@ -49,8 +51,10 @@ public class LoginActivity extends AppCompatActivity {
 
         authRepository = new AuthRepository(this);
         userRepository = new UserRepository(this);
+        notificationRepository = new NotificationRepository(this);
 
         if (authRepository.checkLogin()) {
+            notificationRepository.fetchFCMToken(authRepository.getUserUid());
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -136,6 +140,8 @@ public class LoginActivity extends AppCompatActivity {
             goToCompleteProfile(fbUser);
             Toast.makeText(this, "Tài khoản mới đăng kí thành công", Toast.LENGTH_SHORT).show();
         } else {
+            assert fbUser != null;
+            notificationRepository.fetchFCMToken(fbUser.getUid());
             goToMain();
         }
     }
@@ -178,6 +184,7 @@ public class LoginActivity extends AppCompatActivity {
                         userRepository.getUserByUid(uid,
                                 userData -> {
                                     // Login thành công, chuyển sang MainActivity
+                                    notificationRepository.fetchFCMToken(uid);
                                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                     startActivity(intent);

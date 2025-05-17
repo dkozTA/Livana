@@ -112,6 +112,7 @@ public class SetPicturesFragment extends Fragment implements IStepValidator {
             // Kiểm tra và yêu cầu quyền trước khi mở gallery
             if (checkAndRequestPermissions()) {
                 // Mở gallery chọn một ảnh
+                Log.d("Test","Mo gallery");
                 Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 pickImageLauncher.launch(intent);
             }
