@@ -3,8 +3,11 @@ package com.example.myapplication.ui.activities;
 import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +22,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.viewpager2.widget.ViewPager2;
@@ -33,16 +37,32 @@ import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.google.firebase.auth.FirebaseAuth;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.MarkerOptions;
+import org.w3c.dom.Text;
+
+import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
-public class HouseDetailActivity extends AppCompatActivity {
+public class HouseDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
     private ImageButton heartButton;
     private Post post;
 
     //doi mau 
     private boolean isTopBarWhite = false;
+
+    private MapView miniMap;
+    private GoogleMap mMap;
+    private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +94,23 @@ public class HouseDetailActivity extends AppCompatActivity {
             }
         });
 
+        Bundle mapViewBundle = null;
+        if (savedInstanceState != null) {
+            mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        }
+        miniMap = findViewById(R.id.miniMapView);
+        miniMap.onCreate(mapViewBundle);
+        miniMap.getMapAsync(this);
+
+        //Set clickable cho mapView mở Large Map
+        View mapClick = findViewById(R.id.mapClick);
+        mapClick.setClickable(true);
+        mapClick.setOnClickListener(v -> {
+            Intent intent = new Intent(HouseDetailActivity.this, LargeMapDetailActivity.class);
+            intent.putExtra("location", post.getLocation());
+            intent.putExtra("name", post.getTitle());
+            startActivity(intent);
+        });
 
         post = getIntent().getParcelableExtra("post");
         if (post != null) {
@@ -265,4 +302,93 @@ public class HouseDetailActivity extends AppCompatActivity {
         Toast.makeText(this, "Cảm ơn bạn đã đánh giá!", Toast.LENGTH_SHORT).show();
     }
 
+    //MapView setup
+    @Override
+    protected void onResume() {
+        super.onResume();
+        miniMap.onResume();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        miniMap.onStart();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        miniMap.onStop();
+    }
+
+    @Override
+    protected void onPause() {
+        miniMap.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        miniMap.onDestroy();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        miniMap.onLowMemory();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+        if (mapViewBundle == null) {
+            mapViewBundle = new Bundle();
+            outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
+        }
+
+        miniMap.onSaveInstanceState(mapViewBundle);
+    }
+
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+
+        showDestination();
+
+        try {
+            boolean success = mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                            this, R.raw.map_style));
+        } catch (Resources.NotFoundException e) {
+            e.printStackTrace();
+        }
+
+        // Tắt tất cả tương tác người dùng
+        googleMap.getUiSettings().setAllGesturesEnabled(false);
+        googleMap.getUiSettings().setZoomControlsEnabled(false);
+        googleMap.getUiSettings().setScrollGesturesEnabled(false);
+    }
+
+    private void showDestination() {
+        String locationName = post.getLocation();
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
+
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                LatLng location = new LatLng(address.getLatitude(), address.getLongitude());
+
+                mMap.addMarker(new MarkerOptions().position(location).title(locationName));
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
+            } else {
+                Toast.makeText(this, "Không tìm thấy vị trí đích", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Lỗi khi tìm tọa độ đích", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

@@ -36,7 +36,7 @@
             android:resource="@array/preloaded_fonts" />
         
            <activity
-                android:name=".ui.activities.CreatePropertyActivity"
+                android:name=".ui.auth.LoginActivity"
                 android:exported="true">
                 <intent-filter>
                     <action android:name="android.intent.action.MAIN" />
@@ -62,6 +62,11 @@
 
         <activity
             android:name=".ui.activities.HouseDetailActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.activities.LargeMapDetailActivity"
             android:exported="false">
         </activity>
 
