@@ -102,6 +102,7 @@ public class ExploreFragment extends Fragment {
                             String propertyType = property.property_type.toString();
                             int maxGuest = property.max_guess;
                             int bedRooms = property.rooms.bedRooms;
+                           /*
                             String livingRoomStatus = property.rooms.livingRooms.toString();
                             String kitchenStatus = property.rooms.kitchen.toString();
 
@@ -116,11 +117,12 @@ public class ExploreFragment extends Fragment {
                             if ("available".equalsIgnoreCase(kitchenStatus)) {
                                 livingRoomText = " · phòng bếp";
                             }
+                            */
 
                             // Ghép chuỗi mô tả chi tiết
-                            String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
+                            //String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
 
-
+                            String detail = "Để tạm ở đây cho đỡ lỗi thôi bro, nhớ sửa lại nhé, living room và kitchen sẽ là int nhé ông bạn";
                             // Create new Post object with property data
                             Post post = new Post(
                                     property.getId(),

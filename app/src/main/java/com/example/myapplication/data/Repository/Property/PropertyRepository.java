@@ -30,7 +30,7 @@ public class PropertyRepository {
     private final FirebaseFirestore db;
     private final StorageRepository storageRepository;
     private final String COLLECTION_NAME = "properties"; // Tên collection trong Firestore
-
+    
     public PropertyRepository(Context context) {
         this.db = FirebaseService.getInstance(context).getFireStore();
         this.storageRepository = new StorageRepository(context);

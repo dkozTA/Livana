@@ -20,6 +20,8 @@ public class PostConverter {
         String propertyType = property.property_type.toString();
         int maxGuest = property.max_guess;
         int bedRooms = property.rooms.bedRooms;
+
+        /*
         String livingRoomStatus = property.rooms.livingRooms.toString();
         String kitchenStatus = property.rooms.kitchen.toString();
 
@@ -34,9 +36,11 @@ public class PostConverter {
         if ("available".equalsIgnoreCase(kitchenStatus)) {
             livingRoomText = " · phòng bếp";
         }
-
+        */
         // Ghép chuỗi mô tả chi tiết
-        String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
+        //String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
+        String detail = "Để tạm ở đây cho đỡ lỗi thôi bro, nhớ sửa lại nhé, living room và kitchen sẽ là int nhé ông bạn";
+
         return new Post(
                 property.id,
                 property.getHost_id(),
