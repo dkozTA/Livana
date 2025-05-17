@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.AmenityStatus;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Model.Property.Rooms;
@@ -35,7 +36,13 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
     private PropertyViewModel viewModel;
 
     NumberSelectorView numBedroom;
+    NumberSelectorView numLivingroom;
+    NumberSelectorView numKitchen;
     NumberSelectorView maxGuess;
+
+
+    RecyclerView amenityRecycler;
+    AmenitySetupAdapter adapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -45,7 +52,7 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
         maxGuess = view.findViewById(R.id.maxGuess);
 
         //Amenity setup
-        RecyclerView amenityRecycler = view.findViewById(R.id.amenityRecycler);
+        amenityRecycler = view.findViewById(R.id.amenityRecycler);
         amenityRecycler.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         List<Amenity> amenityList = Arrays.asList(
@@ -59,7 +66,7 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
                 new Amenity("BBQ", R.drawable.ic_outdoor_grill, AmenityStatus.Hidden)
         );
 
-        AmenitySetupAdapter adapter = new AmenitySetupAdapter(amenityList);
+        adapter = new AmenitySetupAdapter(amenityList);
         amenityRecycler.setAdapter(adapter);
 
         viewModel = new ViewModelProvider(requireActivity()).get(PropertyViewModel.class);
@@ -76,15 +83,50 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
 
         numBedroom.setCount(property.getRooms().bedRooms);
         maxGuess.setCount(property.getMax_guess());
+        //need count for living room and kitchen
 
         //amenities
 
+        if (property.getAmenities() != null) {
+            Amenities am = property.getAmenities();
+            List<Amenity> amenityList = Arrays.asList(
+                    new Amenity("TV", R.drawable.ic_tv, am.tv),
+                    new Amenity("Wi-Fi", R.drawable.ic_wifi, am.wifi),
+                    new Amenity("Thú cưng", R.drawable.ic_pets, am.petAllowance),
+                    new Amenity("Hồ bơi", R.drawable.ic_pool, am.pool),
+                    new Amenity("Máy giặt", R.drawable.ic_bed, am.washingMachine),
+                    new Amenity("Bữa sáng", R.drawable.ic_free_breakfast, am.breakfast),
+                    new Amenity("Máy lạnh", R.drawable.ic_airconditioner, am.airConditioner),
+                    new Amenity("BBQ", R.drawable.ic_outdoor_grill, am.bbq)
+            );
+
+            adapter = new AmenitySetupAdapter(amenityList);
+            amenityRecycler.setAdapter(adapter);
+        }
 
     }
 
     @Override
     public void save() {
+        Property newValue = viewModel.getPropertyData().getValue();
+        if(newValue == null) newValue = new Property();
 
+        newValue.rooms = new Rooms(numBedroom.getCount(), AmenityStatus.Hidden, AmenityStatus.Hidden);
+
+        //amenities
+        List<Amenity> amList = adapter.GetAmenities();
+        newValue.amenities = new Amenities(
+                amList.get(0).status,
+                amList.get(0).status,
+                amList.get(0).status,
+                amList.get(0).status,
+                amList.get(0).status,
+                amList.get(0).status,
+                amList.get(0).status,
+                amList.get(0).status,
+                "more",
+                "rule"
+        );
     }
 
     @Override

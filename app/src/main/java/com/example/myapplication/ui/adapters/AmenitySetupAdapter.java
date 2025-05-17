@@ -55,6 +55,8 @@ public class AmenitySetupAdapter extends RecyclerView.Adapter<AmenitySetupAdapte
         SelectorButton hideButton;
         SelectorButton existButton;
 
+        int position;
+
         Amenity amenity;
         public AmenityViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -105,6 +107,7 @@ public class AmenitySetupAdapter extends RecyclerView.Adapter<AmenitySetupAdapte
             this.amenity = amenity;
             text.setText(amenity.name);
             iconView.setImageResource(amenity.iconResId);
+            this.position = position;
 
             SetState(amenity.status);
         }

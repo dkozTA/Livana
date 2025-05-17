@@ -25,6 +25,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -69,6 +70,8 @@ public class SetPicturesFragment extends Fragment implements IStepValidator {
         mainRemovedButton.setOnClickListener(v -> {
             pickImageButton.setVisibility(View.VISIBLE);
             mainPhotoInclude.setVisibility(View.GONE);
+
+            mainPhoto = null;
         });
 
 
@@ -126,8 +129,9 @@ public class SetPicturesFragment extends Fragment implements IStepValidator {
             }
         });
 
-        updateDisplay(true);
-        updateDisplay(false);
+        viewModel = new ViewModelProvider(requireActivity()).get(PropertyViewModel.class);
+
+        applyData();
 
         return view;
     }

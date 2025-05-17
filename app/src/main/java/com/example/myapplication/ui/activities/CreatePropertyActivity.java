@@ -18,17 +18,21 @@ import com.google.android.material.button.MaterialButton;
 import java.util.List;
 
 public class CreatePropertyActivity extends AppCompatActivity {
-    private static final int TOTAL_STEP = 4;
+    private static final int TOTAL_STEP = 5;
     private PropertyViewModel viewModel;
     private NavHostFragment navigator;
     private NavController navController;
+
+    MaterialButton nextButton;
+    MaterialButton prevButton;
 
     private int stepIndex = 0;
 
     private final int[] stepNextTrans = {
             R.id.t01,
             R.id.t12,
-            R.id.t23
+            R.id.t23,
+            R.id.t34
     };
 
     @Override
@@ -44,8 +48,8 @@ public class CreatePropertyActivity extends AppCompatActivity {
         if(navigator != null) navController = navigator.getNavController();
 
 
-        MaterialButton nextButton = findViewById(R.id.nextButton);
-        MaterialButton prevButton = findViewById(R.id.prevButton);
+        nextButton = findViewById(R.id.nextButton);
+        prevButton = findViewById(R.id.prevButton);
 
         nextButton.setOnClickListener(v -> NextStep());
         prevButton.setOnClickListener(v -> PrevStep());
@@ -53,7 +57,13 @@ public class CreatePropertyActivity extends AppCompatActivity {
 
     private void NextStep() {
         Fragment current = navigator.getChildFragmentManager().getFragments().get(0);
-        if (stepIndex >= TOTAL_STEP - 1) return;
+        if (stepIndex >= TOTAL_STEP - 1) {
+            nextButton.setText("Hoàn thành");
+
+
+
+            return;
+        }
         
         if (current instanceof IStepValidator) {
             String warning = null;
