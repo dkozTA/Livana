@@ -30,6 +30,24 @@ public class Property {
     public Date created_at;
     public Date updated_at;
 
+    @Override
+    public String toString() {
+        return "Property{" +
+                "id='" + id + '\'' +
+                ", host_id='" + host_id + '\'' +
+                ", name='" + name + '\'' +
+                ", property_type=" + (property_type != null ? property_type.toString() : "null") +
+                ", status=" + (status != null ? status.toString() : "null") +
+                ", rooms=" + (rooms != null ? rooms.toString() : "null") +
+                ", max_guess=" + max_guess +
+                ", amenities=" + (amenities != null ? amenities.toString() : "null") +
+                ", main_photo='" + main_photo + '\'' +
+                ", normal_price=" + normal_price +
+                ", weekend_price=" + weekend_price +
+                ", holiday_price=" + holiday_price +
+                '}';
+    }
+
     public Property() {};
 
     public Property(String host_id, String name, PropertyType property_type, PropertyStatus status,

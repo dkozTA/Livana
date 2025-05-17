@@ -12,11 +12,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Enum.PropertyStatus;
+import com.example.myapplication.data.Model.Property.Property;
+import com.example.myapplication.data.Repository.Auth.AuthRepository;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.interfaces.IStepValidator;
 import com.example.myapplication.ui.misc.PropertyViewModel;
 import com.google.android.material.button.MaterialButton;
 
+import java.util.Date;
 import java.util.List;
 
 public class CreatePropertyActivity extends AppCompatActivity {
@@ -59,27 +63,40 @@ public class CreatePropertyActivity extends AppCompatActivity {
 
     private void NextStep() {
         Fragment current = navigator.getChildFragmentManager().getFragments().get(0);
-        if (stepIndex >= TOTAL_STEP - 1) {
-
-            PropertyRepository propertyRepository = new PropertyRepository(this);
-            propertyRepository.add
-
-            return;
-        }
-
-        if (stepIndex + 1 == TOTAL_STEP - 1) nextButton.setText("Hoàn thành");
 
         if (current instanceof IStepValidator) {
             String warning = null;
             if (((IStepValidator) current).validate(warning)) {
                 ((IStepValidator) current).save();
                 Toast.makeText(this, "Validate Successfully", Toast.LENGTH_SHORT).show();
-                navController.navigate(stepNextTrans[stepIndex]);
-                stepIndex++;
+
+                if (stepIndex >= TOTAL_STEP - 1) {
+                    Property property = viewModel.getPropertyData().getValue();
+
+                    AuthRepository auth = new AuthRepository(this);
+                    property.host_id = auth.getUserUid();
+                    property.created_at = new Date();
+                    property.updated_at = new Date();
+                    property.status = PropertyStatus.Active;
+                    PropertyRepository propertyRepository = new PropertyRepository(this);
+                    propertyRepository.addProperty(property, this,
+                            unused -> {
+                                Toast.makeText(this, "Add Property success", Toast.LENGTH_SHORT).show();
+                            }, e -> {
+                                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+
+                    Log.d("Property", viewModel.getPropertyData().getValue().toString());
+                } else {
+                    navController.navigate(stepNextTrans[stepIndex]);
+                    stepIndex++;
+                }
             } else {
 
             }
         }
+
+        if (stepIndex + 1 == TOTAL_STEP - 1) nextButton.setText("Hoàn thành");
     }
 
     private void PrevStep() {

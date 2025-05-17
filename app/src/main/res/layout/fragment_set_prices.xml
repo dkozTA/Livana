@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
                 android:fontFamily="@font/roboto_bold"
-                android:text="Giá ngày thường (VND/đêm)"
+                android:text="Giá ngày thường (một đêm)"
                 android:textColor="#353535"
                 android:textSize="22sp" />
 
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
                 android:fontFamily="@font/roboto_bold"
-                android:text="Giá cuối tuần (VND/đêm)"
+                android:text="Giá cuối tuần (một đêm)"
                 android:textColor="#353535"
                 android:textSize="22sp" />
 
@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
                 android:fontFamily="@font/roboto_bold"
-                android:text="Giá ngày lễ (VND/đêm)"
+                android:text="Giá ngày lễ (một đêm)"
                 android:textColor="#353535"
                 android:textSize="22sp" />
 
@@ -146,6 +146,48 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/holidayPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_vnd"
+                    android:drawableTint="#404040"
+                    android:fontFamily="@font/afacad_medium"
+                    android:inputType="numberDecimal"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="10dp"
+                    android:textColor="#1B1B1B"
+                    android:textSize="22sp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp"
+                android:fontFamily="@font/roboto_bold"
+                android:text="Mức đặt cọc"
+                android:textColor="#353535"
+                android:textSize="22sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="35dp"
+                app:boxBackgroundMode="outline"
+                app:boxCornerRadiusBottomEnd="10dp"
+                app:boxCornerRadiusBottomStart="10dp"
+                app:boxCornerRadiusTopEnd="10dp"
+                app:boxCornerRadiusTopStart="10dp"
+                app:boxStrokeColor="#E94E82"
+                app:boxStrokeWidth="1.5dp"
+                app:counterTextColor="@color/black"
+                app:cursorColor="#1A1A1A"
+                app:hintTextColor="@color/black">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/deposit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_vnd"

@@ -22,6 +22,7 @@ public class SetPricesFragment extends Fragment implements IStepValidator {
     private EditText normalPrice;
     private EditText weekendPrice;
     private EditText holidayPrice;
+    private EditText deposit;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class SetPricesFragment extends Fragment implements IStepValidator {
         normalPrice = view.findViewById(R.id.normalPrice);
         weekendPrice = view.findViewById(R.id.weekendPrice);
         holidayPrice = view.findViewById(R.id.holidayPrice);
+        deposit = view.findViewById(R.id.deposit);
 
         applyData();
         return view;
@@ -45,6 +47,7 @@ public class SetPricesFragment extends Fragment implements IStepValidator {
             normalPrice.setText(String.valueOf(property.getNormal_price()));
             weekendPrice.setText(String.valueOf(property.getWeekend_price()));
             holidayPrice.setText(String.valueOf(property.getHoliday_price()));
+            deposit.setText(String.valueOf(property.getDeposit()));
         }
     }
 
@@ -56,11 +59,12 @@ public class SetPricesFragment extends Fragment implements IStepValidator {
         newValue.normal_price = Float.parseFloat(String.valueOf(normalPrice.getText()));
         newValue.weekend_price = Float.parseFloat(String.valueOf(weekendPrice.getText()));
         newValue.holiday_price = Float.parseFloat(String.valueOf(holidayPrice.getText()));
+        newValue.deposit = Float.parseFloat(String.valueOf(deposit.getText()));
     }
 
     @Override
     public boolean validate(String warning) {
-        return false;
+        return true;
     }
 
     @Override

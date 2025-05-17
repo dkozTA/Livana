@@ -3,6 +3,7 @@ package com.example.myapplication.data.Repository.Property;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.FirebaseService;
