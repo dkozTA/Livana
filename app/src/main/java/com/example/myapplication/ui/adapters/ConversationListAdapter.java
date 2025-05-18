@@ -98,9 +98,9 @@ public class ConversationListAdapter extends RecyclerView.Adapter<ConversationLi
                 // Format the message prefix based on sender
                 String prefix;
                 if (lastMessage.sender_id.equals(conversation.host_id)) {
-                    prefix = "Host: ";
+                    prefix = "Chủ: ";
                 } else {
-                    prefix = "Guest: ";
+                    prefix = "Khách: ";
                 }
 
                 // Set the last message text
