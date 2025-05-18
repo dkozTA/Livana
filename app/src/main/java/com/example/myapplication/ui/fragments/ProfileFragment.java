@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragments;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,9 +39,10 @@ public class ProfileFragment extends Fragment {
     private CardView profileShowcase;
     private CardView personalInfoCard;
     private CardView loginSecurityCard;
-    private SwitchCompat roleSwitch;
+    private MaterialButton roleChangeButton;
     private UserRepository userRepository;
     private MaterialButton logoutButton;
+    private boolean isCurrentlyHost = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -58,7 +60,7 @@ public class ProfileFragment extends Fragment {
         profileShowcase = view.findViewById(R.id.profile_showcase);
         personalInfoCard = view.findViewById(R.id.personal_info_card);
         loginSecurityCard = view.findViewById(R.id.login_security_card);
-        roleSwitch = view.findViewById(R.id.role_switch);
+        roleChangeButton = view.findViewById(R.id.role_change_button);
         userRepository = new UserRepository(requireContext());
         logoutButton = view.findViewById(R.id.logout_button);
     }
@@ -78,11 +80,9 @@ public class ProfileFragment extends Fragment {
             Toast.makeText(requireContext(), "Login & Security Settings", Toast.LENGTH_SHORT).show();
         });
 
-        // Role switch listener
-        roleSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (buttonView.isPressed()) { // Only respond to user interactions, not programmatic changes
-                switchRole(isChecked);
-            }
+        // Role change button listener
+        roleChangeButton.setOnClickListener(v -> {
+            switchRole(!isCurrentlyHost);
         });
 
         // Logout button
@@ -96,15 +96,17 @@ public class ProfileFragment extends Fragment {
         });
     }
 
-    private void switchRole(boolean isHost) {
-        roleSwitch.setEnabled(false); // Disable switch to prevent further changes during processing
+    private void switchRole(boolean toHostRole) {
+        roleChangeButton.setEnabled(false); // Disable button to prevent multiple clicks
+
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
             Toast.makeText(requireContext(), "Please log in first", Toast.LENGTH_SHORT).show();
+            roleChangeButton.setEnabled(true);
             return;
         }
 
-        Role newRole = isHost ? Role.HOST : Role.USER;
+        Role newRole = toHostRole ? Role.HOST : Role.USER;
 
         // Show loading state
         Toast.makeText(requireContext(), "Changing role...", Toast.LENGTH_SHORT).show();
@@ -112,10 +114,10 @@ public class ProfileFragment extends Fragment {
         // Update user role in database
         userRepository.updateUserRole(currentUser.getUid(), newRole,
                 task -> {
-                    roleSwitch.setEnabled(true); // Re-enable switch after processing
+                    roleChangeButton.setEnabled(true); // Re-enable button after processing
                     if (task.isSuccessful()) {
                         // Role updated successfully, navigate to appropriate activity
-                        if (isHost) {
+                        if (toHostRole) {
                             Intent intent = new Intent(requireContext(), HostMainActivity.class);
                             startActivity(intent);
                             requireActivity().finish();
@@ -129,15 +131,12 @@ public class ProfileFragment extends Fragment {
                         Toast.makeText(requireContext(),
                                 "Failed to change role: " + task.getException().getMessage(),
                                 Toast.LENGTH_SHORT).show();
-
-                        // Reset switch to previous state
-                        roleSwitch.setChecked(!isHost);
                     }
                 }
         );
     }
 
-    // Sign out method
+    // Sign out method remains unchanged
     private void signOut() {
         FirebaseAuth.getInstance().signOut();
 
@@ -165,10 +164,9 @@ public class ProfileFragment extends Fragment {
                         profileName.setText(user.full_name);
                         profileRole.setText(user.role != null ? user.role.toString() : "USER");
 
-                        // Set switch state based on current role without triggering the listener
-                        boolean isHost = user.role == Role.HOST;
-                        roleSwitch.setChecked(isHost);
-                        roleSwitch.setText(isHost ? "Trở lại người dùng" : "Chuyển sang host");
+                        // Update role state and button text
+                        isCurrentlyHost = user.role == Role.HOST;
+                        updateRoleButtonText();
 
                         if (user.avatar_link != null && !user.avatar_link.isEmpty()) {
                             Glide.with(requireContext())
@@ -182,5 +180,13 @@ public class ProfileFragment extends Fragment {
                         "Failed to load profile: " + e.getMessage(),
                         Toast.LENGTH_SHORT).show()
         );
+    }
+
+    private void updateRoleButtonText() {
+        if (isCurrentlyHost) {
+            roleChangeButton.setText("Trở lại người dùng ⬅");
+        } else {
+            roleChangeButton.setText("Chuyển sang host ➡");
+        }
     }
 }
