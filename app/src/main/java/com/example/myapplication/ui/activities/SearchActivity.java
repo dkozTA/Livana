@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,6 +20,19 @@ import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
 
+    // Tab system variables
+    private LinearLayout tabHomes, tabServices, tabExperiences;
+    private LinearLayout homesContent, servicesContent, experiencesContent;
+    private ImageView iconHomes, iconServices, iconExperiences;
+    private TextView textHomes, textServices, textExperiences;
+
+    // Current active tab
+    private enum Tab {
+        HOMES, SERVICES, EXPERIENCES
+    }
+    private Tab currentTab = Tab.HOMES;
+
+    // Original variables for Homes tab
     private CardView cardName, cardWhere, cardWhen;
     private LinearLayout layoutNameExpanded, layoutWhereExpanded, layoutWhenExpanded;
     private LinearLayout cardInnerLayout, cardWhereInnerLayout, cardWhenInnerLayout;
@@ -37,89 +51,203 @@ public class SearchActivity extends AppCompatActivity {
 
         // Initialize views
         initializeViews();
+        setTabClickListeners();
         setClickListeners();
         setupDatePickers();
+
+        // Set initial tab state
+        switchToTab(Tab.HOMES);
     }
 
     /**
-     * Initialize all view components
+     * Initialize all view components including tabs
      */
     private void initializeViews() {
-        // Name section
+        // Tab views
+        tabHomes = findViewById(R.id.tabHomes);
+        tabServices = findViewById(R.id.tabServices);
+        tabExperiences = findViewById(R.id.tabExperiences);
+
+        // Content views
+        homesContent = findViewById(R.id.homesContent);
+        servicesContent = findViewById(R.id.servicesContent);
+        experiencesContent = findViewById(R.id.experiencesContent);
+
+        // Tab icons and texts
+        iconHomes = findViewById(R.id.iconHomes);
+        iconServices = findViewById(R.id.iconServices);
+        iconExperiences = findViewById(R.id.iconExperiences);
+        textHomes = findViewById(R.id.textHomes);
+        textServices = findViewById(R.id.textServices);
+        textExperiences = findViewById(R.id.textExperiences);
+
+        // Name section (Homes tab)
         cardName = findViewById(R.id.cardName);
         layoutNameExpanded = findViewById(R.id.layoutNameExpanded);
         cardInnerLayout = findViewById(R.id.cardInnerLayout);
 
-        // Where section
+        // Where section (Homes tab)
         cardWhere = findViewById(R.id.cardWhere);
         layoutWhereExpanded = findViewById(R.id.layoutWhereExpanded);
         cardWhereInnerLayout = findViewById(R.id.cardWhereInnerLayout);
 
-        // When section
+        // When section (Homes tab)
         cardWhen = findViewById(R.id.cardWhen);
         layoutWhenExpanded = findViewById(R.id.layoutWhenExpanded);
         cardWhenInnerLayout = findViewById(R.id.cardWhenInnerLayout);
         editTextDepartureDate = findViewById(R.id.editTextDepartureDate);
         editTextArrivalDate = findViewById(R.id.editTextArrivalDate);
 
-        // Set tomorrow as default for departure date
+        // Set tomorrow as default for arrival date
         arrivalCalendar.add(Calendar.DAY_OF_MONTH, 1);
     }
 
     /**
-     * Set up click listeners for all expandable cards
+     * Set up click listeners for tab switching
+     */
+    private void setTabClickListeners() {
+        tabHomes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchToTab(Tab.HOMES);
+            }
+        });
+
+        tabServices.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchToTab(Tab.SERVICES);
+            }
+        });
+
+        tabExperiences.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchToTab(Tab.EXPERIENCES);
+            }
+        });
+    }
+
+    /**
+     * Switch to the specified tab
+     */
+    private void switchToTab(Tab tab) {
+        currentTab = tab;
+
+        // Hide all content
+        homesContent.setVisibility(View.GONE);
+        servicesContent.setVisibility(View.GONE);
+        experiencesContent.setVisibility(View.GONE);
+
+        // Reset all tab styles
+        resetTabStyles();
+
+        // Show selected content and update tab style
+        switch (tab) {
+            case HOMES:
+                homesContent.setVisibility(View.VISIBLE);
+                setActiveTabStyle(textHomes, iconHomes);
+                break;
+            case SERVICES:
+                servicesContent.setVisibility(View.VISIBLE);
+                setActiveTabStyle(textServices, iconServices);
+                break;
+            case EXPERIENCES:
+                experiencesContent.setVisibility(View.VISIBLE);
+                setActiveTabStyle(textExperiences, iconExperiences);
+                break;
+        }
+    }
+
+    /**
+     * Reset all tab styles to inactive state
+     */
+    private void resetTabStyles() {
+        // Reset text colors
+        textHomes.setTextColor(getResources().getColor(android.R.color.darker_gray));
+        textServices.setTextColor(getResources().getColor(android.R.color.darker_gray));
+        textExperiences.setTextColor(getResources().getColor(android.R.color.darker_gray));
+
+        // Reset text styles
+        textHomes.setTypeface(null, android.graphics.Typeface.NORMAL);
+        textServices.setTypeface(null, android.graphics.Typeface.NORMAL);
+        textExperiences.setTypeface(null, android.graphics.Typeface.NORMAL);
+
+        // Reset icon colors (you might need to create different drawable resources for different states)
+        iconHomes.setColorFilter(getResources().getColor(android.R.color.darker_gray));
+        iconServices.setColorFilter(getResources().getColor(android.R.color.darker_gray));
+        iconExperiences.setColorFilter(getResources().getColor(android.R.color.darker_gray));
+    }
+
+    /**
+     * Set active style for the selected tab
+     */
+    private void setActiveTabStyle(TextView textView, ImageView iconView) {
+        // Set active text color and style
+        textView.setTextColor(getResources().getColor(R.color.colorAccent)); // You might need to define this color
+        textView.setTypeface(null, android.graphics.Typeface.BOLD);
+
+        // Set active icon color
+        iconView.setColorFilter(getResources().getColor(R.color.colorAccent));
+    }
+
+    /**
+     * Set up click listeners for all expandable cards (Homes tab only)
      */
     private void setClickListeners() {
-        // Set click listener for the Name card
-        cardName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleNameExpansion();
-            }
-        });
+        if (cardName != null) {
+            cardName.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleNameExpansion();
+                }
+            });
+        }
 
-        // Set click listener for the Where card
-        cardWhere.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleWhereExpansion();
-            }
-        });
+        if (cardWhere != null) {
+            cardWhere.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleWhereExpansion();
+                }
+            });
+        }
 
-        // Set click listener for the When card
-        cardWhen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toggleWhenExpansion();
-            }
-        });
+        if (cardWhen != null) {
+            cardWhen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    toggleWhenExpansion();
+                }
+            });
+        }
     }
 
     /**
      * Set up date pickers for departure and arrival date fields
      */
     private void setupDatePickers() {
-        // Setup date selection for departure date
-        editTextDepartureDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(true);
-            }
-        });
+        if (editTextDepartureDate != null) {
+            editTextDepartureDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDatePickerDialog(true);
+                }
+            });
+        }
 
-        // Setup date selection for arrival date
-        editTextArrivalDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(false);
-            }
-        });
+        if (editTextArrivalDate != null) {
+            editTextArrivalDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showDatePickerDialog(false);
+                }
+            });
+        }
     }
 
     /**
      * Show date picker dialog for selecting dates
-     *
-     * @param isDeparture true if picking departure date, false if picking arrival date
      */
     private void showDatePickerDialog(final boolean isDeparture) {
         Calendar calendar = isDeparture ? departureCalendar : arrivalCalendar;
@@ -173,6 +301,8 @@ public class SearchActivity extends AppCompatActivity {
      * Toggle the expansion of the Name search card
      */
     private void toggleNameExpansion() {
+        if (currentTab != Tab.HOMES) return;
+
         if (isNameExpanded) {
             // Collapse the name section
             layoutNameExpanded.setVisibility(View.GONE);
@@ -189,6 +319,8 @@ public class SearchActivity extends AppCompatActivity {
      * Toggle the expansion of the Where search card
      */
     private void toggleWhereExpansion() {
+        if (currentTab != Tab.HOMES) return;
+
         if (isWhereExpanded) {
             // Collapse the where section
             layoutWhereExpanded.setVisibility(View.GONE);
@@ -205,6 +337,8 @@ public class SearchActivity extends AppCompatActivity {
      * Toggle the expansion of the When search card
      */
     private void toggleWhenExpansion() {
+        if (currentTab != Tab.HOMES) return;
+
         if (isWhenExpanded) {
             // Collapse the when section
             layoutWhenExpanded.setVisibility(View.GONE);
