@@ -3,15 +3,20 @@ package com.example.myapplication.ui.activities;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.R;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
@@ -44,6 +49,26 @@ public class SearchActivity extends AppCompatActivity {
     private final Calendar arrivalCalendar = Calendar.getInstance();
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy", Locale.US);
 
+    // Homes Element
+    private TextInputEditText home_name;
+    private TextInputEditText city_name;
+    private TextInputEditText district_name;
+    private TextInputEditText departure_date;
+    private TextInputEditText arrival_date;
+
+    // Services Element
+    private SeekBar seekBarGuests;
+    private TextView guestNumberText;
+    private TextInputEditText priceText;
+    private CheckBox wifi, pool, bbq, petAllow;
+    // Sorting Element
+    private RadioGroup sortGroup;
+    private RadioButton price_asc, price_desc, rating_high, none;
+
+    // Others ELement
+    private TextView back, clearALL;
+    private MaterialButton search_button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +82,37 @@ public class SearchActivity extends AppCompatActivity {
 
         // Set initial tab state
         switchToTab(Tab.HOMES);
+
+        // xử lí dữ liệu nhập vào input
+        seekBarGuests = findViewById(R.id.seekBarGuests);
+        guestNumberText = findViewById(R.id.guest_number_max);
+
+
+        seekBarGuests.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Tránh giá trị 0 (nếu bạn không muốn cho 0 khách)
+                int guests = Math.max(progress, 1);
+                String text;
+                if (guests == seekBar.getMax()) {
+                    text = guests + "+ ";
+                } else {
+                    text = guests + " ";
+                }
+                guestNumberText.setText(text);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
 
     /**
