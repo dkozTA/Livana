@@ -4,10 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.example.myapplication.data.Enum.PropertyStatus;
 import com.example.myapplication.data.Model.Property.Amenities;
 
-import java.util.Date;
 import java.util.List;
 
 public class Post implements Parcelable {

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomRatingBarYellow" parent="Theme.AppCompat">
+        <item name="colorControlActivated">#FFD700</item> <!-- Màu vàng -->
+    </style>
+</resources>

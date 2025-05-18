@@ -39,7 +39,7 @@ public class WishlistFolderAdapter extends RecyclerView.Adapter<WishlistFolderAd
     @Override
     public void onBindViewHolder(@NonNull FolderViewHolder holder, int position) {
         WishlistFolder folder = folders.get(position);
-        holder.folderName.setText(folder.getName());
+        //holder.folderName.setText(folder.getName());
 
         // Show first 4 house images in a grid
         List<Post> posts = folder.getPosts();

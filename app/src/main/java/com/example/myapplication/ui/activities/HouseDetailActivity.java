@@ -25,13 +25,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.AmenityStatus;
+import com.example.myapplication.data.Model.Review.Review;
+import com.example.myapplication.data.Repository.Review.ReviewRepository;
 import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.adapters.PostImageAdapter;
+import com.example.myapplication.ui.adapters.ReviewAdapter;
 import com.example.myapplication.ui.misc.Amenity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.misc.WishlistManager;
@@ -57,7 +62,11 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
     private ImageButton heartButton;
     private Post post;
 
-    //doi mau 
+    RecyclerView reviewRecyclerView;
+
+    UserRepository userRepository;
+
+    //doi mau
     private boolean isTopBarWhite = false;
 
     private MapView miniMap;
@@ -117,7 +126,8 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             TextView title = findViewById(R.id.title);
             //ImageView postImageView = findViewById(R.id.post_image);
             ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
-
+            RatingBar ratingBar = findViewById(R.id.review_rating_bar);
+            TextView hostName = findViewById(R.id.host_name);
             TextView location = findViewById(R.id.location);
             TextView detail = findViewById(R.id.details);
             TextView dateRange = findViewById(R.id.date_range);
@@ -126,6 +136,7 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             TextView total_reviews = findViewById(R.id.total_reviews);
             TextView house_rule = findViewById(R.id.house_rule);
             TextView special_feature = findViewById(R.id.special_feature);
+            TextView titleRiview = findViewById(R.id.reviewTitle);
             showAmenities(post);
             heartButton = findViewById(R.id.heart_button);
 
@@ -143,8 +154,10 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             detail.setText(post.getDetail());
             dateRange.setText(post.getDateRange());
             price.setText(post.getNormal_price());
-            avg_ratings.setText(post.getAvgRatings() + " ⭐ ");
+            avg_ratings.setText(post.getAvgRatings() + "");
             total_reviews.setText(post.getTotalReview() + " đánh giá");
+            titleRiview.setText("Đánh giá (" + post.getTotalReview() + ")");
+            ratingBar.setRating((float) post.getAvgRatings());
             if (post.getAmenities() != null && post.getAmenities().houseRules != null) {
                 house_rule.setText(post.getAmenities().houseRules);
             } else {
@@ -160,7 +173,39 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             updateHeartIcon();
 
             heartButton.setOnClickListener(v -> handleHeartClick());
+
+            UserRepository userRepository = new UserRepository(this);
+            userRepository.getHostNameByPropertyID(post.getId(),
+                    hostNameStr -> {
+                        hostName.setText("Host: " + hostNameStr);
+                    },
+                    e -> {
+                        hostName.setText("Không rõ chủ nhà");
+                    }
+            );
+
+
+
+
+            reviewRecyclerView = findViewById(R.id.reviewRecyclerView);
+
+            ReviewRepository reviewRepository = new ReviewRepository(this); // hoặc getContext() nếu trong Fragment
+
+            reviewRepository.getAllReviewByPropertyID(post.getId(),
+                    reviews -> {
+                        Log.d("HouseDetail", "Loaded reviews: " + reviews.size());
+                        // Gán adapter để hiển thị trong RecyclerView
+                        ReviewAdapter review_adapter = new ReviewAdapter(reviews);
+                        reviewRecyclerView.setLayoutManager(new LinearLayoutManager(this)); // hoặc getContext()
+                        reviewRecyclerView.setAdapter(review_adapter);
+                    },
+                    e -> {
+                        Log.e("HouseDetail", "Failed to load reviews: " + e.getMessage());
+                    }
+            );
         }
+
+
 
         boolean showReview = getIntent().getBooleanExtra("show_review", false);
         String bookingId = getIntent().getStringExtra("booking_id");

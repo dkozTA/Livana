@@ -46,9 +46,6 @@ public class ExploreFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_explore, container, false);
 
         searchBar = view.findViewById(R.id.search_bar);
-//        searchBar.setOnClickListener(v -> {
-//            Toast.makeText(getContext(), "Search functionality coming soon", Toast.LENGTH_SHORT).show();
-//        });
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -67,8 +64,6 @@ public class ExploreFragment extends Fragment {
 
         // Create repository instance to interact with Firebase
         propertyRepository = new PropertyRepository(requireContext());
-        // Start fetching data
-//        Log.d("ExploreFragment", "Starting data fetch");
         fetchBackendData();
 
         // Bắt sự kiện khi người dùng nhập vào search bar
@@ -78,7 +73,7 @@ public class ExploreFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterPosts(s.toString()); // Gọi hàm lọc mỗi khi thay đổi
+                filterPosts(s.toString()); // Gọi hàm tim kiem mỗi khi thay đổi
             }
 
             @Override
@@ -171,6 +166,7 @@ public class ExploreFragment extends Fragment {
         );
     }
 
+    //ham tim kiem don gian
     private void filterPosts(String query) {
         postList.clear();
         if (query.isEmpty()) {

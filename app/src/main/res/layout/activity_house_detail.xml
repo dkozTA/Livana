@@ -69,35 +69,61 @@
                     android:layout_marginBottom="16dp"
                     android:background="#E0E0E0" />
 
-                <LinearLayout
+                <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
+                    android:paddingHorizontal="8dp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:weightSum="2">
+                    android:layout_marginBottom="10dp">
 
-                    <TextView
-                        android:id="@+id/avg_ratings"
-                        android:layout_width="0dp"
+                    <!-- Cụm bên trái: avg rating + RatingBar -->
+                    <LinearLayout
+                        android:id="@+id/left_section"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:textSize="16dp"
-                        tools:text="⭐ 4.8"/>
+                        android:orientation="horizontal"
+                        android:layout_alignParentStart="true"
+                        android:gravity="center_vertical">
 
+                        <TextView
+                            android:id="@+id/avg_ratings"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                            tools:text="4.8"
+                            android:layout_marginEnd="6dp" />
+
+                        <RatingBar
+                            android:id="@+id/review_rating_bar"
+                            style="@style/Widget.AppCompat.RatingBar.Indicator"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:rating="4.5"
+                            android:stepSize="0.5"
+                            android:scaleX="0.9"
+                            android:scaleY="0.9"
+                            android:theme="@style/CustomRatingBarYellow" />
+                    </LinearLayout>
+
+                    <!-- Bên phải: total reviews -->
                     <TextView
                         android:id="@+id/total_reviews"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:textStyle="bold"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
                         android:textColor="@color/black"
-                        android:textSize="16dp"
-                        tools:text="(120 đánh giá)"/>
-                </LinearLayout>
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        tools:text="(120 đánh giá)" />
+                </RelativeLayout>
+
+
+
 
 
                 <!-- ✅ Divider -->
@@ -127,14 +153,17 @@
                         android:layout_height="wrap_content">
 
                         <TextView
-                            android:text="Hosted by Jureeporn"
+                            android:id="@+id/host_name"
+                            android:text="Host: Jureeporn"
                             android:textStyle="bold"
+                            android:layout_marginTop="7dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:textSize="16dp"/>
 
                         <TextView
+                            android:id="@+id/hostYear"
                             android:text="Superhost · 2 years hosting"
                             android:textColor="#777777"
                             android:layout_width="wrap_content"
@@ -226,8 +255,6 @@
                     android:layout_marginBottom="16dp"
                     android:background="#E0E0E0" />
 
-
-
                 <TextView
                     android:text="Nội quy nhà"
                     android:textStyle="bold"
@@ -243,6 +270,33 @@
                     android:layout_height="wrap_content"
                     android:textColor="#777777"
                     android:textSize="16dp"/>
+
+                <!-- ✅ Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:background="#E0E0E0" />
+
+                <TextView
+                    android:id="@+id/reviewTitle"
+                    android:text="Đánh giá"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:textSize="20dp"/>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/reviewRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/reviewTitle"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:padding="8dp"/>
             </LinearLayout>
 
         </LinearLayout>
@@ -309,7 +363,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/reserve_button"
             android:layout_marginEnd="16dp">
 
             <TextView
