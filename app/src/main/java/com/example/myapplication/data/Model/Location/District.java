@@ -1,5 +1,9 @@
 package com.example.myapplication.data.Model.Location;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.common.internal.Objects;
+
 import java.util.List;
 
 public class District {
@@ -17,5 +21,11 @@ public class District {
         this.division_type = division_type;
         this.province_code = province_code;
         this.wards = wards;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return name;
     }
 }

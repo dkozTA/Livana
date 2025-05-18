@@ -3,11 +3,13 @@ package com.example.myapplication.data.Repository.Property;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
 
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
 import com.example.myapplication.data.Repository.User.UserRepository;
+import com.example.myapplication.ui.fragments.LinkValidator;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FieldValue;
@@ -25,12 +27,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 
 public class PropertyRepository {
     private final FirebaseFirestore db;
     private final StorageRepository storageRepository;
     private final String COLLECTION_NAME = "properties"; // Tên collection trong Firestore
-
+    
     public PropertyRepository(Context context) {
         this.db = FirebaseService.getInstance(context).getFireStore();
         this.storageRepository = new StorageRepository(context);
@@ -55,6 +58,7 @@ public class PropertyRepository {
         }, onFailure);
     }
 
+    /*
     public void addProperty(Property property, String main_image, List<String> sub_images, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         String propertyID = property.id;
         property.setMainPhoto(main_image);
@@ -63,6 +67,65 @@ public class PropertyRepository {
                 .set(property)
                 .addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
+    }
+     */
+
+    // Nếu main img là url rồi thì không cần làm gì
+    // Nếu main img là uri thì phải up lên storage
+    public void addProperty(Property property, Context context, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        String ID = UUID.randomUUID().toString();
+        property.id = ID;
+        List<String> sub_img = property.sub_photos;
+        String main_images = property.main_photo;
+
+        Uri main_img_uri = null;
+
+        // kiểm tra xem main img có phải uri không
+        if(LinkValidator.isValidUri(context, main_images)) {
+            main_img_uri = Uri.parse(main_images);
+        }
+
+        List<Uri> sub_photos_uri = new ArrayList<>();
+        List<String> sub_photos_url = new ArrayList<>();
+
+        for(String uri : sub_img) {
+            if(LinkValidator.isValidUri(context, uri)) {
+               sub_photos_uri.add(Uri.parse(uri));
+            } else {
+                sub_photos_url.add(uri);
+            }
+        }
+
+        if(main_img_uri != null) {
+            this.storageRepository.uploadMainImage(ID, main_img_uri, main_img_url -> {
+                property.setMainPhoto(main_img_url);
+                this.storageRepository.uploadHouseSubImages(ID, sub_photos_uri, sub_img_urls -> {
+                    sub_img_urls.addAll(sub_photos_url);
+                    property.setSub_photos(sub_img_urls);
+                    this.db.collection(COLLECTION_NAME).document(ID)
+                            .set(property)
+                            .addOnSuccessListener(onSuccess)
+                            .addOnFailureListener(e -> {
+                                onFailure.onFailure(new Exception("Can not add property into db"));
+                            });
+                }, e -> {
+                    onFailure.onFailure(new Exception("Can not upload Sub images to Storage"));
+                });
+            }, e-> {
+                onFailure.onFailure(new Exception("Can not upload main image to Storage"));
+            });
+        } else {
+            this.storageRepository.uploadHouseSubImages(ID, sub_photos_uri, sub_img_urls -> {
+                sub_img_urls.addAll(sub_photos_url);
+                property.setSub_photos(sub_img_urls);
+                this.db.collection(COLLECTION_NAME).document(ID)
+                        .set(property)
+                        .addOnSuccessListener(onSuccess)
+                        .addOnFailureListener(onFailure);
+            }, e -> {
+                onFailure.onFailure(new Exception("Can not upload Sub images to Storage"));
+            });
+        }
     }
 
     public void updateProperty(String oldProperty_ID, Property updatedProperty, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {

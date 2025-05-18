@@ -1,10 +1,12 @@
 package com.example.myapplication.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
@@ -13,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
+import com.example.myapplication.ui.activities.AIFindActivity;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.adapters.PostAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -26,6 +29,7 @@ import android.text.TextWatcher;
 public class ExploreFragment extends Fragment {
     private EditText searchBar;
     private RecyclerView recyclerView;
+    private Button aiSeachButton;
     // Store property data from backend
     private PropertyRepository propertyRepository;
     // List to hold UI post items
@@ -45,6 +49,12 @@ public class ExploreFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        aiSeachButton = view.findViewById(R.id.back);
+        aiSeachButton.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), AIFindActivity.class);
+            startActivity(intent);
+        });
 
         // Initialize empty list and adapter
         postList = new ArrayList<>();
@@ -97,6 +107,7 @@ public class ExploreFragment extends Fragment {
                             String propertyType = property.property_type.toString();
                             int maxGuest = property.max_guess;
                             int bedRooms = property.rooms.bedRooms;
+                           /*
                             String livingRoomStatus = property.rooms.livingRooms.toString();
                             String kitchenStatus = property.rooms.kitchen.toString();
 
@@ -111,11 +122,12 @@ public class ExploreFragment extends Fragment {
                             if ("available".equalsIgnoreCase(kitchenStatus)) {
                                 livingRoomText = " · phòng bếp";
                             }
+                            */
 
                             // Ghép chuỗi mô tả chi tiết
-                            String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
+                            //String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
 
-
+                            String detail = "Để tạm ở đây cho đỡ lỗi thôi bro, nhớ sửa lại nhé, living room và kitchen sẽ là int nhé ông bạn";
                             // Create new Post object with property data
                             Post post = new Post(
                                     property.getId(),

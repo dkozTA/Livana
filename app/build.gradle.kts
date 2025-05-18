@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     id("com.google.gms.google-services") version "4.4.2" apply false
+    alias(libs.plugins.google.android.libraries.mapsplatform.secrets.gradle.plugin)
 }
 
 android {
@@ -30,6 +31,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
@@ -40,7 +44,8 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation(libs.swiperefreshlayout)
+    implementation(libs.legacy.support.v4)
+    implementation(libs.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -55,6 +60,10 @@ dependencies {
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0")
 
 
+    // GG MAP
+    implementation ("com.google.android.gms:play-services-maps:18.0.1")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+
     // Retrofit
     // Thư viện Retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
@@ -66,10 +75,14 @@ dependencies {
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation("com.google.android.material:material:1.9.0")
 
+    // Mở Gallery
+    implementation ("androidx.core:core:1.9.0")
+
     implementation ("de.hdodenhof:circleimageview:3.1.0")
 
     // notification
     implementation("com.google.firebase:firebase-messaging")
+
 }
 
 apply(plugin = "com.google.gms.google-services")
