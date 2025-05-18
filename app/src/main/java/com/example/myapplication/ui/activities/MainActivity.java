@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.activities;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,7 +14,9 @@ import androidx.fragment.app.Fragment;
 
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Enum.Role;
 import com.example.myapplication.data.Repository.User.UserRepository;
+import com.example.myapplication.ui.auth.LoginActivity;
 import com.example.myapplication.ui.fragments.ExploreFragment;
 import com.example.myapplication.ui.fragments.MessagesFragment;
 import com.example.myapplication.ui.fragments.ProfileFragment;
@@ -21,13 +24,24 @@ import com.example.myapplication.ui.fragments.TripsFragment;
 import com.example.myapplication.ui.fragments.WishlistFragment;
 import com.example.myapplication.ui.misc.WishlistManager;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import androidx.core.splashscreen.SplashScreen;
 
 public class MainActivity extends AppCompatActivity {
     private UserRepository userRepository;
     private WishlistManager wishlistManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Install splash screen
+        SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
+
+        // Check user and redirect before showing content
+        userRepository = new UserRepository(this);
+        checkUserAndRedirect();
+
+        // Only set content view if we're not redirecting
         setContentView(R.layout.activity_main);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -116,6 +130,30 @@ public class MainActivity extends AppCompatActivity {
                 },
                 e -> {
                     Log.e("WishlistLoad", "Lỗi khi load wishlist", e);
+                }
+        );
+    }
+
+    private void checkUserAndRedirect() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null) {
+            // User is not logged in, go to login screen
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return;
+        }
+
+        userRepository.getUserByUid(currentUser.getUid(),
+                user -> {
+                    if (user != null && user.role == Role.HOST) {
+                        // We're in MainActivity and need to go to HostMainActivity
+                        startActivity(new Intent(this, HostMainActivity.class));
+                        finish();
+                    }
+                },
+                e -> {
+                    // Error occurred, just continue in current activity
                 }
         );
     }

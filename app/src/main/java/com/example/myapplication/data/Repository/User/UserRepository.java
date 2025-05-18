@@ -4,11 +4,13 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.myapplication.data.Enum.Role;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FieldValue;
@@ -313,5 +315,12 @@ public class UserRepository {
         }, e-> {
             onFailure.onFailure(new Exception("Can not get property"));
         });
+    }
+
+    public void updateUserRole(String uid, Role role, OnCompleteListener<Void> onCompleteListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(uid)
+                .update("role", role.toString())
+                .addOnCompleteListener(onCompleteListener);
     }
 }
