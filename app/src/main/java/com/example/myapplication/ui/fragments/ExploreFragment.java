@@ -16,6 +16,8 @@ import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.ui.activities.AIFindActivity;
+import com.example.myapplication.ui.activities.SearchActivity;
+import com.example.myapplication.ui.activities.SearchedPropertyList;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.adapters.PostAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -67,17 +69,9 @@ public class ExploreFragment extends Fragment {
         fetchBackendData();
 
         // Bắt sự kiện khi người dùng nhập vào search bar
-        searchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterPosts(s.toString()); // Gọi hàm tim kiem mỗi khi thay đổi
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+        searchBar.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), SearchActivity.class);
+            startActivity(intent);
         });
 
 
@@ -166,7 +160,7 @@ public class ExploreFragment extends Fragment {
         );
     }
 
-    //ham tim kiem don gian
+    /*ham tim kiem don gian
     private void filterPosts(String query) {
         postList.clear();
         if (query.isEmpty()) {
@@ -183,5 +177,7 @@ public class ExploreFragment extends Fragment {
         }
         postAdapter.notifyDataSetChanged();
     }
+
+     */
 
 }
