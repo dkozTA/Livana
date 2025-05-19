@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,8 +39,9 @@ public class ProfileFragment extends Fragment {
     private TextView profileName;
     private TextView profileRole;
     private CardView profileShowcase;
-    private CardView personalInfoCard;
-    private CardView loginSecurityCard;
+
+    private LinearLayout personalInfoCard;
+    private LinearLayout loginSecurityCard;
     private MaterialButton roleChangeButton;
     private UserRepository userRepository;
     private MaterialButton logoutButton;
