@@ -2,15 +2,12 @@ package com.example.myapplication.ui;
 
 import android.os.Bundle;
 import android.util.Log;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
-import com.example.myapplication.data.Model.Booking.Booking;
-import com.example.myapplication.data.Model.Review.Review;
-import com.example.myapplication.data.Repository.Booking.BookingRepository;
-import com.example.myapplication.data.Repository.Review.ReviewRepository;
+import com.example.myapplication.R;
+import com.example.myapplication.ui.fragments.host.PropertyManagementFragment;
 
 public class TestActivity extends AppCompatActivity {
     private static final String TAG = "SearchTestActivity";
@@ -19,6 +16,14 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_test);
 
+        // Load PropertyManagementFragment
+        if (savedInstanceState == null) {
+            PropertyManagementFragment fragment = new PropertyManagementFragment();
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.fragment_container, fragment);
+            transaction.commit();
+        }
     }
 }
