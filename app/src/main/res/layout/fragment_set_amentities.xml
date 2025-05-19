@@ -176,9 +176,54 @@
                 android:id="@+id/amenityRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="500dp"
-                android:overScrollMode="never"
                 android:nestedScrollingEnabled="false"
-                android:scrollbars="none" />
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="205dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/afacad_medium"
+                android:text="Thêm"
+                android:textColor="#404040"
+                android:textSize="21sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="30dp"
+                android:textColorHint="#A9A9A9"
+                app:boxStrokeColor="@color/text_input_layout"
+                app:cursorColor="#1F1F1F"
+                app:expandedHintEnabled="false"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false"
+                app:hintTextColor="#E94E82"
+                app:suffixTextColor="#E94E82">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/moreInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"
+                    android:fontFamily="@font/afacad"
+                    android:gravity="top|start"
+                    android:hint="Có xe đạp ..."
+                    android:inputType="textMultiLine"
+                    android:maxLength="1000"
+                    android:minLines="4"
+                    android:overScrollMode="always"
+                    android:paddingStart="14dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="14dp"
+                    android:scrollbars="vertical"
+                    android:textSize="20sp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
         </LinearLayout>
