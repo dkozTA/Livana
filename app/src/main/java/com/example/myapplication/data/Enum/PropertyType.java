@@ -39,4 +39,8 @@ public enum PropertyType {
                 return "Loại chỗ ở không xác định";
         }
     }
+
+    public String getValue() {
+        return name(); // hoặc toString(), đều cho kết quả tương tự
+    }
 }
