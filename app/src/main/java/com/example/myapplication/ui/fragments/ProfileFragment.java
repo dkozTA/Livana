@@ -141,13 +141,16 @@ public class ProfileFragment extends Fragment {
 
     // Sign out method remains unchanged
     private void signOut() {
+        // Sign out from Firebase
         FirebaseAuth.getInstance().signOut();
 
+        // Clear shared preferences
         requireContext().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
                 .edit()
                 .clear()
                 .apply();
 
+        // Navigate to login screen
         Intent intent = new Intent(requireContext(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

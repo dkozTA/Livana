@@ -10,8 +10,8 @@ import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -119,11 +119,8 @@ public class UserRepository {
                             .addOnSuccessListener(onSuccessListener)
                             .addOnFailureListener(onFailureListener);
                 },
-                onFailureListener
-        );
+                onFailureListener);
     }
-
-
     public void addToWishList(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
             onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
