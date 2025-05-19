@@ -4,11 +4,13 @@ import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.myapplication.data.Enum.Role;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Model.User.User;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FieldValue;
@@ -92,23 +94,36 @@ public class UserRepository {
                 .addOnFailureListener(onFailure);
     }
 
-    public void addRecentList(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
-            onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
-            return;
-        }
-        List<String> recent_list = new ArrayList<>();
-        this.getUserByUid(userUID,
+    public void addRecentList(String userId, String propertyId, OnSuccessListener<Void> onSuccessListener, OnFailureListener onFailureListener) {
+        getUserByUid(userId,
                 user -> {
-                    recent_list.addAll(user.recent_list);
-                    recent_list.remove(propertyID);
-                    recent_list.add(propertyID);
-                    this.db.collection("users").document(userUID).update("recent_list", recent_list)
-                            .addOnSuccessListener(onSuccess)
-                            .addOnFailureListener(onFailure);
+                    // Check if recent_list exists and initialize if null
+                    if (user.recent_list == null) {
+                        user.recent_list = new ArrayList<>();
+                    }
+
+                    // Remove propertyId if it already exists to avoid duplicates
+                    user.recent_list.remove(propertyId);
+
+                    // Add propertyId to the beginning of the list
+                    user.recent_list.add(0, propertyId);
+
+                    // Limit the size of recent_list to prevent it from growing too large
+//                    if (user.recent_list.size() > 10) {
+//                        user.recent_list = new ArrayList<>(user.recent_list.subList(0, 10));
+//                    }
+
+                    // Update the user document with the new recent_list
+                    db.collection("users").document(userId)
+                            .update("recent_list", user.recent_list)
+                            .addOnSuccessListener(onSuccessListener)
+                            .addOnFailureListener(onFailureListener);
                 },
-                onFailure);
+                onFailureListener
+        );
     }
+
+
     public void addToWishList(String userUID, String propertyID, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         if (userUID == null || userUID.isEmpty() || propertyID == null || propertyID.isEmpty()) {
             onFailure.onFailure(new IllegalArgumentException("userUID and propertyID cannot be null or empty"));
@@ -313,5 +328,12 @@ public class UserRepository {
         }, e-> {
             onFailure.onFailure(new Exception("Can not get property"));
         });
+    }
+
+    public void updateUserRole(String uid, Role role, OnCompleteListener<Void> onCompleteListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(uid)
+                .update("role", role.toString())
+                .addOnCompleteListener(onCompleteListener);
     }
 }

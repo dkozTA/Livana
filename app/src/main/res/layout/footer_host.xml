@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- res/layout/footer_host.xml -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -7,7 +7,7 @@
     android:elevation="10dp">
 
     <LinearLayout
-        android:id="@+id/footer"
+        android:id="@+id/footer_host"
         style="?android:attr/buttonBarStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,52 +19,37 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <Button
-            android:id="@+id/button_explore"
+            android:id="@+id/button_property_manage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
-            android:drawableTop="@drawable/ic_explore"
+            android:drawableTop="@drawable/ic_property_manage"
             android:drawablePadding="4dp"
             android:drawableTint="@color/footer_icon_color"
             android:padding="8dp"
-            android:text="Khám phá"
+            android:text="Nhà ở"
             android:textAllCaps="false"
             android:textColor="@color/footer_button_text_color"
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/button_wishlists"
+            android:id="@+id/button_booking_manage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
-            android:drawableTop="@drawable/ic_favorite"
+            android:drawableTop="@drawable/ic_booking_manage"
             android:drawablePadding="4dp"
             android:drawableTint="@color/footer_icon_color"
             android:padding="8dp"
-            android:text="Yêu thích"
+            android:text="Đặt phòng"
             android:textAllCaps="false"
             android:textColor="@color/footer_button_text_color"
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/button_trips"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
-            android:drawableTop="@drawable/ic_trip"
-            android:drawablePadding="4dp"
-            android:drawableTint="@color/footer_icon_color"
-            android:padding="8dp"
-            android:text="Chuyến đi"
-            android:textAllCaps="false"
-            android:textColor="@color/footer_button_text_color"
-            android:textSize="12sp" />
-
-        <Button
-            android:id="@+id/button_messages"
+            android:id="@+id/button_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -74,6 +59,21 @@
             android:drawableTint="@color/footer_icon_color"
             android:padding="8dp"
             android:text="Tin nhắn"
+            android:textAllCaps="false"
+            android:textColor="@color/footer_button_text_color"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/button_statistic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:drawableTop="@drawable/ic_statistic"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/footer_icon_color"
+            android:padding="8dp"
+            android:text="Thống kê"
             android:textAllCaps="false"
             android:textColor="@color/footer_button_text_color"
             android:textSize="12sp" />
