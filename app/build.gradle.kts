@@ -83,6 +83,9 @@ dependencies {
     // notification
     implementation("com.google.firebase:firebase-messaging")
 
+    // splash screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
 }
 
 apply(plugin = "com.google.gms.google-services")
