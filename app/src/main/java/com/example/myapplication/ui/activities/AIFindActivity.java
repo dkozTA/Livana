@@ -25,7 +25,7 @@ public class AIFindActivity extends AppCompatActivity {
 
         editTextRequest = findViewById(R.id.editTextRequest);
         btnSubmit = findViewById(R.id.btnSubmit);
-        resultContainer = findViewById(R.id.resultContainer);
+        //resultContainer = findViewById(R.id.resultContainer);
 
 
         btnSubmit.setOnClickListener(view -> {
