@@ -36,10 +36,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:fontFamily="@font/roboto_bold"
-                android:text="Giá ngày thường (một đêm)"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Giá ngày thường"
                 android:textColor="#353535"
-                android:textSize="22sp" />
+                android:textSize="21sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -48,7 +48,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="35dp"
+                android:layout_marginBottom="30dp"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"
@@ -67,21 +67,22 @@
                     android:drawableStart="@drawable/ic_vnd"
                     android:drawableTint="#404040"
                     android:fontFamily="@font/afacad_medium"
-                    android:inputType="numberDecimal"
-                    android:paddingStart="15dp"
+                    android:paddingStart="17dp"
+                    android:paddingTop="12dp"
                     android:paddingEnd="10dp"
+                    android:paddingBottom="12dp"
                     android:textColor="#1B1B1B"
-                    android:textSize="22sp" />
+                    android:textSize="24sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:fontFamily="@font/roboto_bold"
-                android:text="Giá cuối tuần (một đêm)"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Giá cuối tuần"
                 android:textColor="#353535"
-                android:textSize="22sp" />
+                android:textSize="21sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -90,7 +91,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="35dp"
+                android:layout_marginBottom="30dp"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"
@@ -110,20 +111,22 @@
                     android:drawableTint="#404040"
                     android:fontFamily="@font/afacad_medium"
                     android:inputType="numberDecimal"
-                    android:paddingStart="15dp"
+                    android:paddingStart="17dp"
+                    android:paddingTop="12dp"
                     android:paddingEnd="10dp"
+                    android:paddingBottom="12dp"
                     android:textColor="#1B1B1B"
-                    android:textSize="22sp" />
+                    android:textSize="24sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:fontFamily="@font/roboto_bold"
-                android:text="Giá ngày lễ (một đêm)"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Giá ngày lễ"
                 android:textColor="#353535"
-                android:textSize="22sp" />
+                android:textSize="21sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -132,7 +135,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="35dp"
+                android:layout_marginBottom="30dp"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"
@@ -152,20 +155,22 @@
                     android:drawableTint="#404040"
                     android:fontFamily="@font/afacad_medium"
                     android:inputType="numberDecimal"
-                    android:paddingStart="15dp"
+                    android:paddingStart="17dp"
+                    android:paddingTop="12dp"
                     android:paddingEnd="10dp"
+                    android:paddingBottom="12dp"
                     android:textColor="#1B1B1B"
-                    android:textSize="22sp" />
+                    android:textSize="24sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
-                android:fontFamily="@font/roboto_bold"
+                android:fontFamily="@font/roboto_medium"
                 android:text="Mức đặt cọc"
                 android:textColor="#353535"
-                android:textSize="22sp" />
+                android:textSize="21sp" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -174,7 +179,7 @@
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginBottom="35dp"
+                android:layout_marginBottom="30dp"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusBottomEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"
@@ -194,10 +199,12 @@
                     android:drawableTint="#404040"
                     android:fontFamily="@font/afacad_medium"
                     android:inputType="numberDecimal"
-                    android:paddingStart="15dp"
+                    android:paddingStart="17dp"
+                    android:paddingTop="12dp"
                     android:paddingEnd="10dp"
+                    android:paddingBottom="12dp"
                     android:textColor="#1B1B1B"
-                    android:textSize="22sp" />
+                    android:textSize="24sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
 

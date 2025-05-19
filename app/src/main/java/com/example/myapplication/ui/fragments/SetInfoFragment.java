@@ -21,12 +21,14 @@ import com.example.myapplication.data.Model.Location.District;
 import com.example.myapplication.data.Model.Location.Province;
 import com.example.myapplication.data.Model.Location.Ward;
 import com.example.myapplication.data.Model.Property.Address;
+import com.example.myapplication.data.Model.Property.Amenities;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Location.LocationAPIClient;
 import com.example.myapplication.data.Repository.Location.LocationAPIService;
 import com.example.myapplication.interfaces.IStepValidator;
 import com.example.myapplication.ui.misc.PropertyViewModel;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +38,9 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
 
     private LocationAPIClient locationApi;
     private AutoCompleteTextView actProvince, actDistrict, actWard;
+    private TextInputLayout actProvinceLayout, actDistrictLayout, actWardLayout;
     private EditText detailAddress;
+    private EditText houseRule;
     private TextInputEditText nameEditText;
     private Province selectedProvince = null;
     private District selectedDistrict = null;
@@ -72,6 +76,10 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
         if (value.name != null) {
             nameEditText.setText(value.name);
         }
+
+        if (value.amenities != null) {
+            houseRule.setText(value.amenities.houseRules);
+        }
     }
 
     @Override
@@ -80,6 +88,9 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
         if(newValue == null) newValue = new Property();
 
         newValue.name = nameEditText.getText().toString();
+
+        if (newValue.amenities == null) newValue.amenities = new Amenities();
+        newValue.amenities.houseRules = houseRule.getText().toString();
 
         if (isValidAddress()) {
             newValue.address = new Address(selectedProvince.code, selectedDistrict.code, selectedWard.code,
@@ -112,13 +123,13 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
                     android.R.layout.simple_dropdown_item_1line, provinces);
 
             actProvince.setAdapter(adapter);
-            actProvince.setEnabled(true);
+            actProvinceLayout.setEnabled(true);
         }
 
         @Override
         public void onError(String errorMessage) {
             actProvince.setAdapter(null);
-            actProvince.setEnabled(false);
+            actProvinceLayout.setEnabled(false);
         }
     }
 
@@ -130,13 +141,13 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
                     android.R.layout.simple_dropdown_item_1line, districts);
 
             actDistrict.setAdapter(adapter);
-            actDistrict.setEnabled(true);
+            actDistrictLayout.setEnabled(true);
         }
 
         @Override
         public void onError(String errorMessage) {
             actDistrict.setAdapter(null);
-            actDistrict.setEnabled(false);
+            actDistrictLayout.setEnabled(false);
         }
     }
 
@@ -148,13 +159,13 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
                     android.R.layout.simple_dropdown_item_1line, wards);
 
             actWard.setAdapter(adapter);
-            actWard.setEnabled(true);
+            actWardLayout.setEnabled(true);
         }
 
         @Override
         public void onError(String errorMessage) {
             actWard.setAdapter(null);
-            actWard.setEnabled(false);
+            actWardLayout.setEnabled(false);
         }
     }
 
@@ -166,14 +177,19 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
         actProvince = view.findViewById(R.id.actProvince);
         actDistrict = view.findViewById(R.id.actDistrict);
         actWard = view.findViewById(R.id.actWard);
-        detailAddress = view.findViewById(R.id.detailAdress);
+
+        actProvinceLayout = view.findViewById(R.id.ProvinceLayout);
+        actDistrictLayout = view.findViewById(R.id.DistrictLayout);
+        actWardLayout = view.findViewById(R.id.WardLayout);
+
+        detailAddress = view.findViewById(R.id.detailAddress);
         nameEditText = view.findViewById(R.id.nameEditText);
+        houseRule = view.findViewById(R.id.houseRule);
 
         locationApi = new LocationAPIClient();
 
-        actProvince.setEnabled(false);
-        actDistrict.setEnabled(false);
-        actWard.setEnabled(false);
+        actDistrictLayout.setEnabled(false);
+        actWardLayout.setEnabled(false);
 
         locationApi.getAllProvinces(new ProvincesCallbackHandler());
         setupProvince();
@@ -192,8 +208,8 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
             selectedWard = null;
             actDistrict.setText("");
             actWard.setText("");
-            actDistrict.setEnabled(false);
-            actWard.setEnabled(false);
+            actDistrictLayout.setEnabled(false);
+            actWardLayout.setEnabled(false);
 
             locationApi.getAllDistrictsInProvince(selectedProvince.code, new DistrictCallbackHandler());
         });
@@ -202,7 +218,7 @@ public class SetInfoFragment extends Fragment implements IStepValidator {
             selectedDistrict = (District) actDistrict.getAdapter().getItem(pos);
             selectedWard = null;
             actWard.setText("");
-            actWard.setEnabled(false);
+            actWardLayout.setEnabled(false);
 
             locationApi.getAllWardsInDistrict(selectedDistrict.code, new WardsCallbackHandler());
         });
