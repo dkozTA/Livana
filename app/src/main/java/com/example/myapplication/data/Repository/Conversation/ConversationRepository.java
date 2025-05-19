@@ -16,7 +16,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ConversationRepository {
     private final FirebaseFirestore db;
@@ -39,6 +42,11 @@ public class ConversationRepository {
                         Conversation conversation = document.toObject(Conversation.class);
                         conversationList.add(conversation);
                     }
+                    conversationList.sort((c1, c2) -> {
+                        Date time1 = c1.messages.get(c1.messages.size() - 1).time;
+                        Date time2 = c2.messages.get(c2.messages.size() - 1).time;
+                        return time2.compareTo(time1);
+                    });
                     onSuccess.onSuccess(conversationList);
                 })
                 .addOnFailureListener(onFailure);
@@ -52,6 +60,11 @@ public class ConversationRepository {
                         Conversation conversation = document.toObject(Conversation.class);
                         conversationList.add(conversation);
                     }
+                    conversationList.sort((c1, c2) -> {
+                        Date time1 = c1.messages.get(c1.messages.size() - 1).time;
+                        Date time2 = c2.messages.get(c2.messages.size() - 1).time;
+                        return time2.compareTo(time1);
+                    });
                     onSuccess.onSuccess(conversationList);
                 })
                 .addOnFailureListener(onFailure);
