@@ -1,7 +1,9 @@
 package com.example.myapplication.ui.activities;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +30,8 @@ public class CreatePropertyActivity extends AppCompatActivity {
     private PropertyViewModel viewModel;
     private NavHostFragment navigator;
     private NavController navController;
+
+    private AlertDialog loadingDialog;
 
     MaterialButton nextButton;
     MaterialButton prevButton;
@@ -79,10 +83,14 @@ public class CreatePropertyActivity extends AppCompatActivity {
                     property.updated_at = new Date();
                     property.status = PropertyStatus.Active;
                     PropertyRepository propertyRepository = new PropertyRepository(this);
+                    showLoadingDialog();
                     propertyRepository.addProperty(property, this,
                             unused -> {
-                                Toast.makeText(this, "Add Property success", Toast.LENGTH_SHORT).show();
-                            }, e -> {
+                                hideLoadingDialog();
+                                showSuccessDialog();
+                            },
+                            e -> {
+                                hideLoadingDialog();
                                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
 
@@ -118,4 +126,33 @@ public class CreatePropertyActivity extends AppCompatActivity {
     public boolean onSupportNavigateUp() {
         return navController.navigateUp() || super.onSupportNavigateUp();
     }
+
+    private void showLoadingDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setCancelable(false);
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_loading, null);
+        builder.setView(view);
+
+        loadingDialog = builder.create();
+        loadingDialog.show();
+    }
+
+    private void hideLoadingDialog() {
+        if (loadingDialog != null && loadingDialog.isShowing()) {
+            loadingDialog.dismiss();
+        }
+    }
+
+    private void showSuccessDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Thành công")
+                .setMessage("Phòng đã được tạo thành công!")
+                .setPositiveButton("OK", (dialog, which) -> {
+                    dialog.dismiss();
+                    finish(); // hoặc chuyển sang Activity khác
+                })
+                .show();
+    }
+
 }
