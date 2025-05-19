@@ -29,15 +29,7 @@ import com.example.myapplication.ui.auth.LoginActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.example.myapplication.R;
-import com.example.myapplication.data.Model.User.User;
-import com.example.myapplication.data.Repository.User.UserRepository;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import com.example.myapplication.data.Enum.Role;
-import android.app.AlertDialog;
+
 import android.content.Context;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -47,6 +39,7 @@ public class ProfileFragment extends Fragment {
     private TextView profileName;
     private TextView profileRole;
     private CardView profileShowcase;
+
     private LinearLayout personalInfoCard;
     private LinearLayout loginSecurityCard;
     private MaterialButton roleChangeButton;
@@ -157,6 +150,7 @@ public class ProfileFragment extends Fragment {
                 .clear()
                 .apply();
 
+        // Navigate to login screen
         Intent intent = new Intent(requireContext(), LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
