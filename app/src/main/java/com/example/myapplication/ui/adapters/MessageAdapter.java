@@ -62,9 +62,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         String senderRole;
         if (message.sender_id != null) {
             if (message.sender_id.equals(hostId)) {
-                senderRole = "Host";
+                senderRole = "Chủ";
             } else if (message.sender_id.equals(guestId)) {
-                senderRole = "Guest";
+                senderRole = "Khách";
             } else {
                 senderRole = "Unknown";
             }

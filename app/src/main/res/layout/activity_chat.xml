@@ -10,6 +10,7 @@
     <!-- Toolbar với thiết kế nâng cao -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
@@ -18,29 +19,31 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#1E88E5"
-            android:elevation="4dp">
+            android:background="@color/white"
+            android:elevation="4dp"
+            android:layout_margin="6dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                >
 
-                <ImageView
+                <ImageButton
                     android:id="@+id/btnBack"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@android:drawable/ic_menu_revert"
-                    android:padding="4dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/circle_white"
+                    android:contentDescription="Back"
+                    android:src="@drawable/ic_arrow_back"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:tint="#FFFFFF" />
+                    />
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/imgGroupAvatar"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@android:drawable/ic_menu_myplaces"
+                    android:id="@+id/conversationAvatar"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:layout_marginStart="8dp"
                     app:layout_constraintStart_toEndOf="@id/btnBack"
                     app:layout_constraintTop_toTopOf="parent"
@@ -54,8 +57,7 @@
                     android:orientation="vertical"
                     android:layout_marginStart="12dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintStart_toEndOf="@id/imgGroupAvatar"
-                    app:layout_constraintEnd_toStartOf="@id/btnMore"
+                    app:layout_constraintStart_toEndOf="@+id/conversationAvatar"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent">
 
@@ -64,7 +66,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Test Conversation"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/black"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:maxLines="1"
@@ -74,23 +76,23 @@
                         android:id="@+id/textSubtitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:maxLines="1"
                         android:text="2 participants • Online"
-                        android:textColor="#E1F5FE"
-                        android:textSize="14sp"
-                        android:maxLines="1"/>
+                        android:textColor="#836E6E"
+                        android:textSize="14sp" />
                 </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/btnMore"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:src="@android:drawable/ic_menu_more"
-                    android:padding="4dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginEnd="8dp"
-                    app:tint="#FFFFFF" />
+<!--                <ImageView-->
+<!--                    android:id="@+id/btnMore"-->
+<!--                    android:layout_width="32dp"-->
+<!--                    android:layout_height="32dp"-->
+<!--                    android:src="@android:drawable/ic_menu_more"-->
+<!--                    android:padding="4dp"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    android:layout_marginEnd="8dp"-->
+<!--                    app:tint="#FFFFFF" />-->
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
@@ -124,6 +126,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:padding="6dp">
 
             <ImageView
@@ -144,14 +147,16 @@
                 android:layout_height="wrap_content"
                 android:background="@null"
                 android:hint="Nhập tin nhắn..."
-                android:padding="12dp"
                 android:maxLines="4"
-                android:textSize="16sp"
                 android:minHeight="38dp"
-                app:layout_constraintStart_toEndOf="@id/btnAttachment"
+                android:padding="12dp"
+                android:textColor="@color/black"
+                android:textColorHint="#3A3232"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/buttonSend"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintStart_toEndOf="@id/btnAttachment"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/buttonSend"
@@ -169,8 +174,8 @@
                 app:iconSize="18dp"
                 app:iconGravity="textStart"
                 app:iconPadding="0dp"
-                app:iconTint="#FFFFFF"
-                android:backgroundTint="#2196F3" />
+                app:iconTint="@color/black"
+                android:backgroundTint="@color/light_gray" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
