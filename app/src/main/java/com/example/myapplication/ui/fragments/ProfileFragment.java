@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragments;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,9 +12,16 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+
 import com.bumptech.glide.Glide;
+import com.example.myapplication.R;
+import com.example.myapplication.data.Enum.Role;
+import com.example.myapplication.data.Repository.User.UserRepository;
+import com.example.myapplication.ui.activities.HostMainActivity;
+import com.example.myapplication.ui.activities.MainActivity;
 import com.example.myapplication.ui.activities.PersonalInfoActivity;
 import com.example.myapplication.ui.activities.ProfileInfoActivity;
 import com.google.android.material.button.MaterialButton;
