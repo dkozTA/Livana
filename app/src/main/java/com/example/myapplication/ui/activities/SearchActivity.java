@@ -1,7 +1,9 @@
 package com.example.myapplication.ui.activities;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
@@ -16,11 +18,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Model.Location.District;
+import com.example.myapplication.data.Model.Location.Province;
+import com.example.myapplication.data.Model.Property.SearchProperty;
+import com.example.myapplication.data.Model.Search.SearchField;
+import com.example.myapplication.data.Model.Search.SearchResponse;
+import com.example.myapplication.data.Repository.Location.LocationAPIClient;
+import com.example.myapplication.data.Repository.Search.PropertyAPIClient;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
@@ -59,6 +70,8 @@ public class SearchActivity extends AppCompatActivity {
     // Services Element
     private SeekBar seekBarGuests;
     private TextView guestNumberText;
+    private SeekBar seekBarBedroom;
+    private TextView bedroomNumberText;
     private TextInputEditText priceText;
     private CheckBox wifi, pool, bbq, petAllow;
     // Sorting Element
@@ -84,10 +97,17 @@ public class SearchActivity extends AppCompatActivity {
         switchToTab(Tab.HOMES);
 
         // xử lí dữ liệu nhập vào input
+        // Xử lí dữ liệu tab home
+        home_name = findViewById(R.id.editTextSearch);
+        city_name = findViewById(R.id.editTextCity);
+        district_name = findViewById(R.id.editTextDistrict);
+        departure_date = findViewById(R.id.editTextDepartureDate);
+        arrival_date = findViewById(R.id.editTextArrivalDate);
+
         seekBarGuests = findViewById(R.id.seekBarGuests);
         guestNumberText = findViewById(R.id.guest_number_max);
 
-
+        // Xử lí dữ liệu tab Services
         seekBarGuests.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -113,6 +133,325 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
+        seekBarBedroom = findViewById(R.id.seekBarBedroom);
+        bedroomNumberText = findViewById(R.id.bedroom_number_max);
+
+        seekBarBedroom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                // Tránh giá trị 0 (nếu bạn không muốn cho 0 khách)
+                int guests = Math.max(progress, 1);
+                String text;
+                if (guests == seekBar.getMax()) {
+                    text = guests + "+ ";
+                } else {
+                    text = guests + " ";
+                }
+                bedroomNumberText.setText(text);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        priceText = findViewById(R.id.editPriceSearch);
+        wifi = findViewById(R.id.checkbox_wifi);
+        pool = findViewById(R.id.checkbox_pool);
+        bbq = findViewById(R.id.checkbox_bbq);
+        petAllow = findViewById(R.id.checkbox_pet);
+
+        // Sort
+        sortGroup = findViewById(R.id.radioGroupSort);
+        price_asc = findViewById(R.id.radio_price_asc);
+        price_desc = findViewById(R.id.radio_price_desc);
+        rating_high = findViewById(R.id.radio_rating_high);
+        none = findViewById(R.id.radio_none);
+
+        // others
+        back = findViewById(R.id.backTextView);
+        clearALL = findViewById(R.id.textClearAll);
+        search_button = findViewById(R.id.buttonSearch);
+
+        search_button.setOnClickListener(v -> search());
+        clearALL.setOnClickListener(v -> clearAll());
+        back.setOnClickListener(v -> back());
+    }
+
+    private void search() {
+        // Tab Home
+        String homeName = home_name.getText().toString().trim();
+        String cityName = city_name.getText().toString().trim();
+        String districtName = district_name.getText().toString().trim();
+        String departureDate = departure_date.getText().toString().trim();
+        String arrivalDate = arrival_date.getText().toString().trim();
+
+        // Tab Services
+        int guestCount = seekBarGuests.getProgress();
+        if (guestCount == 0) guestCount = 1;
+
+        int bedroomCount = seekBarBedroom.getProgress();
+        if (bedroomCount == 0) bedroomCount = 1;
+
+        String maxPriceStr = priceText.getText().toString().trim();
+        boolean hasWifi = wifi.isChecked();
+        boolean hasPool = pool.isChecked();
+        boolean hasBbq = bbq.isChecked();
+        boolean allowsPet = petAllow.isChecked();
+
+        // Khởi tạo builder
+        SearchField.Builder builder = new SearchField.Builder();
+
+        // Counters để theo dõi các API call
+        final int[] apiCallsCompleted = {0};
+        final int totalApiCalls = (!cityName.isEmpty() ? 1 : 0) + (!districtName.isEmpty() ? 1 : 0);
+
+        // Nếu không có API calls cần thực hiện, thì build ngay
+        if (totalApiCalls == 0) {
+            SearchField searchField = buildSearchField(builder, homeName, guestCount, bedroomCount,
+                    maxPriceStr, departureDate, arrivalDate,
+                    hasWifi, hasPool, hasBbq, allowsPet,
+                    null, null);
+            performSearch(searchField);
+            return;
+        }
+
+        // Lists để lưu kết quả từ API
+        final List<Integer> cityCodesList = new ArrayList<>();
+        final List<Integer> districtCodesList = new ArrayList<>();
+
+        // Callback để check khi tất cả API calls hoàn thành
+        int finalGuestCount = guestCount;
+        int finalBedroomCount = bedroomCount;
+        Runnable checkCompletion = () -> {
+            if (apiCallsCompleted[0] == totalApiCalls) {
+                SearchField searchField = buildSearchField(builder, homeName, finalGuestCount, finalBedroomCount,
+                        maxPriceStr, departureDate, arrivalDate,
+                        hasWifi, hasPool, hasBbq, allowsPet,
+                        cityCodesList.isEmpty() ? null : cityCodesList,
+                        districtCodesList.isEmpty() ? null : districtCodesList);
+                performSearch(searchField);
+            }
+        };
+
+        // Tạo LocationAPIClient
+        LocationAPIClient locationAPIClient = new LocationAPIClient();
+
+        // Tìm kiếm city code nếu có cityName
+        if (!cityName.isEmpty()) {
+            locationAPIClient.searchProvinceByName(cityName, new LocationAPIClient.OnProvinceListCallback() {
+                @Override
+                public void onSuccess(List<Province> provinces) {
+                    for (Province province : provinces) {
+                        cityCodesList.add(province.code);
+                    }
+                    apiCallsCompleted[0]++;
+                    checkCompletion.run();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.e("SEARCH", "Error getting city codes: " + error);
+                    apiCallsCompleted[0]++;
+                    checkCompletion.run();
+                }
+            });
+        }
+
+        // Tìm kiếm district code nếu có districtName
+        if (!districtName.isEmpty()) {
+            locationAPIClient.searchDistrictByName(districtName, new LocationAPIClient.OnDistrictListCallback() {
+                @Override
+                public void onSuccess(List<District> districts) {
+                    int count = 0;
+                    for (District district : districts) {
+                        if(count < 10) {
+                            districtCodesList.add(district.code);
+                        }
+                        count++;
+                    }
+                    apiCallsCompleted[0]++;
+                    checkCompletion.run();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.e("SEARCH", "Error getting district codes: " + error);
+                    apiCallsCompleted[0]++;
+                    checkCompletion.run();
+                }
+            });
+        }
+    }
+
+    private SearchField buildSearchField(SearchField.Builder builder, String homeName,
+                                         int guestCount, int bedroomCount, String maxPriceStr,
+                                         String departureDate, String arrivalDate,
+                                         boolean hasWifi, boolean hasPool, boolean hasBbq,
+                                         boolean allowsPet, List<Integer> cityCodes,
+                                         List<Integer> districtCodes) {
+
+        // Chỉ thêm các giá trị không rỗng vào builder
+
+        // Property name
+        if (!homeName.isEmpty()) {
+            builder.propertyName(homeName);
+        }
+
+        // City codes
+        if (cityCodes != null && !cityCodes.isEmpty()) {
+            builder.cityCode(cityCodes);
+        }
+
+        // District codes
+        if (districtCodes != null && !districtCodes.isEmpty()) {
+            builder.districtCode(districtCodes);
+        }
+
+        // Guest count (luôn có giá trị >= 1)
+        builder.maxGuest(guestCount);
+
+        // Bedroom count (luôn có giá trị >= 1)
+        builder.bedRooms(bedroomCount);
+
+        // Price range
+        if (!maxPriceStr.isEmpty()) {
+            try {
+                double maxPrice = Double.parseDouble(maxPriceStr);
+                if (maxPrice > 0) {
+                    builder.priceRange(0, maxPrice); // min price = 0, max price từ input
+                }
+            } catch (NumberFormatException e) {
+                Log.w("SEARCH", "Invalid price format: " + maxPriceStr);
+            }
+        }
+
+        // Date range
+        if (!departureDate.isEmpty() && !arrivalDate.isEmpty()) {
+            builder.dateRange(departureDate, arrivalDate);
+        }
+
+        // Amenities - chỉ thêm những cái được check
+        if (hasWifi) {
+            builder.wifi(true);
+        }
+
+        if (hasPool) {
+            builder.pool(true);
+        }
+
+        if (hasBbq) {
+            builder.bbq(true);
+        }
+
+        if (allowsPet) {
+            builder.petAllowance(true);
+        }
+
+        // Default pagination
+        builder.pagination(0, 20);
+
+        return builder.build();
+    }
+
+    private void performSearch(SearchField searchField) {
+        String departureDate = searchField.getCheck_in_date();
+        String arrivalDate = searchField.getCheck_out_date();
+
+        if(departureDate != null) {
+            departureDate = departureDate.replace("/", "-");
+        }
+        if(arrivalDate != null) {
+            arrivalDate = arrivalDate.replace("/", "-");
+        }
+
+        searchField.setCheck_in_date(departureDate);
+        searchField.setCheck_out_date(arrivalDate);
+
+        /*
+        Log.d("SEARCH_RESULT", "=== SEARCH FIELD DETAILS ===");
+        Log.d("SEARCH_RESULT", "Property Name: " + searchField.getPropertyName());
+        Log.d("SEARCH_RESULT", "City Code: " + searchField.getCity_codes());
+        Log.d("SEARCH_RESULT", "District Code: " + searchField.getDistrict_codes());
+        Log.d("SEARCH_RESULT", "Max Guest: " + searchField.getMax_guest());
+        Log.d("SEARCH_RESULT", "Bed Rooms: " + searchField.getBed_rooms());
+        Log.d("SEARCH_RESULT", "Min Price: " + searchField.getMin_price());
+        Log.d("SEARCH_RESULT", "Max Price: " + searchField.getMax_price());
+        Log.d("SEARCH_RESULT", "Check In Date: " + searchField.getCheck_in_date());
+        Log.d("SEARCH_RESULT", "Check Out Date: " + searchField.getCheck_out_date());
+        Log.d("SEARCH_RESULT", "TV: " + searchField.isTv());
+        Log.d("SEARCH_RESULT", "Pet Allowance: " + searchField.isPetAllowance());
+        Log.d("SEARCH_RESULT", "Pool: " + searchField.isPool());
+        Log.d("SEARCH_RESULT", "Washing Machine: " + searchField.isWashingMachine());
+        Log.d("SEARCH_RESULT", "Breakfast: " + searchField.isBreakfast());
+        Log.d("SEARCH_RESULT", "BBQ: " + searchField.isBbq());
+        Log.d("SEARCH_RESULT", "WiFi: " + searchField.isWifi());
+        Log.d("SEARCH_RESULT", "Air Conditioner: " + searchField.isAirConditioner());
+        Log.d("SEARCH_RESULT", "Page: " + searchField.getPage());
+        Log.d("SEARCH_RESULT", "Hits Per Page: " + searchField.getHitsPerPage());
+        Log.d("SEARCH_RESULT", "========================");
+        In ra tất cả các trường của SearchField
+        Hà Nội
+        Ba Vì
+        Sóc Sơn
+         */
+
+        PropertyAPIClient propertyAPIClient = new PropertyAPIClient();
+        propertyAPIClient.searchProperties(searchField, new PropertyAPIClient.OnPropertyCallback() {
+            @Override
+            public void onSuccess(SearchResponse response) {
+                List<String> result_id = new ArrayList<>();
+                List<SearchProperty> hits = response.getResults().getHits();
+                for(SearchProperty property : hits) {
+                    result_id.add(property.getObjectID());
+                }
+                // Log.d("SEARCH ID", String.valueOf(result_id.size()));
+
+                Intent intent = new Intent(SearchActivity.this, SearchedPropertyList.class);
+                intent.putExtra(SearchedPropertyList.EXTRA_SEARCH_FIELD, searchField);
+                intent.putStringArrayListExtra(SearchedPropertyList.EXTRA_PROPERTY_IDS, (ArrayList<String>) result_id);
+                startActivity(intent);
+
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Log.e("SEARCH_RESULT", "Error searching properties: " + errorMessage);
+            }
+        });
+
+    }
+
+    private void clearAll() {
+        // Tab Home
+        home_name.setText("");
+        city_name.setText("");
+        district_name.setText("");
+        departure_date.setText("");
+        arrival_date.setText("");
+
+        // Tab Services
+        seekBarGuests.setProgress(10);
+        priceText.setText("");
+        wifi.setChecked(false);
+        pool.setChecked(false);
+        bbq.setChecked(false);
+        petAllow.setChecked(false);
+
+        // Sort
+        sortGroup.clearCheck();
+    }
+
+    private void back() {
+        Intent intent = new Intent(SearchActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish(); // optional: kết thúc activity hiện tại
     }
 
     /**

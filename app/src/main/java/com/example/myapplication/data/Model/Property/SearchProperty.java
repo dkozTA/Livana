@@ -16,9 +16,6 @@ public class SearchProperty {
     @SerializedName("district_code")
     private int district_code;
 
-    @SerializedName("ward_code")
-    private int ward_code;
-
     @SerializedName("max_guest")
     private int max_guest;
 
@@ -59,7 +56,7 @@ public class SearchProperty {
     public SearchProperty() {
     }
 
-    public SearchProperty(String propertyID, String propertyName, int city_code, int district_code, int ward_code,
+    public SearchProperty(String propertyID, String propertyName, int city_code, int district_code,
                           int max_guest, int bed_rooms, double price, List<String> bookedDate, boolean tv,
                           boolean petAllowance, boolean pool, boolean washingMachine, boolean breakfast,
                           boolean bbq, boolean wifi, boolean airConditioner) {
@@ -67,7 +64,6 @@ public class SearchProperty {
         this.propertyName = propertyName;
         this.city_code = city_code;
         this.district_code = district_code;
-        this.ward_code = ward_code;
         this.max_guest = max_guest;
         this.bed_rooms = bed_rooms;
         this.price = price;
@@ -87,7 +83,6 @@ public class SearchProperty {
         this.propertyName = property.getName();
         this.city_code = property.getAddress().city_code;
         this.district_code = property.getAddress().district_code;
-        this.ward_code = property.getAddress().ward_code;
         this.max_guest = property.getMax_guess();
         this.price = property.getNormal_price();
         this.bookedDate = property.getBooked_date();
@@ -117,10 +112,6 @@ public class SearchProperty {
 
     public int getDistrict_code() {
         return district_code;
-    }
-
-    public int getWard_code() {
-        return ward_code;
     }
 
     public int getMax_guest() {

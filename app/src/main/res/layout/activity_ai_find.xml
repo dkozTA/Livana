@@ -68,12 +68,13 @@
                 android:backgroundTint="#0F0F0F"
                 android:text="Gửi yêu cầu" />
 
-            <LinearLayout
-                android:id="@+id/resultContainer"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerAI"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="vertical" />
+                android:layout_marginTop="40dp"
+                android:nestedScrollingEnabled="false" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
