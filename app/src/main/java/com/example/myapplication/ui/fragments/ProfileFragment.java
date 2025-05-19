@@ -152,6 +152,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadUserProfile() {
+
+        profileName.setText("Đang tải...");
+        profileRole.setText("Đang tải...");
+        profileImage.setImageResource(R.drawable.photo1); // Use default image during loading
+
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
             Toast.makeText(requireContext(), "Please log in first", Toast.LENGTH_SHORT).show();
@@ -176,9 +181,13 @@ public class ProfileFragment extends Fragment {
                         }
                     }
                 },
-                e -> Toast.makeText(requireContext(),
+                e -> {
+                        profileName.setText("Tên người dùng");
+                        profileRole.setText("Vai trò");
+                        Toast.makeText(requireContext(),
                         "Failed to load profile: " + e.getMessage(),
-                        Toast.LENGTH_SHORT).show()
+                        Toast.LENGTH_SHORT).show();
+                }
         );
     }
 

@@ -208,7 +208,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/black"
         android:padding="16dp"
-        android:text="Chuyển sang host"
+        android:text="..."
         android:textColor="@color/white"
         app:cornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
