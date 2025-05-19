@@ -87,6 +87,7 @@ public class AmenitySetupAdapter extends RecyclerView.Adapter<AmenitySetupAdapte
         }
 
         public void SetState(AmenityStatus state) {
+            if (state == null) state = AmenityStatus.Hidden;
             amenity.status = state;
 
             ResetState();

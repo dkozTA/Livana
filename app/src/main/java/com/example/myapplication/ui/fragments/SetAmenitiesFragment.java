@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -40,9 +41,10 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
     NumberSelectorView numKitchen;
     NumberSelectorView maxGuess;
 
-
     RecyclerView amenityRecycler;
     AmenitySetupAdapter adapter;
+
+    EditText moreInfoEditText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +72,8 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
 
         adapter = new AmenitySetupAdapter(amenityList);
         amenityRecycler.setAdapter(adapter);
+
+        moreInfoEditText = view.findViewById(R.id.moreInfo);
 
         viewModel = new ViewModelProvider(requireActivity()).get(PropertyViewModel.class);
 
@@ -104,6 +108,8 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
                     new Amenity("BBQ", R.drawable.ic_outdoor_grill, am.bbq)
             );
 
+            moreInfoEditText.setText(am.more);
+
             adapter = new AmenitySetupAdapter(amenityList);
             amenityRecycler.setAdapter(adapter);
         }
@@ -121,7 +127,7 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
 
         //amenities
         List<Amenity> amList = adapter.GetAmenities();
-        newValue.amenities = new Amenities(
+        Amenities am = new Amenities(
                 amList.get(0).status,
                 amList.get(1).status,
                 amList.get(2).status,
@@ -130,9 +136,11 @@ public class SetAmenitiesFragment extends Fragment implements IStepValidator {
                 amList.get(5).status,
                 amList.get(6).status,
                 amList.get(7).status,
-                "more",
+                moreInfoEditText.getText().toString(),
                 "rule"
         );
+        if (newValue.amenities != null) am.houseRules = newValue.amenities.houseRules;
+        newValue.amenities = am;
 
         viewModel.setPropertyData(newValue);
     }
