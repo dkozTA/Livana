@@ -87,6 +87,11 @@
         </activity>
 
         <activity
+            android:name=".ui.activities.IncomeOverviewActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
             android:name=".ui.activities.LargeMapDetailActivity"
             android:exported="false">
         </activity>
