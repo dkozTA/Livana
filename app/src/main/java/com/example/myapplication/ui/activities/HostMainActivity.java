@@ -8,6 +8,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.ui.fragments.host.BookingManageFragment;
 import com.example.myapplication.ui.fragments.host.PropertyManageFragment;
 import com.example.myapplication.ui.fragments.host.HostMessageFragment;
+import com.example.myapplication.ui.fragments.host.PropertyManagementFragment;
 import com.example.myapplication.ui.fragments.host.StatisticFragment;
 import com.example.myapplication.ui.fragments.ProfileFragment;
 
@@ -27,7 +28,7 @@ public class HostMainActivity extends AppCompatActivity {
 
     private void setupFooterNavigation() {
         findViewById(R.id.button_property_manage).setOnClickListener(v -> {
-            loadFragment(new PropertyManageFragment());
+            loadFragment(new PropertyManagementFragment());
             updateButtonStates(R.id.button_property_manage);
         });
         findViewById(R.id.button_booking_manage).setOnClickListener(v -> {

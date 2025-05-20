@@ -47,8 +47,12 @@
         </activity>
 
         <activity
-            android:name=".ui.activities.ConversationListActivity"
+            android:name=".ui.activities.AIFindActivity"
             android:exported="true">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
 
         <activity
@@ -68,6 +72,11 @@
         </activity>
 
         <activity
+            android:name=".ui.activities.CreatePropertyActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
             android:name=".ui.activities.HouseDetailActivity"
             android:exported="false">
         </activity>
@@ -79,6 +88,11 @@
 
         <activity
             android:name=".ui.activities.LargeMapDetailActivity"
+            android:exported="false">
+        </activity>
+
+        <activity
+            android:name=".ui.activities.IncomeOverviewActivity"
             android:exported="false">
         </activity>
 

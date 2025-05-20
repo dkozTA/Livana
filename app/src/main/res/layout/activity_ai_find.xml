@@ -5,10 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <View
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:background="#FFFFFF" />
+        android:background="#FFFFFF">
+
+        <ImageButton
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#00FFFFFF"
+            android:src="@drawable/ic_arrow_back"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="19dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -67,6 +77,31 @@
                 android:layout_marginTop="12dp"
                 android:backgroundTint="#0F0F0F"
                 android:text="Gửi yêu cầu" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/detailButton"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_margin="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="10dp"
+                android:fontFamily="@font/roboto_medium"
+                android:padding="5dp"
+                android:text="Chi tiết"
+                android:textAlignment="center"
+                android:textColor="#EE282828"
+                android:textColorHighlight="#C1C1C1"
+                android:textStyle="bold"
+                app:backgroundTint="#00FFFFFF"
+                app:cornerRadius="20dp"
+                app:iconPadding="0dp"
+                app:iconTint="#FFFFFF"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="1.0"
+                app:strokeColor="#757575"
+                app:strokeWidth="1.5dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerAI"

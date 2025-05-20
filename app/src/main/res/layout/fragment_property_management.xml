@@ -24,14 +24,27 @@
             android:textStyle="bold"
             android:textColor="@color/text_primary" />
 
-        <ImageView
-            android:id="@+id/imageAddProperty"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_add"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:padding="4dp"
-            app:tint="@color/primary" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addButton"
+            android:layout_width="80dp"
+            android:layout_height="45dp"
+            android:fontFamily="@font/roboto_medium"
+            android:padding="5dp"
+            android:text="Thêm"
+            android:textAlignment="center"
+            android:textColor="#EE282828"
+            android:textColorHighlight="#C1C1C1"
+            android:textStyle="bold"
+            app:backgroundTint="#00FFFFFF"
+            app:cornerRadius="20dp"
+            app:iconPadding="0dp"
+            app:iconTint="#FFFFFF"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            app:strokeColor="#757575"
+            app:strokeWidth="1.5dp" />
 
     </LinearLayout>
 

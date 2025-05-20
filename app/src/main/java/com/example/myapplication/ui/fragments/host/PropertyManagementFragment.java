@@ -2,10 +2,12 @@ package com.example.myapplication.ui.fragments.host;
 
 // PropertyManagementFragment.java
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,6 +20,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
+import com.example.myapplication.ui.activities.CreatePropertyActivity;
 import com.example.myapplication.ui.adapters.PropertyAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +36,8 @@ public class PropertyManagementFragment extends Fragment {
     // Inject your repository/database class here
     private PropertyRepository propertyRepository;
     private String currentUserId; // Get this from SharedPreferences or Auth
+
+    private Button addButton;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -62,6 +67,12 @@ public class PropertyManagementFragment extends Fragment {
     private void initViews(View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        addButton = view.findViewById(R.id.addButton);
+
+        addButton.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), CreatePropertyActivity.class);
+            startActivity(intent);
+        });
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             loadProperties();

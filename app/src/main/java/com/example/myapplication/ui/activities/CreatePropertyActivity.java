@@ -40,6 +40,7 @@ public class CreatePropertyActivity extends AppCompatActivity {
 
     MaterialButton nextButton;
     MaterialButton prevButton;
+    MaterialButton exitButton;
 
     private int stepIndex = 0;
 
@@ -65,9 +66,11 @@ public class CreatePropertyActivity extends AppCompatActivity {
 
         nextButton = findViewById(R.id.nextButton);
         prevButton = findViewById(R.id.prevButton);
+        exitButton = findViewById(R.id.exitButton);
 
         nextButton.setOnClickListener(v -> NextStep());
         prevButton.setOnClickListener(v -> PrevStep());
+        exitButton.setOnClickListener(v -> finish());
     }
 
     private void NextStep() {
