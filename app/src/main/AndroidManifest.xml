@@ -56,6 +56,11 @@
         </activity>
 
         <activity
+            android:name=".ui.activities.AIResultActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
             android:name=".ui.activities.SearchActivity"
             android:exported="true">
         </activity>

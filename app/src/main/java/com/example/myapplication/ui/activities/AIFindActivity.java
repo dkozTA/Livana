@@ -83,16 +83,18 @@ public class AIFindActivity extends AppCompatActivity {
     }
 
     private void sendRequestToModel(String userInput) {
-        // Dùng Thread riêng để tránh block UI
         new Thread(() -> {
+            HttpURLConnection conn = null;
             try {
-                URL url = new URL("http://10.0.2.2:8000/extract_booking");  // Địa chỉ localhost từ Android Emulator
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                URL url = new URL("http://10.0.2.2:8000/extract_booking");
+                conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setDoOutput(true);
+                conn.setConnectTimeout(50000); // 10s timeout kết nối
+                conn.setReadTimeout(50000);    // 10s timeout đọc dữ liệu
 
-                // JSON gửi đi
+                // Gửi dữ liệu JSON
                 JSONObject jsonRequest = new JSONObject();
                 jsonRequest.put("text", userInput);
 
@@ -101,7 +103,7 @@ public class AIFindActivity extends AppCompatActivity {
                 os.flush();
                 os.close();
 
-                // Đọc phản hồi
+                // Nhận phản hồi
                 int responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     InputStream is = conn.getInputStream();
@@ -114,20 +116,32 @@ public class AIFindActivity extends AppCompatActivity {
                     reader.close();
                     is.close();
 
-                    parseAndDisplayResponse(response.toString());
+                    // Chuyển về UI Thread để hiển thị Toast
+                    runOnUiThread(() -> {
+                        Toast.makeText(this, "Kết nối thành công", Toast.LENGTH_SHORT).show();
+                        parseAndDisplayResponse(response.toString());
+                    });
                 } else {
-                    editTextRequest.setEnabled(true);
-                    btnSubmit.setEnabled(true);
-                    resultContainer.setVisibility(View.GONE);
-                    detailButton.setVisibility(View.GONE);
-
-                    Toast.makeText(this, "Lỗi kết nối: " , Toast.LENGTH_SHORT).show();
+                    runOnUiThread(() -> {
+                        editTextRequest.setEnabled(true);
+                        btnSubmit.setEnabled(true);
+                        resultContainer.setVisibility(View.GONE);
+                        detailButton.setVisibility(View.GONE);
+                        Toast.makeText(this, "Lỗi server: " + responseCode, Toast.LENGTH_SHORT).show();
+                    });
                 }
-
-                conn.disconnect();
+            } catch (SocketTimeoutException e) {
+                runOnUiThread(() -> Toast.makeText(this, "Mất kết nối: Timeout", Toast.LENGTH_SHORT).show());
+            } catch (IOException e) {
+                runOnUiThread(() -> Toast.makeText(this, "Lỗi mạng: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            } catch (JSONException e) {
+                runOnUiThread(() -> Toast.makeText(this, "Lỗi dữ liệu JSON", Toast.LENGTH_SHORT).show());
             } catch (Exception e) {
-                e.printStackTrace();
-                //showError("Lỗi: " + e.getMessage());
+                runOnUiThread(() -> Toast.makeText(this, "Lỗi không xác định", Toast.LENGTH_SHORT).show());
+            } finally {
+                if (conn != null) {
+                    conn.disconnect(); // Đảm bảo đóng kết nối
+                }
             }
         }).start();
     }
