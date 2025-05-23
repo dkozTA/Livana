@@ -22,12 +22,16 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PropertyRepository {
     private final FirebaseFirestore db;
@@ -366,5 +370,120 @@ public class PropertyRepository {
         return dates;
     }
 
+    public void getPropertySortedByPriceAsc(List<String> property_ids, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        if (property_ids == null || property_ids.isEmpty()) {
+            onFailure.onFailure(new Exception("Property IDs list is empty"));
+            return;
+        }
+
+        List<Property> properties = new ArrayList<>();
+        AtomicInteger completedCount = new AtomicInteger(0);
+        AtomicBoolean hasError = new AtomicBoolean(false);
+
+        for (String id : property_ids) {
+            getPropertyById(id,
+                    property -> {
+                        synchronized (properties) {
+                            if (!hasError.get()) {
+                                property.id = (id); // Set ID cho property
+                                properties.add(property);
+
+                                // Kiểm tra xem đã lấy hết tất cả property chưa
+                                if (completedCount.incrementAndGet() == property_ids.size()) {
+                                    // Sắp xếp theo giá tăng dần
+                                    properties.sort(Comparator.comparingDouble(p -> p.normal_price));
+
+                                    onSuccess.onSuccess(properties);
+                                }
+                            }
+                        }
+                    },
+                    exception -> {
+                        if (!hasError.getAndSet(true)) {
+                            // Chỉ gọi onFailure một lần
+                            onFailure.onFailure(exception);
+                        }
+                    }
+            );
+        }
+    }
+
+    public void getPropertySortedByPriceDesc(List<String> property_ids, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        if (property_ids == null || property_ids.isEmpty()) {
+            onFailure.onFailure(new Exception("Property IDs list is empty"));
+            return;
+        }
+
+        List<Property> properties = new ArrayList<>();
+        AtomicInteger completedCount = new AtomicInteger(0);
+        AtomicBoolean hasError = new AtomicBoolean(false);
+
+        for (String id : property_ids) {
+            getPropertyById(id,
+                    property -> {
+                        synchronized (properties) {
+                            if (!hasError.get()) {
+                                property.id = (id); // Set ID cho property
+                                properties.add(property);
+
+                                // Kiểm tra xem đã lấy hết tất cả property chưa
+                                if (completedCount.incrementAndGet() == property_ids.size()) {
+                                    // Sắp xếp theo giá giảm dần
+                                    properties.sort((p1, p2) ->
+                                            Double.compare(p2.normal_price, p1.normal_price));
+
+                                    onSuccess.onSuccess(properties);
+                                }
+                            }
+                        }
+                    },
+                    exception -> {
+                        if (!hasError.getAndSet(true)) {
+                            // Chỉ gọi onFailure một lần
+                            onFailure.onFailure(exception);
+                        }
+                    }
+            );
+        }
+    }
+
+    public void getPropertySortedByRating(List<String> property_ids, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        if (property_ids == null || property_ids.isEmpty()) {
+            onFailure.onFailure(new Exception("Property IDs list is empty"));
+            return;
+        }
+
+        List<Property> properties = new ArrayList<>();
+        AtomicInteger completedCount = new AtomicInteger(0);
+        AtomicBoolean hasError = new AtomicBoolean(false);
+
+        for (String id : property_ids) {
+            getPropertyById(id,
+                    property -> {
+                        synchronized (properties) {
+                            if (!hasError.get()) {
+                                property.id = (id); // Set ID cho property
+                                properties.add(property);
+
+                                // Kiểm tra xem đã lấy hết tất cả property chưa
+                                if (completedCount.incrementAndGet() == property_ids.size()) {
+                                    // Sắp xếp theo ratings giảm dần
+                                    properties.sort((p1, p2) ->
+                                            Double.compare(p2.avg_ratings, p1.avg_ratings));
+
+                                    onSuccess.onSuccess(properties);
+                                }
+                            }
+                        }
+                    },
+                    exception -> {
+                        if (!hasError.getAndSet(true)) {
+                            // Chỉ gọi onFailure một lần
+                            onFailure.onFailure(exception);
+                        }
+                    }
+            );
+        }
+    }
 
 }
