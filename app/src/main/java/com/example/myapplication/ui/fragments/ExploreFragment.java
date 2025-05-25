@@ -16,8 +16,11 @@ import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.ui.activities.AIFindActivity;
+import com.example.myapplication.ui.activities.SearchActivity;
+import com.example.myapplication.ui.activities.SearchedPropertyList;
 import com.example.myapplication.ui.misc.Post;
 import com.example.myapplication.ui.adapters.PostAdapter;
+import com.example.myapplication.utils.PostConverter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.ArrayList;
@@ -67,17 +70,9 @@ public class ExploreFragment extends Fragment {
         fetchBackendData();
 
         // Bắt sự kiện khi người dùng nhập vào search bar
-        searchBar.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filterPosts(s.toString()); // Gọi hàm tim kiem mỗi khi thay đổi
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+        searchBar.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), SearchActivity.class);
+            startActivity(intent);
         });
 
 
@@ -94,62 +89,8 @@ public class ExploreFragment extends Fragment {
                         // Clear existing posts
                         postList.clear();
                         fullPostList.clear();
-
-                        // Convert each Property to Post
-                        for (Property property : properties) {
-                            // Format price to display with $ symbol
-                            String formattedPrice = "₫" + String.format("%,.0f", property.getNormal_price()) + " cho 1 đêm";
-
-                            // Handle null address case
-                            String title = property.address.getDetailAddress() != null ?
-                                    property.address.getDetailAddress() : "No location";
-
-                            String propertyType = property.property_type.toString();
-                            int maxGuest = property.max_guess;
-                            int bedRooms = property.rooms.bedRooms;
-                           /*
-                            String livingRoomStatus = property.rooms.livingRooms.toString();
-                            String kitchenStatus = property.rooms.kitchen.toString();
-
-                            // Nếu có phòng khách, chỉ ghi "· living room"
-                            String livingRoomText = "";
-                            if ("available".equalsIgnoreCase(livingRoomStatus)) {
-                                livingRoomText = " · phòng khách";
-                            }
-
-                            // Nếu có phòng khách, chỉ ghi "· living room"
-                            String kitchenText = "";
-                            if ("available".equalsIgnoreCase(kitchenStatus)) {
-                                livingRoomText = " · phòng bếp";
-                            }
-                            */
-
-                            // Ghép chuỗi mô tả chi tiết
-                            //String detail = propertyType + " · " + maxGuest + " khách" + " · " + bedRooms + " phòng ngủ" + livingRoomText + kitchenText;
-
-                            String detail = "Để tạm ở đây cho đỡ lỗi thôi bro, nhớ sửa lại nhé, living room và kitchen sẽ là int nhé ông bạn";
-                            // Create new Post object with property data
-                            Post post = new Post(
-                                    property.getId(),
-                                    property.getHost_id(),
-                                    title,                    // title
-                                    property.getMainPhoto(),               // placeholder image
-                                    property.name,                        // address string
-                                    detail, // property type as detail
-                                    "1.200 km",                          // no distance available
-                                    "Available now",                 // placeholder date range
-                                    formattedPrice,                 // formatted price
-                                    property.total_reviews,
-                                    property.avg_ratings,
-                                    property.amenities,
-                                    property.sub_photos
-                            );
-//                            Log.d("ExploreFragment", "Creating post with ID: " + property.getId() +
-//                                    ", Title: " + title);
-
-                            postList.add(post);
-                            fullPostList.add(post);
-                        }
+                        fullPostList.addAll(PostConverter.convertPropertiesToPosts(properties));
+                        postList.addAll(PostConverter.convertPropertiesToPosts(properties));
                         // Notify adapter to refresh RecyclerView
                         postAdapter.notifyDataSetChanged();
                     }
@@ -166,7 +107,7 @@ public class ExploreFragment extends Fragment {
         );
     }
 
-    //ham tim kiem don gian
+    /*ham tim kiem don gian
     private void filterPosts(String query) {
         postList.clear();
         if (query.isEmpty()) {
@@ -183,5 +124,7 @@ public class ExploreFragment extends Fragment {
         }
         postAdapter.notifyDataSetChanged();
     }
+
+     */
 
 }

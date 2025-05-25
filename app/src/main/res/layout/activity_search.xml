@@ -526,7 +526,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="12dp"
-                                android:text="Số lượng khách"
+                                android:text="Số lượng khách tối thiểu"
                                 android:fontFamily="@font/afacad_medium"
                                 android:textSize="18sp" />
 
@@ -550,13 +550,69 @@
                                     android:layout_marginHorizontal="16dp"
                                     android:layout_weight="1"
                                     android:max="50"
-                                    android:progress="10" />
+                                    android:progress="2" />
 
                                 <TextView
                                     android:id="@+id/guest_number_max"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="10"
+                                    android:text="2"
+                                    android:fontFamily="@font/afacad_medium"
+                                    android:textSize="18sp" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Number of Bedroom -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardCornerRadius="12dp"
+                        android:layout_margin="10dp"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:text="Số lượng phòng ngủ tối thiểu"
+                                android:fontFamily="@font/afacad_medium"
+                                android:textSize="18sp" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="1"
+                                    android:fontFamily="@font/afacad_medium"
+                                    android:textSize="18sp" />
+
+                                <SeekBar
+                                    android:id="@+id/seekBarBedroom"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginHorizontal="16dp"
+                                    android:layout_weight="2"
+                                    android:max="20"
+                                    android:progress="2" />
+
+                                <TextView
+                                    android:id="@+id/bedroom_number_max"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="2"
                                     android:fontFamily="@font/afacad_medium"
                                     android:textSize="18sp" />
                             </LinearLayout>
@@ -585,7 +641,7 @@
                                 android:id="@+id/priceTitle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Giá"
+                                android:text="Giá tối đa cho 1 đêm"
                                 android:textSize="18sp"
                                 android:textColor="#FF000000"
                                 android:layout_marginBottom="4dp"
@@ -617,6 +673,8 @@
 
                     </androidx.cardview.widget.CardView>
 
+
+
                     <!-- Amenities -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
@@ -640,32 +698,33 @@
                                 android:textSize="18sp" />
 
                             <CheckBox
+                                android:id="@+id/checkbox_wifi"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="WiFi"
-                                android:fontFamily="@font/afacad_medium"
-                                />
+                                android:fontFamily="@font/afacad_medium" />
 
                             <CheckBox
+                                android:id="@+id/checkbox_pool"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Bể bơi"
-                                android:fontFamily="@font/afacad_medium"
-                                />
+                                android:fontFamily="@font/afacad_medium" />
 
                             <CheckBox
+                                android:id="@+id/checkbox_bbq"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="BBQ"
-                                android:fontFamily="@font/afacad_medium"
-                                />
+                                android:fontFamily="@font/afacad_medium" />
 
                             <CheckBox
+                                android:id="@+id/checkbox_pet"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Cho phép thú cưng"
-                                android:fontFamily="@font/afacad_medium"
-                                />
+                                android:fontFamily="@font/afacad_medium" />
+
 
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
@@ -705,34 +764,39 @@
                                 android:textStyle="bold" />
 
                             <RadioGroup
+                                android:id="@+id/radioGroupSort"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content">
 
                                 <RadioButton
+                                    android:id="@+id/radio_price_asc"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/afacad_medium"
                                     android:text="Giá: Thấp tới cao" />
 
                                 <RadioButton
+                                    android:id="@+id/radio_price_desc"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/afacad_medium"
                                     android:text="Giá: Cao tới thấp" />
 
                                 <RadioButton
+                                    android:id="@+id/radio_rating_high"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/afacad_medium"
                                     android:text="Đánh giá: Cao nhất" />
 
                                 <RadioButton
+                                    android:id="@+id/radio_none"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:fontFamily="@font/afacad_medium"
                                     android:text="Không" />
-
                             </RadioGroup>
+
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 

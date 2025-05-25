@@ -1,5 +1,7 @@
 package com.example.myapplication.data.Repository.Search;
 
+import android.util.Log;
+
 import com.example.myapplication.data.Model.Property.SearchProperty;
 import com.example.myapplication.data.Model.Search.SearchField;
 import com.example.myapplication.data.Model.Search.SearchResponse;
@@ -11,7 +13,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PropertyAPIClient {
-    private static final String BASE_URL = "http://10.0.2.2:3000/"; // Thay đổi URL server của bạn
+    private static final String BASE_URL = "http://10.0.2.2:5000/"; // Thay đổi URL server của bạn
     private PropertyAPIService apiService;
 
     public interface OnPropertyCallback {

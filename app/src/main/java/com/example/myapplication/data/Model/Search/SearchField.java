@@ -1,19 +1,25 @@
 package com.example.myapplication.data.Model.Search;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
-public class SearchField {
+import java.util.ArrayList;
+import java.util.List;
+
+public class SearchField implements Parcelable {
     @SerializedName("propertyName")
     private String propertyName;
 
-    @SerializedName("city_code")
-    private int city_code;
+    @SerializedName("city_codes")
+    private List<Integer> city_codes;
 
-    @SerializedName("district_code")
-    private int district_code;
+    @SerializedName("district_codes")
+    private List<Integer> district_codes;
 
-    @SerializedName("ward_code")
-    private int ward_code;
+    @SerializedName("property_ids")
+    private List<String> property_ids;
 
     @SerializedName("max_guest")
     private int max_guest;
@@ -67,8 +73,76 @@ public class SearchField {
     public SearchField() {
         // Khởi tạo các giá trị mặc định
         this.page = 0;
-        this.hitsPerPage = 20;
+        this.hitsPerPage = 30;
     }
+
+    // Constructor cho Parcelable
+    protected SearchField(Parcel in) {
+        propertyName = in.readString();
+        city_codes = new ArrayList<>();
+        in.readList(city_codes, Integer.class.getClassLoader());
+        district_codes = new ArrayList<>();
+        in.readList(district_codes, Integer.class.getClassLoader());
+        property_ids = new ArrayList<>();
+        in.readStringList(property_ids);
+        max_guest = in.readInt();
+        bed_rooms = in.readInt();
+        min_price = in.readDouble();
+        max_price = in.readDouble();
+        check_in_date = in.readString();
+        check_out_date = in.readString();
+        tv = in.readByte() != 0;
+        petAllowance = in.readByte() != 0;
+        pool = in.readByte() != 0;
+        washingMachine = in.readByte() != 0;
+        breakfast = in.readByte() != 0;
+        bbq = in.readByte() != 0;
+        wifi = in.readByte() != 0;
+        airConditioner = in.readByte() != 0;
+        page = in.readInt();
+        hitsPerPage = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(propertyName);
+        dest.writeList(city_codes);
+        dest.writeList(district_codes);
+        dest.writeStringList(property_ids);
+        dest.writeInt(max_guest);
+        dest.writeInt(bed_rooms);
+        dest.writeDouble(min_price);
+        dest.writeDouble(max_price);
+        dest.writeString(check_in_date);
+        dest.writeString(check_out_date);
+        dest.writeByte((byte) (tv ? 1 : 0));
+        dest.writeByte((byte) (petAllowance ? 1 : 0));
+        dest.writeByte((byte) (pool ? 1 : 0));
+        dest.writeByte((byte) (washingMachine ? 1 : 0));
+        dest.writeByte((byte) (breakfast ? 1 : 0));
+        dest.writeByte((byte) (bbq ? 1 : 0));
+        dest.writeByte((byte) (wifi ? 1 : 0));
+        dest.writeByte((byte) (airConditioner ? 1 : 0));
+        dest.writeInt(page);
+        dest.writeInt(hitsPerPage);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static final Creator<SearchField> CREATOR = new Creator<SearchField>() {
+        @Override
+        public SearchField createFromParcel(Parcel in) {
+            return new SearchField(in);
+        }
+
+        @Override
+        public SearchField[] newArray(int size) {
+            return new SearchField[size];
+        }
+    };
 
     // Getters and Setters
     public String getPropertyName() {
@@ -79,28 +153,28 @@ public class SearchField {
         this.propertyName = propertyName;
     }
 
-    public int getCity_code() {
-        return city_code;
+    public List<Integer> getCity_codes() {
+        return city_codes;
     }
 
-    public void setCity_code(int city_code) {
-        this.city_code = city_code;
+    public void setCity_codes(List<Integer> city_codes) {
+        this.city_codes = city_codes;
     }
 
-    public int getDistrict_code() {
-        return district_code;
+    public List<Integer> getDistrict_codes() {
+        return district_codes;
     }
 
-    public void setDistrict_code(int district_code) {
-        this.district_code = district_code;
+    public void setDistrict_codes(List<Integer> district_codes) {
+        this.district_codes = district_codes;
     }
 
-    public int getWard_code() {
-        return ward_code;
+    public List<String> getProperty_ids() {
+        return property_ids;
     }
 
-    public void setWard_code(int ward_code) {
-        this.ward_code = ward_code;
+    public void setProperty_ids(List<String> property_ids) {
+        this.property_ids = property_ids;
     }
 
     public int getMax_guest() {
@@ -244,18 +318,18 @@ public class SearchField {
             return this;
         }
 
-        public Builder cityCode(int cityCode) {
-            searchField.setCity_code(cityCode);
+        public Builder cityCode(List<Integer> cityCode) {
+            searchField.setCity_codes(cityCode);
             return this;
         }
 
-        public Builder districtCode(int districtCode) {
-            searchField.setDistrict_code(districtCode);
+        public Builder districtCode(List<Integer> districtCode) {
+            searchField.setDistrict_codes(districtCode);
             return this;
         }
 
-        public Builder wardCode(int wardCode) {
-            searchField.setWard_code(wardCode);
+        public Builder propertyIds(List<String> propertyIds) {
+            searchField.setProperty_ids(propertyIds);
             return this;
         }
 
