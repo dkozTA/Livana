@@ -63,6 +63,7 @@
                         android:layout_height="wrap_content" />
 
                     <TextView
+                        android:id="@+id/total_income"
                         android:text="₫35.637.790 trong tháng này"
                         android:layout_marginTop="4dp"
                         android:textSize="14sp"
@@ -70,27 +71,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
-                    <LinearLayout
+                    <com.github.mikephil.charting.charts.BarChart
+                        android:id="@+id/barChart"
                         android:layout_width="match_parent"
-                        android:layout_height="0dp"
-                        android:layout_weight="1"
-                        android:layout_marginTop="16dp"
-                        android:gravity="bottom"
-                        android:orientation="horizontal">
-
-                        <View android:layout_width="0dp" android:layout_weight="1"
-                            android:layout_height="40dp" android:background="#D81B60" />
-                        <View android:layout_width="0dp" android:layout_weight="1"
-                            android:layout_height="50dp" android:background="#D81B60" />
-                        <View android:layout_width="0dp" android:layout_weight="1"
-                            android:layout_height="60dp" android:background="#D81B60" />
-                        <View android:layout_width="0dp" android:layout_weight="1"
-                            android:layout_height="30dp" android:background="#D81B60" />
-                        <View android:layout_width="0dp" android:layout_weight="1"
-                            android:layout_height="50dp" android:background="#DDDDDD" />
-                        <View android:layout_width="0dp" android:layout_weight="1"
-                            android:layout_height="40dp" android:background="#DDDDDD" />
-                    </LinearLayout>
+                        android:layout_height="100dp"/>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
