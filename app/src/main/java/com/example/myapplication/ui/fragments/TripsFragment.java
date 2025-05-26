@@ -2,30 +2,40 @@ package com.example.myapplication.ui.fragments;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Color;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Enum.Booking_status;
 import com.example.myapplication.data.Model.Booking.Booking;
-import com.example.myapplication.data.Model.Property.Property;  // Add this import
+import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Model.Review.Review;
 import com.example.myapplication.data.Repository.Booking.BookingRepository;
 import com.example.myapplication.data.Repository.Review.ReviewRepository;
 import com.example.myapplication.ui.activities.HouseDetailActivity;
 import com.example.myapplication.ui.adapters.BookingAdapter;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.NumberFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 public class TripsFragment extends Fragment {
     private RecyclerView bookingRecyclerView;
@@ -59,9 +69,7 @@ public class TripsFragment extends Fragment {
                                 @Override
                                 public void onViewDetailsClick(Booking booking, Property property) {
                                     // Handle property details click
-                                    Intent intent = new Intent(requireContext(), HouseDetailActivity.class);
-                                    intent.putExtra("property_id", property.getId());
-                                    startActivity(intent);
+                                    showBookingDetailDialog(booking, property);
                                 }
                             },
                             requireContext());
@@ -142,5 +150,162 @@ public class TripsFragment extends Fragment {
                 e -> {
                     Toast.makeText(requireContext(), "Không thể gửi đánh giá: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    private void showBookingDetailDialog(Booking booking, Property property) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog);
+        View view = getLayoutInflater().inflate(R.layout.dialog_booking_detail, null);
+
+        // Find views
+        ImageView propertyImage = view.findViewById(R.id.detail_property_image);
+        TextView propertyName = view.findViewById(R.id.detail_property_name);
+        TextView propertyLocation = view.findViewById(R.id.detail_property_location);
+        TextView bookingDates = view.findViewById(R.id.detail_booking_dates);
+        TextView status = view.findViewById(R.id.detail_status);
+        TextView totalPrice = view.findViewById(R.id.detail_total_price);
+        TextView bookingId = view.findViewById(R.id.detail_booking_id);
+        TextView priceBreakdown = view.findViewById(R.id.detail_price_breakdown);
+        View divider = view.findViewById(R.id.divider);
+
+        // Set property name with styling
+        propertyName.setText(property.getName());
+
+        // Format and set property location
+        if (property.getAddress() != null) {
+            StringBuilder addressBuilder = new StringBuilder();
+            if (property.getAddress().detailed_address != null && !property.getAddress().detailed_address.isEmpty())
+                addressBuilder.append(property.getAddress().detailed_address);
+            if (property.getAddress().ward_name != null && !property.getAddress().ward_name.isEmpty()) {
+                if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                addressBuilder.append(property.getAddress().ward_name);
+            }
+            if (property.getAddress().district_name != null && !property.getAddress().district_name.isEmpty()) {
+                if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                addressBuilder.append(property.getAddress().district_name);
+            }
+            if (property.getAddress().city_name != null && !property.getAddress().city_name.isEmpty()) {
+                if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                addressBuilder.append(property.getAddress().city_name);
+            }
+            propertyLocation.setText(addressBuilder.toString());
+        } else {
+            propertyLocation.setText("Địa chỉ không khả dụng");
+        }
+
+        // Set booking dates with icon
+        bookingDates.setText(getString(R.string.booking_dates_format,
+                booking.check_in_day, booking.check_out_day));
+
+        // Set status with appropriate color based on booking status
+        String statusText = "Trạng thái: ";
+        int statusColor;
+
+        switch(booking.status) {
+            case IN_PROGRESS:
+                statusText += "Đang tiến hành";
+                statusColor = requireContext().getColor(R.color.black);
+                break;
+            case ACCEPTED:
+                statusText += "Đã xác nhận";
+                statusColor = requireContext().getColor(android.R.color.holo_green_dark);
+                break;
+            case COMPLETED:
+                statusText += "Đã hoàn thành";
+                statusColor = requireContext().getColor(android.R.color.holo_blue_dark);
+                break;
+            case CANCELLED:
+                statusText += "Đã hủy";
+                statusColor = requireContext().getColor(android.R.color.holo_red_dark);
+                break;
+            case REVIEWED:
+                statusText += "Đã đánh giá";
+                statusColor = requireContext().getColor(android.R.color.holo_purple);
+                break;
+            default:
+                statusText += booking.status.toString();
+                statusColor = requireContext().getColor(R.color.black);
+        }
+
+        status.setText(statusText);
+        status.setTextColor(statusColor);
+
+        // Set total price with currency formatting
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        totalPrice.setText(getString(R.string.total_price_format,
+                currencyFormat.format(booking.total_price)));
+
+        // Calculate and set price breakdown
+        try {
+            // Try different date formats to handle various possible formats
+            String[] dateFormats = {"dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy"};
+            Date checkInDate = null;
+            Date checkOutDate = null;
+            boolean datesParsed = false;
+
+            for (String format : dateFormats) {
+                try {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.getDefault());
+                    checkInDate = dateFormat.parse(booking.check_in_day);
+                    checkOutDate = dateFormat.parse(booking.check_out_day);
+                    if (checkInDate != null && checkOutDate != null) {
+                        datesParsed = true;
+                        break;
+                    }
+                } catch (ParseException e) {
+                    // Try next format
+                }
+            }
+
+            if (datesParsed && checkInDate != null && checkOutDate != null) {
+                long differenceMs = checkOutDate.getTime() - checkInDate.getTime();
+                int numberOfDays = (int) (differenceMs / (1000 * 60 * 60 * 24));
+
+                // Ensure at least 1 day to avoid division by zero
+                if (numberOfDays < 1) numberOfDays = 1;
+
+                // Calculate price per night
+                double pricePerNight = booking.total_price / numberOfDays;
+
+                priceBreakdown.setText(String.format("%s × %d đêm",
+                        currencyFormat.format(pricePerNight),
+                        numberOfDays));
+            } else {
+                // If we can't parse the dates, just show the total
+                priceBreakdown.setText(String.format("%s (tổng cộng)",
+                        currencyFormat.format(booking.total_price)));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Fallback in case of any other errors
+            priceBreakdown.setText(String.format("%s (tổng cộng)",
+                    currencyFormat.format(booking.total_price)));
+        }
+
+        // Set booking ID
+        bookingId.setText(getString(R.string.booking_id_format, booking.id));
+
+        // Load property image with rounded corners
+        if (property.getMainPhoto() != null && !property.getMainPhoto().isEmpty()) {
+            Glide.with(requireContext())
+                    .load(property.getMainPhoto())
+                    .centerCrop()
+                    .placeholder(R.drawable.loading_animation)
+                    .error(R.drawable.avatar_placeholder)
+                    .into(propertyImage);
+        } else {
+            propertyImage.setImageResource(R.drawable.avatar_placeholder);
+        }
+
+        AlertDialog dialog = builder.setView(view)
+                .create();
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        }
+
+        MaterialButton closeButton = view.findViewById(R.id.btn_close_dialog);
+        closeButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 }

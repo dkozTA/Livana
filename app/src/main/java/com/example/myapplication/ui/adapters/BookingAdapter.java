@@ -69,6 +69,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         private TextView bookingDatesText;
         private TextView bookingPriceText;
         private ImageView propertyImageView;
+        public Button vietDetailsButton;
 
         BookingViewHolder(View itemView) {
             super(itemView);
@@ -79,6 +80,7 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingDatesText = itemView.findViewById(R.id.booking_dates);
             bookingPriceText = itemView.findViewById(R.id.booking_price);
             propertyImageView = itemView.findViewById(R.id.property_image);
+            vietDetailsButton = itemView.findViewById(R.id.view_details_button);
         }
 
         void bind(Booking booking) {
@@ -148,9 +150,13 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
                 } else {
                     propertyImageView.setImageResource(R.drawable.avatar_placeholder);
                 }
+                vietDetailsButton.setOnClickListener(v -> {
+                    listener.onViewDetailsClick(booking, property);
+                });
             }, e -> {
                 // Handle error
                 Log.e("BookingAdapter", "Failed to load property: " + e.getMessage());
+                vietDetailsButton.setOnClickListener(null);
                 propertyNameText.setText("Property unavailable");
                 propertyLocationText.setText("Location unknown");
                 propertyImageView.setImageResource(R.drawable.avatar_placeholder);
