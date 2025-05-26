@@ -32,15 +32,20 @@
                 android:text="₫3.450.000"
                 android:textStyle="bold"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:layout_marginEnd="10dp"/>
 
             <ImageView
                 android:id="@+id/button_explore"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginStart="5dp"
-                android:background="@drawable/circle_transparent"
-                android:src="@drawable/ic_arrow_right" />
+                android:backgroundTint="@color/light_gray"
+                android:background="@drawable/circle_background"
+                android:padding="6dp"
+                android:src="@drawable/ic_arrow_right"
+                android:scaleType="centerInside" />
+
         </LinearLayout>
 
         <TextView

@@ -17,6 +17,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -326,6 +327,46 @@ public class UserRepository {
             onFailure.onFailure(new Exception("Can not get property"));
         });
     }
+
+    // viet ham lay created_at nhung ko lay duoc , sửa hộ cái
+    public void getDateCreateByPropertyID(String propertyID, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
+        propertyRepository.getPropertyById(propertyID, property -> {
+            this.getUserByUid(property.host_id,
+                    host -> {
+                        Date createdDate = host.created_at;
+                        Log.d("DateCreateByPropertyID", "CreatedDate: " + createdDate);
+
+                        long now = System.currentTimeMillis();
+                        long createdTime = createdDate.getTime();
+                        long diffMillis = now - createdTime;
+
+                        long minutes = diffMillis / (1000 * 60);
+                        long hours = minutes / 60;
+                        long days = hours / 24;
+                        long months = days / 30;
+                        long years = days / 365;
+
+                        String result;
+                        if (years >= 1) {
+                            result = years + " năm";
+                        } else if (months >= 1) {
+                            result = months + " tháng";
+                        } else if (days >= 1) {
+                            result = days + " ngày";
+                        } else if (hours >= 1) {
+                            result = + hours + " giờ";
+                        } else if (minutes >= 1) {
+                            result = minutes + " phút";
+                        } else {
+                            result = "vừa xong";
+                        }
+
+                        onSuccess.onSuccess(result);
+
+                    }, e -> onFailure.onFailure(new Exception("Không thể lấy thông tin host")));
+        }, e -> onFailure.onFailure(new Exception("Không thể lấy thông tin property")));
+    }
+
 
     public void updateUserRole(String uid, Role role, OnCompleteListener<Void> onCompleteListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
