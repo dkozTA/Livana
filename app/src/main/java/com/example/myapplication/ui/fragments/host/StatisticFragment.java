@@ -47,12 +47,7 @@ public class StatisticFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_host_statistic, container, false);
         TextView total_income = view.findViewById(R.id.total_income);
         BarChart barChart = view.findViewById(R.id.barChart);
-
-
-
         String hostId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        Log.d("userId", hostId);
-
 
         bookingRepository = new BookingRepository(requireContext());
         bookingRepository.getAllBookingsByHostID(hostId,
@@ -194,7 +189,6 @@ public class StatisticFragment extends Fragment {
                     barChart.invalidate();
 
 
-
                     // Gán sự kiện click sau khi đã có dữ liệu
                     CardView incomeCard = getView().findViewById(R.id.income_card);
                     double finalCurrentMonthActual = currentMonthActual;
@@ -203,19 +197,16 @@ public class StatisticFragment extends Fragment {
                         Intent intent = new Intent(getActivity(), IncomeOverviewActivity.class);
                         intent.putExtra("bookings", new ArrayList<>(bookings));
                         intent.putExtra("total_income", total);
-                        intent.putExtra("current_month_actual", finalCurrentMonthActual);
                         intent.putExtra("current_month_forecast", finalCurrentMonthForecast);
-//                        intent.putExtra("monthly_income_map", new HashMap<>(monthlyTotal));
                         intent.putExtra("monthly_income_map", new HashMap<>(sortedMonthlyTotal));
                         startActivity(intent);
                     });
 
                     barChart.setOnClickListener(v -> {
                         Intent intent = new Intent(getActivity(), IncomeOverviewActivity.class);
+                        intent.putExtra("bookings", new ArrayList<>(bookings));
                         intent.putExtra("total_income", total);
-                        intent.putExtra("current_month_actual", finalCurrentMonthActual);
                         intent.putExtra("current_month_forecast", finalCurrentMonthForecast);
-//                        intent.putExtra("monthly_income_map", new HashMap<>(monthlyTotal));
                         intent.putExtra("monthly_income_map", new HashMap<>(sortedMonthlyTotal));
                         startActivity(intent);
                     });
