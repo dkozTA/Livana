@@ -6,6 +6,9 @@ import android.os.Build;
 
 import androidx.annotation.NonNull;
 
+
+import com.example.myapplication.data.Enum.PropertyStatus;
+
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.FirebaseService;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
@@ -18,7 +21,7 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.SetOptions;
+
 import com.google.firebase.firestore.Transaction;
 
 import java.text.SimpleDateFormat;
@@ -26,7 +29,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -44,7 +46,7 @@ public class PropertyRepository {
     private final FirebaseFirestore db;
     private final StorageRepository storageRepository;
     private final String COLLECTION_NAME = "properties"; // Tên collection trong Firestore
-    
+
     public PropertyRepository(Context context) {
         this.db = FirebaseService.getInstance(context).getFireStore();
         this.storageRepository = new StorageRepository(context);
@@ -296,6 +298,7 @@ public class PropertyRepository {
         return true; // Không có ngày nào trùng → hợp lệ
     }
 
+    //Gọi cái này để thêm vào link nhé, không gọi cái dưới
     public void addLinksToBothProperty(String propertyID, String link_id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.addLinksToProperty(propertyID, link_id, unused -> {
             this.addLinksToProperty(link_id, propertyID, onSuccess, onFailure);
@@ -326,6 +329,12 @@ public class PropertyRepository {
         }, e -> {
            onFailure.onFailure(new Exception("Link Id của Property không tồn tại"));
         });
+    }
+
+    public void updatePropertyStatus(String propertyID, PropertyStatus status, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.db.collection(COLLECTION_NAME).document(propertyID).update("status", status)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
     }
 
     // Lưu theo định dạng dd-MM-yyyy - Front end check xem ngày Start có lớn hơn ngày End không
@@ -461,6 +470,7 @@ public class PropertyRepository {
                 .addOnFailureListener(onFailure);
     }
 
+    // khi remove thì remove cả nhà cũng được link luôn
     public void removeBookedDates(String propertyId, String checkIn, String checkOut, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         // Fetch property, remove dates in range [checkIn, checkOut] from booked_date, and update
         db.collection("properties").document(propertyId).get()
@@ -611,5 +621,4 @@ public class PropertyRepository {
             );
         }
     }
-
 }
