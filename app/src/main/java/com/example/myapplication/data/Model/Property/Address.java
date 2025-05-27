@@ -33,7 +33,11 @@ public class Address {
     }
     
     public String getDetailAddress() {
-        return this.detailed_address;
+        return detailed_address;
+    }
+
+    public String getFullAddress() {
+        return detailed_address + ", " + ward_name + ", " + district_name + ", " + city_name;
     }
 
     // luư địa chỉ city district và ward theo dạng code nhé để dễ search

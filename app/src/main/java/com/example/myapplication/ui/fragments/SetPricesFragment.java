@@ -38,8 +38,6 @@ public class SetPricesFragment extends Fragment implements IStepValidator {
         deposit = view.findViewById(R.id.deposit);
 
         normalPrice.addTextChangedListener(new MoneyTextWatcher(normalPrice));
-        normalPrice.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
-
         weekendPrice.addTextChangedListener(new MoneyTextWatcher(weekendPrice));
         holidayPrice.addTextChangedListener(new MoneyTextWatcher(holidayPrice));
         deposit.addTextChangedListener(new MoneyTextWatcher(deposit));

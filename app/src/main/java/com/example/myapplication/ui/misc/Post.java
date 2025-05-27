@@ -9,7 +9,7 @@ import com.example.myapplication.data.Model.Property.Amenities;
 import java.util.List;
 
 public class Post implements Parcelable {
-    private String id, title, imageResId, location, distance, dateRange, detail;
+    private String id, title, name, imageResId, location, detailAddress, distance, dateRange, detail;
     private int total_review;
     private double avg_ratings;
     private Amenities amenities;
@@ -19,14 +19,16 @@ public class Post implements Parcelable {
 
     private List<String> sub_photos; // ảnh phụ (URLs)
 
-    public Post(String id, String hostId, String title, String imageResId, String location, String detail,
+    public Post(String id, String hostId, String title, String name, String imageResId, String location, String detailAddress, String detail,
                 String distance, String dateRange, String normal_price,
                 int total_review, double avg_ratings, Amenities amenities, List<String> sub_photos) {
         this.id = id;
         this.hostId = hostId;
         this.title = title;
+        this.name = name;
         this.imageResId = imageResId;
         this.location = location;
+        this.detailAddress = detailAddress;
         this.detail = detail;
         this.distance = distance;
         this.dateRange = dateRange;
@@ -41,8 +43,10 @@ public class Post implements Parcelable {
         id = in.readString();
         hostId = in.readString();
         title = in.readString();
+        name = in.readString();
         imageResId = in.readString();
         location = in.readString();
+        detailAddress = in.readString();
         detail = in.readString();
         distance = in.readString();
         dateRange = in.readString();
@@ -70,8 +74,10 @@ public class Post implements Parcelable {
         dest.writeString(id);
         dest.writeString(hostId);
         dest.writeString(title);
+        dest.writeString(name);
         dest.writeString(imageResId);
         dest.writeString(location);
+        dest.writeString(detailAddress);
         dest.writeString(detail);
         dest.writeString(distance);
         dest.writeString(dateRange);
@@ -93,12 +99,20 @@ public class Post implements Parcelable {
         return title;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getImageResId() {
         return imageResId;
     }
 
     public String getLocation() {
         return location;
+    }
+
+    public String getDetailAddress() {
+        return detailAddress;
     }
 
     public String getDistance() {

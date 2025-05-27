@@ -2,7 +2,6 @@ package com.example.myapplication.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -219,22 +218,22 @@ public class AIFindActivity extends AppCompatActivity {
                             String detail = "Để tạm ở đây cho đỡ lỗi thôi bro, nhớ sửa lại nhé, living room và kitchen sẽ là int nhé ông bạn";
                             // Create new Post object with property data
                             Post post = new Post(
-                                    property.getId(),
+                                    property.id,
                                     property.getHost_id(),
                                     title,                    // title
+                                    property.getName(),
                                     property.getMainPhoto(),               // placeholder image
-                                    property.name,                        // address string
-                                    detail, // property type as detail
+                                    property.address.district_name + ", " + property.address.city_name,                        // address string
+                                    property.address.getFullAddress(),
+                                    detail,// property type as detail
                                     "1.200 km",                          // no distance available
                                     "Available now",                 // placeholder date range
-                                    formattedPrice,                 // formatted price
+                                    formattedPrice,
                                     property.total_reviews,
                                     property.avg_ratings,
                                     property.amenities,
                                     property.sub_photos
                             );
-//                            Log.d("ExploreFragment", "Creating post with ID: " + property.getId() +
-//                                    ", Title: " + title);
 
                             postList.add(post);
                             fullPostList.add(post);

@@ -47,8 +47,10 @@ public class PostConverter {
                 property.id,
                 property.getHost_id(),
                 title,                    // title
+                property.getName(),
                 property.getMainPhoto(),               // placeholder image
                 property.name,                        // address string
+                property.address.getFullAddress(),
                 detail,// property type as detail
                 "1.200 km",                          // no distance available
                 "Available now",                 // placeholder date range

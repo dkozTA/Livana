@@ -6,6 +6,8 @@ import android.widget.EditText;
 
 import java.text.DecimalFormat;
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 public class MoneyTextWatcher implements TextWatcher {
     private final EditText editText;
@@ -22,7 +24,7 @@ public class MoneyTextWatcher implements TextWatcher {
     public MoneyTextWatcher(EditText editText, int maxDecimalDigits) {
         this.editText = editText;
         this.maxDecimalDigits = maxDecimalDigits;
-        this.decimalFormat = new DecimalFormat("#,###");
+        this.decimalFormat = new DecimalFormat("#,###", DecimalFormatSymbols.getInstance(Locale.US));
     }
 
     /**
@@ -30,7 +32,7 @@ public class MoneyTextWatcher implements TextWatcher {
      * @param editText EditText to apply the formatting to
      */
     public MoneyTextWatcher(EditText editText) {
-        this(editText, 2);
+        this(editText, 3);
     }
 
     @Override

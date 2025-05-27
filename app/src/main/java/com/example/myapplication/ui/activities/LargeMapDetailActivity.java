@@ -69,6 +69,7 @@ public class LargeMapDetailActivity extends FragmentActivity implements OnMapRea
             List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
 
             if (addresses != null && !addresses.isEmpty()) {
+                Toast.makeText(this, locationName, Toast.LENGTH_SHORT);
                 Address address = addresses.get(0);
                 LatLng location = new LatLng(address.getLatitude(), address.getLongitude());
 

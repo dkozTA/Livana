@@ -2,13 +2,17 @@ package com.example.myapplication.ui;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentContainer;
 
+import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Model.Location.District;
 import com.example.myapplication.data.Model.Property.Property;
@@ -30,29 +34,7 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PropertyAPIClient propertyAPIClient = new PropertyAPIClient();
-        PropertyRepository propertyRepository = new PropertyRepository(this);
-
-        propertyRepository.getAllProperties(properties -> {
-            AtomicInteger count = new AtomicInteger(0);
-            for(Property property : properties) {
-                SearchProperty searchProperty = new SearchProperty(property);
-                propertyAPIClient.addPropertyToAlgolia(searchProperty, new PropertyAPIClient.OnPropertyCallback() {
-                    @Override
-                    public void onSuccess(SearchResponse response) {
-                        Log.d(TAG, count.getAndIncrement() + "");
-                    }
-
-                    @Override
-                    public void onError(String errorMessage) {
-                        Log.d(TAG, "onError: " + errorMessage + property.id);
-                    }
-                });
-            }
-        }, e -> {
-            Log.d(TAG, "onError: " + e.getMessage());
-        });
-
-        // Sóc Sơn Ba Vì Hà Nội
+        setContentView(R.layout.fragment_header_sample);
+        setSupportActionBar(findViewById(R.id.toolbar));
     }
 }

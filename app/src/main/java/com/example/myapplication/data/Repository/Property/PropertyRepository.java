@@ -70,8 +70,8 @@ public class PropertyRepository {
     }
      */
 
-    // Nếu main img là url rồi thì không cần làm gì
-    // Nếu main img là uri thì phải up lên storage
+    // Nếu main img.png là url rồi thì không cần làm gì
+    // Nếu main img.png là uri thì phải up lên storage
     public void addProperty(Property property, Context context, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         String ID = UUID.randomUUID().toString();
         property.id = ID;
@@ -80,7 +80,7 @@ public class PropertyRepository {
 
         Uri main_img_uri = null;
 
-        // kiểm tra xem main img có phải uri không
+        // kiểm tra xem main img.png có phải uri không
         if(LinkValidator.isValidUri(context, main_images)) {
             main_img_uri = Uri.parse(main_images);
         }

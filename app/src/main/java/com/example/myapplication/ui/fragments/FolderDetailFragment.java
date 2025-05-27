@@ -43,7 +43,7 @@ public class FolderDetailFragment extends Fragment {
 
         RecyclerView recyclerView = view.findViewById(R.id.houses_recycler);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        PostAdapter adapter = new PostAdapter(getContext(), folder.getPosts(), true);
+        PostAdapter adapter = new PostAdapter(getContext(), folder.getPosts(), false);
         recyclerView.setAdapter(adapter);
 
         return view;

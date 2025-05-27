@@ -27,7 +27,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDmBeaOTjeXGH-KWehgHgVHy5sU7VYWuPI" />
+            android:value="AIzaSyAs0E4z8rBaPTHvN9eOqTVq6OyTia3fDFk" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
@@ -98,11 +98,6 @@
 
         <activity
             android:name=".ui.activities.LargeMapDetailActivity"
-            android:exported="false">
-        </activity>
-
-        <activity
-            android:name=".ui.activities.IncomeOverviewActivity"
             android:exported="false">
         </activity>
 

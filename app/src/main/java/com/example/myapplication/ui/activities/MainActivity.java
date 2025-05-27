@@ -19,6 +19,7 @@ import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.auth.LoginActivity;
 import com.example.myapplication.ui.fragments.ExploreFragment;
 import com.example.myapplication.ui.fragments.MessagesFragment;
+import com.example.myapplication.ui.fragments.NewExploreFragment;
 import com.example.myapplication.ui.fragments.ProfileFragment;
 import com.example.myapplication.ui.fragments.TripsFragment;
 import com.example.myapplication.ui.fragments.WishlistFragment;
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, new ExploreFragment())
+                    .replace(R.id.fragment_container, new NewExploreFragment())
                     .commit();
         }
 
@@ -85,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupFooterNavigation() {
         findViewById(R.id.button_explore).setOnClickListener(v -> {
-            loadFragment(new ExploreFragment());
+            loadFragment(new NewExploreFragment());
             updateButtonStates(R.id.button_explore);
         });
         findViewById(R.id.button_wishlists).setOnClickListener(v -> {

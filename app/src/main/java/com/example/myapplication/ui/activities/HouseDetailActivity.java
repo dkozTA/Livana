@@ -27,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.myapplication.R;
@@ -62,7 +63,7 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
     private ImageButton heartButton;
     private Post post;
 
-    RecyclerView reviewRecyclerView;
+    ViewPager2 reviewRecyclerView;
 
     UserRepository userRepository;
 
@@ -116,7 +117,7 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
         mapClick.setClickable(true);
         mapClick.setOnClickListener(v -> {
             Intent intent = new Intent(HouseDetailActivity.this, LargeMapDetailActivity.class);
-            intent.putExtra("location", post.getLocation());
+            intent.putExtra("location", post.getTitle());
             intent.putExtra("name", post.getTitle());
             startActivity(intent);
         });
@@ -126,13 +127,12 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             TextView title = findViewById(R.id.title);
             //ImageView postImageView = findViewById(R.id.post_image);
             ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
-            RatingBar ratingBar = findViewById(R.id.review_rating_bar);
             TextView hostName = findViewById(R.id.host_name);
             TextView location = findViewById(R.id.location);
             TextView detail = findViewById(R.id.details);
             TextView dateRange = findViewById(R.id.date_range);
             TextView price = findViewById(R.id.price);
-            TextView avg_ratings = findViewById(R.id.avg_ratings);
+            TextView avg_ratings = findViewById(R.id.ratings);
             TextView total_reviews = findViewById(R.id.total_reviews);
             TextView house_rule = findViewById(R.id.house_rule);
             TextView special_feature = findViewById(R.id.special_feature);
@@ -155,9 +155,8 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             dateRange.setText(post.getDateRange());
             price.setText(post.getNormal_price());
             avg_ratings.setText(post.getAvgRatings() + "");
-            total_reviews.setText(post.getTotalReview() + " đánh giá");
+            total_reviews.setText(post.getTotalReview() + "\nĐánh giá");
             titleRiview.setText("Đánh giá (" + post.getTotalReview() + ")");
-            ratingBar.setRating((float) post.getAvgRatings());
             if (post.getAmenities() != null && post.getAmenities().houseRules != null) {
                 house_rule.setText(post.getAmenities().houseRules);
             } else {
@@ -196,8 +195,8 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
                         Log.d("HouseDetail", "Loaded reviews: " + reviews.size());
                         // Gán adapter để hiển thị trong RecyclerView
                         ReviewAdapter review_adapter = new ReviewAdapter(reviews);
-                        reviewRecyclerView.setLayoutManager(new LinearLayoutManager(this)); // hoặc getContext()
                         reviewRecyclerView.setAdapter(review_adapter);
+                        reviewRecyclerView.setOffscreenPageLimit(3);
                     },
                     e -> {
                         Log.e("HouseDetail", "Failed to load reviews: " + e.getMessage());
@@ -417,8 +416,8 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
     }
 
     private void showDestination() {
-        String locationName = post.getLocation();
-        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        String locationName = post.getTitle();
+        Geocoder geocoder = new Geocoder(this, new Locale("vi", "VN"));
         try {
             List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
 
@@ -426,10 +425,11 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
                 Address address = addresses.get(0);
                 LatLng location = new LatLng(address.getLatitude(), address.getLongitude());
 
-                mMap.addMarker(new MarkerOptions().position(location).title(locationName));
+                mMap.addMarker(new MarkerOptions().position(location).title(post.getName()));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15));
             } else {
-                Toast.makeText(this, "Không tìm thấy vị trí đích", Toast.LENGTH_SHORT).show();
+                if (addresses == null) Toast.makeText(this, "Không phan hoi", Toast.LENGTH_SHORT).show();
+                else Toast.makeText(this, "Không tìm thấy vị trí đích" + locationName, Toast.LENGTH_SHORT).show();
             }
         } catch (IOException e) {
             e.printStackTrace();
