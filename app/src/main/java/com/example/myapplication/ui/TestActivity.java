@@ -2,6 +2,7 @@ package com.example.myapplication.ui;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Random;
@@ -30,29 +31,13 @@ public class TestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PropertyAPIClient propertyAPIClient = new PropertyAPIClient();
         PropertyRepository propertyRepository = new PropertyRepository(this);
-
-        propertyRepository.getAllProperties(properties -> {
-            AtomicInteger count = new AtomicInteger(0);
-            for(Property property : properties) {
-                SearchProperty searchProperty = new SearchProperty(property);
-                propertyAPIClient.addPropertyToAlgolia(searchProperty, new PropertyAPIClient.OnPropertyCallback() {
-                    @Override
-                    public void onSuccess(SearchResponse response) {
-                        Log.d(TAG, count.getAndIncrement() + "");
-                    }
-
-                    @Override
-                    public void onError(String errorMessage) {
-                        Log.d(TAG, "onError: " + errorMessage + property.id);
-                    }
-                });
-            }
-        }, e -> {
-            Log.d(TAG, "onError: " + e.getMessage());
+        String propertyID = "ef3ec1b7-f988-4d97-83a1-0582b846aca7";
+        String linkID = "f7995b46-8305-4a7b-b64a-fd98bee08327";
+        propertyRepository.addLinksToBothProperty(linkID, propertyID, unused -> {
+            Log.d(TAG, "addLinksToProperty: success");
+        }, e-> {
+            Log.d(TAG, "addLinksToProperty: fail");
         });
-
-        // Sóc Sơn Ba Vì Hà Nội
     }
 }
