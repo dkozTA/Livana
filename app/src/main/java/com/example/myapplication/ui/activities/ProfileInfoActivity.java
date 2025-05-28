@@ -2,6 +2,7 @@ package com.example.myapplication.ui.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +43,9 @@ public class ProfileInfoActivity extends AppCompatActivity {
         profileRentingHistory = findViewById(R.id.profile_renting_history);
         profileWishList = findViewById(R.id.profile_wish_list);
         userRepository = new UserRepository(this);
+
+        ImageButton btnBack = findViewById(R.id.btn_back);
+        btnBack.setOnClickListener(v -> finish());
     }
 
     private void loadUserProfile() {
