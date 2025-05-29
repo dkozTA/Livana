@@ -75,7 +75,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Số khách tối đa:"
+                    android:text="Số khách:"
                     android:textStyle="bold"
                     android:layout_marginEnd="8dp"
                     android:layout_marginBottom="4dp"/>
@@ -146,6 +146,21 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
                     tools:text="TV, Wifi, Hồ bơi"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sắp xếp:"
+                    android:textStyle="bold"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:id="@+id/sort_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    tools:text="Không"/>
             </GridLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

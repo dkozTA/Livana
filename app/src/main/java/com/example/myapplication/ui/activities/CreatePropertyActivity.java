@@ -26,6 +26,8 @@ import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.interfaces.IStepValidator;
 import com.example.myapplication.ui.misc.PropertyViewModel;
 import com.google.android.material.button.MaterialButton;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import java.util.Date;
 import java.util.List;
@@ -37,6 +39,7 @@ public class CreatePropertyActivity extends AppCompatActivity {
     private NavController navController;
 
     private AlertDialog loadingDialog;
+    private boolean isUpdatingProcess = false;
 
     MaterialButton nextButton;
     MaterialButton prevButton;
@@ -57,6 +60,32 @@ public class CreatePropertyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_property);
 
         viewModel = new ViewModelProvider(this).get(PropertyViewModel.class);
+
+        Intent intent = getIntent();
+        if (intent != null && intent.hasExtra("property_json")) {
+            String json = intent.getStringExtra("property_json");
+
+            if (json != null && !json.isEmpty()) {
+                try {
+                    Property property = new Gson().fromJson(json, Property.class);
+
+                    if (property != null) {
+                        viewModel.setPropertyData(property);
+                        isUpdatingProcess = true;
+                        Log.d("IntentCheck", "Nhận property thành công: " + property.name);
+                    } else {
+                        Log.e("IntentCheck", "Không thể parse JSON thành Property");
+                    }
+
+                } catch (JsonSyntaxException e) {
+                    Log.e("IntentCheck", "Lỗi parse JSON: " + e.getMessage());
+                }
+            } else {
+                Log.w("IntentCheck", "JSON rỗng hoặc null");
+            }
+        } else {
+            Log.w("IntentCheck", "Không nhận được extra 'property_json'");
+        }
 
         navigator = (NavHostFragment)
                 getSupportFragmentManager().findFragmentById(R.id.stepNavigator);
@@ -82,7 +111,7 @@ public class CreatePropertyActivity extends AppCompatActivity {
                 ((IStepValidator) current).save();
                 Toast.makeText(this, "Validate Successfully", Toast.LENGTH_SHORT).show();
 
-                if (stepIndex >= TOTAL_STEP - 1) {
+                if (stepIndex >= TOTAL_STEP - 1 && !isUpdatingProcess) {
                     Property property = viewModel.getPropertyData().getValue();
 
                     AuthRepository auth = new AuthRepository(this);
@@ -103,6 +132,21 @@ public class CreatePropertyActivity extends AppCompatActivity {
                             });
 
                     Log.d("Property", viewModel.getPropertyData().getValue().toString());
+                } else if (stepIndex >= TOTAL_STEP - 1 && isUpdatingProcess) {
+                    Property property = viewModel.getPropertyData().getValue();
+                    property.updated_at = new Date();
+
+                    showLoadingDialog();
+                    PropertyRepository propertyRepository = new PropertyRepository(this);
+                    propertyRepository.updateProperty(property.getId(), property, this,
+                            unused ->{
+                                hideLoadingDialog();
+                                showSuccessDialog();
+                            },
+                            e -> {
+                                hideLoadingDialog();
+                                Toast.makeText(this,  e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
                 } else {
                     navController.navigate(stepNextTrans[stepIndex]);
                     stepIndex++;
@@ -112,7 +156,7 @@ public class CreatePropertyActivity extends AppCompatActivity {
             }
         }
 
-        if (stepIndex + 1 == TOTAL_STEP - 1) nextButton.setText("Hoàn thành");
+        if (stepIndex == TOTAL_STEP - 1) nextButton.setText(isUpdatingProcess ? "Cập nhật" : "Hoàn thành");
     }
 
     private void PrevStep() {

@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Enum.SortOption;
 import com.example.myapplication.data.Model.Location.District;
 import com.example.myapplication.data.Model.Location.Province;
 import com.example.myapplication.data.Model.Property.SearchProperty;
@@ -205,6 +206,20 @@ public class SearchActivity extends AppCompatActivity {
         boolean hasBbq = bbq.isChecked();
         boolean allowsPet = petAllow.isChecked();
 
+        SortOption selectedSortOption = SortOption.None; // mặc định
+        int checkedId = sortGroup.getCheckedRadioButtonId();
+
+        if (checkedId == R.id.radio_price_asc) {
+            selectedSortOption = SortOption.Price_Low_To_High;
+        } else if (checkedId == R.id.radio_price_desc) {
+            selectedSortOption = SortOption.Price_High_To_Low;
+        } else if (checkedId == R.id.radio_rating_high) {
+            selectedSortOption = SortOption.Rating_High_To_Low;
+        } else {
+            selectedSortOption = SortOption.None;
+        }
+
+
         // Khởi tạo builder
         SearchField.Builder builder = new SearchField.Builder();
 
@@ -217,7 +232,7 @@ public class SearchActivity extends AppCompatActivity {
             SearchField searchField = buildSearchField(builder, homeName, guestCount, bedroomCount,
                     maxPriceStr, departureDate, arrivalDate,
                     hasWifi, hasPool, hasBbq, allowsPet,
-                    null, null);
+                    null, null, selectedSortOption);
             performSearch(searchField);
             return;
         }
@@ -229,13 +244,14 @@ public class SearchActivity extends AppCompatActivity {
         // Callback để check khi tất cả API calls hoàn thành
         int finalGuestCount = guestCount;
         int finalBedroomCount = bedroomCount;
+        SortOption finalSelectedSortOption = selectedSortOption;
         Runnable checkCompletion = () -> {
             if (apiCallsCompleted[0] == totalApiCalls) {
                 SearchField searchField = buildSearchField(builder, homeName, finalGuestCount, finalBedroomCount,
                         maxPriceStr, departureDate, arrivalDate,
                         hasWifi, hasPool, hasBbq, allowsPet,
                         cityCodesList.isEmpty() ? null : cityCodesList,
-                        districtCodesList.isEmpty() ? null : districtCodesList);
+                        districtCodesList.isEmpty() ? null : districtCodesList, finalSelectedSortOption);
                 performSearch(searchField);
             }
         };
@@ -295,7 +311,7 @@ public class SearchActivity extends AppCompatActivity {
                                          String departureDate, String arrivalDate,
                                          boolean hasWifi, boolean hasPool, boolean hasBbq,
                                          boolean allowsPet, List<Integer> cityCodes,
-                                         List<Integer> districtCodes) {
+                                         List<Integer> districtCodes, SortOption sortOption) {
 
         // Chỉ thêm các giá trị không rỗng vào builder
 
@@ -354,6 +370,9 @@ public class SearchActivity extends AppCompatActivity {
             builder.petAllowance(true);
         }
 
+        if(sortOption != null) {
+            builder.sortOptions(sortOption.toString());
+        }
         // Default pagination
         builder.pagination(0, 20);
 

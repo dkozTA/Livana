@@ -39,11 +39,11 @@ public class WishlistFolderAdapter extends RecyclerView.Adapter<WishlistFolderAd
     @Override
     public void onBindViewHolder(@NonNull FolderViewHolder holder, int position) {
         WishlistFolder folder = folders.get(position);
-        //holder.folderName.setText(folder.getName());
+        holder.folderName.setText(folder.getName());
 
         // Show first 4 house images in a grid
         List<Post> posts = folder.getPosts();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 3; i++) {
             if (i < posts.size()) {
                 Glide.with(holder.itemView.getContext())
                         .load(posts.get(i).getImageResId()) // nếu là URL, nên đổi tên hàm thành getImageUrl()
@@ -51,10 +51,8 @@ public class WishlistFolderAdapter extends RecyclerView.Adapter<WishlistFolderAd
                         .error(R.drawable.photo1)
                         .into(holder.previewImages[i]);
 
-                holder.previewImages[i].setVisibility(View.VISIBLE);
             } else {
-                holder.previewImages[i].setImageResource(R.color.black); // hoặc ảnh placeholder
-                holder.previewImages[i].setVisibility(View.INVISIBLE); // giữ không gian nhưng ẩn nội dung
+                holder.previewImages[i].setImageResource(R.color.divider_gray); // hoặc ảnh placeholder
             }
         }
 
@@ -73,12 +71,11 @@ public class WishlistFolderAdapter extends RecyclerView.Adapter<WishlistFolderAd
 
         public FolderViewHolder(@NonNull View itemView) {
             super(itemView);
-            folderName = itemView.findViewById(R.id.folder_name);
+            folderName = itemView.findViewById(R.id.nameFolder);
             previewImages = new ImageView[]{
-                    itemView.findViewById(R.id.preview_image1),
-                    itemView.findViewById(R.id.preview_image2),
-                    itemView.findViewById(R.id.preview_image3),
-                    itemView.findViewById(R.id.preview_image4)
+                    itemView.findViewById(R.id.image1),
+                    itemView.findViewById(R.id.image2),
+                    itemView.findViewById(R.id.image3)
             };
         }
     }

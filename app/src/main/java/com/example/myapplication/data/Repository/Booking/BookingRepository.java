@@ -35,7 +35,7 @@ public class BookingRepository {
     public void createBooking(Booking booking, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.db.collection(COLLECTION_NAME).document(booking.id).set(booking)
                 .addOnSuccessListener(unused -> {
-                    this.propertyRepository.updateBookedDate(booking.property_id, booking.check_in_day, booking.check_out_day,
+                    this.propertyRepository.updateBookedDateWithLinksTransaction(booking.property_id, booking.check_in_day, booking.check_out_day,
                             onSuccess, e -> {
                                 onFailure.onFailure(new Exception("Can not add booked date to Property"));
                             });

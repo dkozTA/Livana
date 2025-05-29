@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragments;
 
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,7 @@ public class SetPricesFragment extends Fragment implements IStepValidator {
 
         if (property != null) {
             normalPrice.setText(property.getNormal_price() == 0 ? "" : String.valueOf(property.getNormal_price()));
+            Log.d("NORMAL PRICE APPLY" , "  " + property.getNormal_price());
             weekendPrice.setText(property.getWeekend_price() == 0 ? "" : String.valueOf(property.getWeekend_price()));
             holidayPrice.setText(property.getHoliday_price() == 0 ? "" : String.valueOf(property.getHoliday_price()));
             deposit.setText(property.getDeposit() == 0 ? "" : String.valueOf(property.getDeposit()));
@@ -64,8 +66,11 @@ public class SetPricesFragment extends Fragment implements IStepValidator {
         if (newValue == null) newValue = new Property();
 
         FloatWrapper val = new FloatWrapper();
-        if (isValidMoney(normalPrice, val))
+        if (isValidMoney(normalPrice, val)) {
             newValue.normal_price = val.value;
+            Log.d("NORMAL PRICE", "  " + val.value);
+        }
+
         if (isValidMoney(weekendPrice, val))
             newValue.weekend_price = val.value;
         if (isValidMoney(holidayPrice, val))
@@ -93,7 +98,7 @@ public class SetPricesFragment extends Fragment implements IStepValidator {
             return false;
         }
 
-        value = value.replaceAll("[,\\.\\s]", "");
+        value = value.replaceAll("[,\\s]", "");
 
         try {
             float a = Float.parseFloat(value);

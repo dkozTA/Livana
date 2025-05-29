@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.myapplication.R;
 import com.example.myapplication.ui.adapters.PostAdapter;
@@ -26,7 +27,7 @@ public class WishlistFragment extends Fragment implements WishlistFolderAdapter.
 
         // Setup folders RecyclerView
         RecyclerView foldersRecycler = view.findViewById(R.id.wishlist_recycler);
-        foldersRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        foldersRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         WishlistFolderAdapter folderAdapter = new WishlistFolderAdapter(
                 WishlistManager.getInstance().getFolders(),
                 this

@@ -13,7 +13,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PropertyAPIClient {
-    private static final String BASE_URL = "http://10.0.2.2:5000/"; // Thay đổi URL server của bạn
+    private static final String BASE_URL = "https://mobile-search-363255354392.asia-southeast1.run.app/"; // Thay đổi URL server của bạn
     private PropertyAPIService apiService;
 
     public interface OnPropertyCallback {

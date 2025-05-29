@@ -3,6 +3,7 @@ package com.example.myapplication.ui.fragments;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -10,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -100,7 +103,7 @@ public class NewExploreFragment extends Fragment {
 
                             // Vị trí mong muốn khi logo thu nhỏ (top-left, như trong toolbar)
                             // Bạn có thể tinh chỉnh số "16" theo margin thực tế
-                            endX = dpToPx(15);
+                            endX = dpToPx(0);
                             endY = dpToPx(50);
                             positionCalculated = true;
                         }
@@ -116,7 +119,7 @@ public class NewExploreFragment extends Fragment {
                     // Dịch chuyển logo từ giữa về trái
                     float currentX = endX + (startX - endX) * offsetFactor;
                     float currentY = endY + (startY - endY) * offsetFactor;
-                    //logoText.setX(currentX);
+                    logoText.setX(currentX);
                     //logoText.setY(currentY);
                 }
             }

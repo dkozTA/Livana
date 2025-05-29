@@ -34,26 +34,24 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="14dp"
             android:layout_weight="1"
-            android:alpha="0"
-            android:fontFamily="@font/roboto_medium"
-            android:scaleY="0.9"
+            android:fontFamily="@font/roboto_bold"
             android:text="Đã xem gần đây"
             android:textColor="#121212"
-            android:textSize="20sp" />
+            android:textSize="22sp" />
+
 
     </LinearLayout>
 
     <View
-        android:id="@+id/headerLine"
+        android:id="@+id/headerShadow"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#B8B8B8"
         android:elevation="0dp"
         android:translationZ="1dp"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerLayout" />
+
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
@@ -74,23 +72,20 @@
             android:backgroundTint="#FFFFFF"
             android:clipToPadding="false"
             android:orientation="vertical"
-            android:paddingTop="8dp">
+            android:padding="20dp">
 
             <TextView
                 android:id="@+id/topTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginBottom="20dp"
                 android:fontFamily="@font/roboto_medium"
-                android:scaleY="0.92"
                 android:text="Đã xem gần đây"
                 android:textColor="#0F0F0F"
-                android:textSize="35sp" />
+                android:textSize="30sp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/housesRecycler"
+                android:id="@+id/contentRecycler"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </LinearLayout>

@@ -24,6 +24,8 @@ import com.example.myapplication.ui.activities.CreatePropertyActivity;
 import com.example.myapplication.ui.adapters.PropertyAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,9 +85,15 @@ public class PropertyManagementFragment extends Fragment {
         propertyAdapter = new PropertyAdapter(propertyList, new PropertyAdapter.OnPropertyActionListener() {
             @Override
             public void onUpdateProperty(Property property) {
-                // Handle update property action
-                Toast.makeText(getContext(), "Cập nhật phòng: " + property.name, Toast.LENGTH_SHORT).show();
-                // TODO: Navigate to update property screen
+                //Use Json to transfer property data
+                Toast.makeText(getContext(), "Update Clicked", Toast.LENGTH_SHORT).show();
+                Gson gson = new Gson();
+                String json = gson.toJson(property);
+
+                Intent intent = new Intent(requireContext(), CreatePropertyActivity.class);
+                intent.putExtra("property_json", json);
+
+                startActivity(intent);
             }
         });
 
