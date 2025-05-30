@@ -18,6 +18,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -100,7 +101,10 @@ public class BookingRepository {
         this.getBookingById(bookingId,
                 booking -> {
                     if(booking.status != Booking_status.ACCEPTED && Objects.equals(booking.host_id, currentUserID)) {
-                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.IN_PROGRESS)
+                        HashMap<String, Object> updates = new HashMap<>();
+                        updates.put("status", Booking_status.IN_PROGRESS);
+                        updates.put("updated_at", new Date());
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update(updates)
                                 .addOnSuccessListener(unused -> {
                                     this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Renting, onSuccess, onFailure);
                                 })
@@ -116,7 +120,10 @@ public class BookingRepository {
         this.getBookingById(bookingId,
                 booking -> {
                     if(booking.status == Booking_status.COMPLETED) {
-                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.REVIEWED)
+                        HashMap<String, Object> updates = new HashMap<>();
+                        updates.put("status", Booking_status.REVIEWED);
+                        updates.put("updated_at", new Date());
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update(updates)
                                 .addOnSuccessListener(onSuccess)
                                 .addOnFailureListener(onFailure);
                     } else {
@@ -133,7 +140,10 @@ public class BookingRepository {
                     if(booking.status != Booking_status.COMPLETED
                             && booking.status != Booking_status.IN_PROGRESS
                             && (booking.host_id.equals(userID) || booking.guest_id.equals(userID))) {
-                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.CANCELLED)
+                        HashMap<String, Object> updates = new HashMap<>();
+                        updates.put("status", Booking_status.CANCELLED);
+                        updates.put("updated_at", new Date());
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update(updates)
                                 .addOnSuccessListener(unused  ->{
                                     // Remove booked dates from property
                                     propertyRepository.removeBookedDates(
@@ -159,7 +169,10 @@ public class BookingRepository {
         this.getBookingById(bookingId,
                 booking -> {
                     if(booking.status == Booking_status.IN_PROGRESS && Objects.equals(booking.host_id, currentUserID)) {
-                        this.db.collection(COLLECTION_NAME).document(bookingId).update("status", Booking_status.COMPLETED)
+                        HashMap<String, Object> updates = new HashMap<>();
+                        updates.put("status", Booking_status.COMPLETED);
+                        updates.put("updated_at", new Date());
+                        this.db.collection(COLLECTION_NAME).document(bookingId).update(updates)
                                 .addOnSuccessListener(unused -> {
                                     this.userRepository.addRentingHistory(booking.guest_id, booking.id,
                                             unused1 -> {
@@ -196,7 +209,7 @@ public class BookingRepository {
                            onFailure.onFailure(new Exception("Booking is null"));
                        }
                    } else {
-                       onSuccess.onSuccess(Booking_status.COMPLETED);
+                       onSuccess.onSuccess(Booking_status.CANCELLED);
                    }
                })
                .addOnFailureListener(onFailure);
