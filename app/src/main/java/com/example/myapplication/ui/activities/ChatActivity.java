@@ -63,8 +63,9 @@ public class ChatActivity extends AppCompatActivity {
         conversationRepository.getConversationById(conversationID, conversation -> {
             if (conversation != null && conversation.messages != null) {
                 messageList = conversation.messages;
-                messageAdapter = new MessageAdapter(messageList, sender_ID , conversation.host_id, conversation.guest_id);
+                messageAdapter = new MessageAdapter(messageList, sender_ID , conversation.host_id, conversation.guest_id, conversation.avatar_url, this);
                 recyclerMessages.setAdapter(messageAdapter);
+                recyclerMessages.smoothScrollToPosition(messageList.size() - 1);
                 title.setText(conversation.name);
                 // Set avatar using Glide
                 if (conversation.avatar_url != null && !conversation.avatar_url.isEmpty()) {

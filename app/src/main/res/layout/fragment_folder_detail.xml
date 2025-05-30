@@ -36,7 +36,6 @@
             android:layout_weight="1"
             android:alpha="0"
             android:fontFamily="@font/roboto_medium"
-            android:scaleY="0.9"
             android:text="Đã xem gần đây"
             android:textColor="#121212"
             android:textSize="20sp" />
@@ -74,25 +73,26 @@
             android:backgroundTint="#FFFFFF"
             android:clipToPadding="false"
             android:orientation="vertical"
-            android:paddingTop="8dp">
+            android:paddingTop="18dp">
 
             <TextView
                 android:id="@+id/topTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="25dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="5dp"
+                android:layout_marginStart="29dp"
+                android:layout_marginEnd="25dp"
+                android:layout_marginBottom="10dp"
                 android:fontFamily="@font/roboto_medium"
-                android:scaleY="0.92"
                 android:text="Đã xem gần đây"
                 android:textColor="#0F0F0F"
-                android:textSize="35sp" />
+                android:textScaleX="1.05"
+                android:textSize="32sp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/housesRecycler"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

@@ -27,4 +27,28 @@
         <item name="cornerSizeBottomLeft">16dp</item>
         <item name="cornerSizeBottomRight">16dp</item>
     </style>
+
+    <!-- Style cho TabLayout -->
+    <style name="CustomTabLayout" parent="Widget.MaterialComponents.TabLayout">
+        <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
+        <item name="tabSelectedTextAppearance">@style/CustomTabSelectedTextAppearance</item>
+    </style>
+
+    <!-- Style cho text bình thường -->
+    <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textStyle">normal</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">#6F6F6F</item>
+    </style>
+
+    <!-- Style cho text khi được chọn -->
+    <style name="CustomTabSelectedTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:textSize">17sp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textStyle">normal</item>
+        <item name="textAllCaps">false</item>
+        <item name="android:textColor">#0F0F0F</item>
+    </style>
 </resources>
