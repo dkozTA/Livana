@@ -39,12 +39,25 @@ public class BookingRepository {
     public void createBooking(Booking booking, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.db.collection(COLLECTION_NAME).document(booking.id).set(booking)
                 .addOnSuccessListener(unused -> {
-                    this.propertyRepository.updateBookedDateWithLinksTransaction(booking.property_id, booking.check_in_day, booking.check_out_day,
-                            unused1 -> {
-                                this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
-                            }, e -> {
-                                onFailure.onFailure(new Exception("Can not add booked date to Property"));
-                            });
+                    this.propertyRepository.getPropertyById(booking.property_id, property -> {
+                        if(property.links == null || property.links.isEmpty()) {
+                           this.propertyRepository.updateBookedDate(booking.property_id, booking.check_in_day, booking.check_out_day,
+                                   unused1 -> {
+                                       this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
+                                   }, e -> {
+                                       onFailure.onFailure(new Exception("Can not add booked date to Property"));
+                                   });
+                       } else {
+                           this.propertyRepository.updateBookedDateWithLinksTransaction(booking.property_id, booking.check_in_day, booking.check_out_day,
+                                   unused1 -> {
+                                       this.propertyRepository.updatePropertyStatusWithLinksTransaction(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
+                                   }, e -> {
+                                       onFailure.onFailure(new Exception("Can not add booked date to Property"));
+                                   });
+                       }
+                    }, e-> {
+
+                    });
                 })
                 .addOnFailureListener(e -> {
                     onFailure.onFailure(new Exception("Can not create Booking"));
@@ -106,14 +119,26 @@ public class BookingRepository {
                         updates.put("updated_at", new Date());
                         this.db.collection(COLLECTION_NAME).document(bookingId).update(updates)
                                 .addOnSuccessListener(unused -> {
-                                    this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Renting, onSuccess, onFailure);
+                                    this.propertyRepository.getPropertyById(booking.property_id, property -> {
+                                        if(property.links == null || property.links.isEmpty()) {
+                                            this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Renting, onSuccess, onFailure);
+                                        } else {
+                                            this.propertyRepository.updatePropertyStatusWithLinksTransaction(booking.property_id, PropertyStatus.Renting, onSuccess, onFailure);
+                                        }
+                                    }, e-> {
+                                        onFailure.onFailure(new Exception("Can not update property status"));
+                                    });
                                 })
-                                .addOnFailureListener(onFailure);
+                                .addOnFailureListener(e -> {
+                                    onFailure.onFailure(new Exception("Can not update booking status"));
+                                });
                     } else {
                         onFailure.onFailure(new Exception("Booking status must be PENDING"));
                     }
                 },
-                onFailure);
+                e -> {
+                    onFailure.onFailure(new Exception("Can not get booking by ID"));
+                });
     }
 
     public void setReviewedBooking(String bookingId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
@@ -138,23 +163,38 @@ public class BookingRepository {
         this.getBookingById(bookingId,
                 booking -> {
                     if(booking.status != Booking_status.COMPLETED
-                            && booking.status != Booking_status.IN_PROGRESS
+                            && booking.status != Booking_status.IN_PROGRESS && booking.status != Booking_status.REVIEWED
                             && (booking.host_id.equals(userID) || booking.guest_id.equals(userID))) {
                         HashMap<String, Object> updates = new HashMap<>();
                         updates.put("status", Booking_status.CANCELLED);
                         updates.put("updated_at", new Date());
                         this.db.collection(COLLECTION_NAME).document(bookingId).update(updates)
                                 .addOnSuccessListener(unused  ->{
-                                    // Remove booked dates from property
-                                    propertyRepository.removeBookedDates(
-                                            booking.property_id,
-                                            booking.check_in_day,
-                                            booking.check_out_day,
-                                            unused1 -> {
-                                                this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
-                                            },
-                                            onFailure
-                                    );
+                                    this.propertyRepository.getPropertyById(booking.property_id, property -> {
+                                        if(property.links == null || property.links.isEmpty()) {
+                                            // Remove booked dates from property
+                                            propertyRepository.removeBookedDates(
+                                                    booking.property_id,
+                                                    booking.check_in_day,
+                                                    booking.check_out_day,
+                                                    unused1 -> {
+                                                        this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
+                                                    },
+                                                    e -> {
+                                                        onFailure.onFailure(new Exception("Can not update property status"));
+                                                    }
+                                            );
+                                        } else {
+                                            // nếu có links thì phải xóa cả nhà của links đi nữa
+                                            propertyRepository.removeBookedDatesWithLinkTransaction(booking.property_id, booking.check_in_day, booking.check_out_day, unused1 -> {
+                                                propertyRepository.updatePropertyStatusWithLinksTransaction(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
+                                            }, e -> {
+                                                onFailure.onFailure(new Exception("Can not update property status an its links"));
+                                            });
+                                        }
+                                    }, e-> {
+                                        onFailure.onFailure(new Exception("Can not update property status"));
+                                    });
                                 })
                                 .addOnFailureListener(onFailure);
                     } else {
@@ -176,8 +216,15 @@ public class BookingRepository {
                                 .addOnSuccessListener(unused -> {
                                     this.userRepository.addRentingHistory(booking.guest_id, booking.id,
                                             unused1 -> {
-                                                this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
-                                            },
+                                                this.propertyRepository.getPropertyById(booking.property_id, property -> {
+                                                    if(property.links == null || property.links.isEmpty()) {
+                                                        this.propertyRepository.updatePropertyStatus(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
+                                                    } else {
+                                                        this.propertyRepository.updatePropertyStatusWithLinksTransaction(booking.property_id, PropertyStatus.Idle, onSuccess, onFailure);
+                                                    }
+                                                }, e-> {
+                                                    onFailure.onFailure(new Exception("Can not update property status"));
+                                                });                                            },
                                             e -> {
                                                 onFailure.onFailure(new Exception("Can not add to user Renting History: " + e.getMessage()));
                                             });

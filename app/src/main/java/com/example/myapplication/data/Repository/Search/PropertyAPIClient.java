@@ -1,16 +1,18 @@
 package com.example.myapplication.data.Repository.Search;
 
-import android.util.Log;
-
 import com.example.myapplication.data.Model.Property.SearchProperty;
+import com.example.myapplication.data.Model.Search.BookedDateRequest;
 import com.example.myapplication.data.Model.Search.SearchField;
 import com.example.myapplication.data.Model.Search.SearchResponse;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.Body;
 
 public class PropertyAPIClient {
     private static final String BASE_URL = "https://mobile-search-363255354392.asia-southeast1.run.app/"; // Thay đổi URL server của bạn
@@ -65,11 +67,6 @@ public class PropertyAPIClient {
         });
     }
 
-    /**
-     * Xóa một property từ Algolia theo ID
-     * @param propertyId ID của property cần xóa
-     * @param callback Interface callback để xử lý kết quả
-     */
     public void deletePropertyById(String propertyId, final OnPropertyCallback callback) {
         apiService.deletePropertyById(propertyId).enqueue(new Callback<SearchResponse>() {
             @Override
@@ -87,11 +84,6 @@ public class PropertyAPIClient {
         });
     }
 
-    /**
-     * Tìm kiếm các property theo tiêu chí
-     * @param searchField Đối tượng chứa các tiêu chí tìm kiếm
-     * @param callback Interface callback để xử lý kết quả
-     */
     public void searchProperties(SearchField searchField, final OnPropertyCallback callback) {
         apiService.searchProperties(searchField).enqueue(new Callback<SearchResponse>() {
             @Override
@@ -102,6 +94,42 @@ public class PropertyAPIClient {
                     callback.onError("Failed to search properties: " + response.message());
                 }
             }
+            @Override
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
+                callback.onError("Lỗi kết nối: " + t.getMessage());
+            }
+        });
+    }
+
+    public void addBookedDate(String propertyID, BookedDateRequest dates, final OnPropertyCallback callback) {
+        apiService.updateBookedDateByPropertyID(propertyID, dates).enqueue(new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to add property's booked dates: " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SearchResponse> call, Throwable t) {
+                callback.onError("Lỗi kết nối: " + t.getMessage());
+            }
+        });
+    }
+
+    public void removeBookedDate(String propertyID, BookedDateRequest dates, final OnPropertyCallback callback) {
+        apiService.removeBookedDateByPropertyID(propertyID, dates).enqueue(new Callback<SearchResponse>() {
+            @Override
+            public void onResponse(Call<SearchResponse> call, Response<SearchResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Failed to remove property's booked dates: " + response.message());
+                }
+            }
+
             @Override
             public void onFailure(Call<SearchResponse> call, Throwable t) {
                 callback.onError("Lỗi kết nối: " + t.getMessage());
