@@ -51,6 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
+            android:layout_marginTop="7dp"
             android:background="#00FFFFFF"
             app:tabGravity="fill"
             app:tabIndicatorColor="@android:color/black"
@@ -99,6 +100,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="#FFFFFF"
+            android:paddingTop="10dp"
             tools:listitem="@layout/item_conversation" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

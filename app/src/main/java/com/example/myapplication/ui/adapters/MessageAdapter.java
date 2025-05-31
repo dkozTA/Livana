@@ -27,16 +27,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
     private final String guestId;
     private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM HH:mm", Locale.getDefault());
     private final String partnerAvatar;
-    private Context context;
 
-    public MessageAdapter(List<Message> messageList, String currentUserId, String hostId, String guestId, String partnerAvatar, Context context) {
+    public MessageAdapter(List<Message> messageList, String currentUserId, String hostId, String guestId, String partnerAvatar) {
         this.messageList = messageList;
         this.currentUserId = currentUserId;
         this.hostId = hostId;
         this.guestId = guestId;
         this.partnerAvatar = partnerAvatar;
-        this.context = context;
-
     }
 
     @Override
@@ -132,7 +129,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
                 for (int i = messageList.size() - 1; i >= position; i--) {
                     if(messageList.get(i).sender_id.equals(senderID)) {
                         if (i == position) {
-                            Glide.with(context)
+                            Glide.with(holder.itemView)
                                     .load(partnerAvatar)
                                     .placeholder(R.drawable.avatar_placeholder)
                                     .error(R.drawable.avatar_placeholder) // Fallback image khi load lỗi

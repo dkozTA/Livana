@@ -63,7 +63,7 @@ public class ChatActivity extends AppCompatActivity {
         conversationRepository.getConversationById(conversationID, conversation -> {
             if (conversation != null && conversation.messages != null) {
                 messageList = conversation.messages;
-                messageAdapter = new MessageAdapter(messageList, sender_ID , conversation.host_id, conversation.guest_id, conversation.avatar_url, this);
+                messageAdapter = new MessageAdapter(messageList, sender_ID , conversation.host_id, conversation.guest_id, conversation.avatar_url);
                 recyclerMessages.setAdapter(messageAdapter);
                 recyclerMessages.smoothScrollToPosition(messageList.size() - 1);
                 title.setText(conversation.name);

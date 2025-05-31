@@ -83,12 +83,12 @@ public class ConversationListAdapter extends RecyclerView.Adapter<ConversationLi
             if (conversation.avatar_url != null && !conversation.avatar_url.isEmpty()) {
                 Glide.with(avatarImageView.getContext())
                         .load(conversation.avatar_url)
-                        .placeholder(R.drawable.avatar_placeholder)
-                        .error(R.drawable.avatar_placeholder) // Fallback image khi load lỗi
+                        .placeholder(R.drawable.user)
+                        .error(R.drawable.user) // Fallback image khi load lỗi
                         .circleCrop() // Optional: Crop ảnh thành hình tròn
                         .into(avatarImageView);
             } else {
-                avatarImageView.setImageResource(R.drawable.avatar_placeholder);
+                avatarImageView.setImageResource(R.drawable.user);
             }
 
             // Get the last message if available

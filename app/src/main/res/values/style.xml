@@ -36,7 +36,7 @@
 
     <!-- Style cho text bình thường -->
     <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:textStyle">normal</item>
         <item name="textAllCaps">false</item>
@@ -45,7 +45,7 @@
 
     <!-- Style cho text khi được chọn -->
     <style name="CustomTabSelectedTextAppearance" parent="TextAppearance.Design.Tab">
-        <item name="android:textSize">17sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
         <item name="android:textStyle">normal</item>
         <item name="textAllCaps">false</item>
