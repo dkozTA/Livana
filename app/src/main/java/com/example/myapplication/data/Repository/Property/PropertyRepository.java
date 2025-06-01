@@ -34,6 +34,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -220,7 +221,25 @@ public class PropertyRepository {
                         Property property = document.toObject(Property.class);
                         propertyList.add(property);
                     }
-                    onSuccess.onSuccess(propertyList);
+                    List<String> targetIDs = Arrays.asList(
+                            "4d36355e-5613-4154-8b19-dacf94faec04",
+                            "5d3c3511-09a4-4604-9391-50b1092e8e44",
+                            "7a850e26-fb7f-484d-b908-acdd6370f240",
+                            "9a6779e1-4ffb-494e-961e-eb1809d45651",
+                            "a158940d-0f68-4e16-adba-a5896ab2e21f"
+                    );
+                    List<Property> prioritized = new ArrayList<>();
+                    List<Property> remaining = new ArrayList<>();
+
+                    for (Property property : propertyList) {
+                        if (targetIDs.contains(property.id)) {
+                            prioritized.add(property);
+                        } else {
+                            remaining.add(property);
+                        }
+                    }
+                    prioritized.addAll(remaining);
+                    onSuccess.onSuccess(prioritized);
                 })
                 .addOnFailureListener(onFailure);
     }
@@ -300,7 +319,7 @@ public class PropertyRepository {
         return dateSeries;
     }
 
-    private boolean validateBookedDate(List<String> existingDates, List<String> targetDates) {
+    public boolean validateBookedDate(List<String> existingDates, List<String> targetDates) {
         // Tạo Set để tối ưu việc kiểm tra tồn tại
         Set<String> existingDateSet = new HashSet<>(existingDates);
 
@@ -524,17 +543,8 @@ public class PropertyRepository {
 
                 return null; // Transaction thành công
             }
-        }).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void unused) {
-                onSuccess.onSuccess(null);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                onFailure.onFailure(e);
-            }
-        });
+        }).addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
     }
 
     // khi remove thì remove cả nhà cũng được link luôn
