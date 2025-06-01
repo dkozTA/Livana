@@ -3,6 +3,7 @@ package com.example.myapplication.data.Model.Search;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.example.myapplication.data.Enum.SortOption;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -63,6 +64,9 @@ public class SearchField implements Parcelable {
     @SerializedName("airConditioner")
     private boolean airConditioner;
 
+    @SerializedName("sort")
+    private String sort;
+
     @SerializedName("page")
     private int page;
 
@@ -99,6 +103,7 @@ public class SearchField implements Parcelable {
         bbq = in.readByte() != 0;
         wifi = in.readByte() != 0;
         airConditioner = in.readByte() != 0;
+        sort = in.readString();
         page = in.readInt();
         hitsPerPage = in.readInt();
     }
@@ -123,6 +128,7 @@ public class SearchField implements Parcelable {
         dest.writeByte((byte) (bbq ? 1 : 0));
         dest.writeByte((byte) (wifi ? 1 : 0));
         dest.writeByte((byte) (airConditioner ? 1 : 0));
+        dest.writeString(sort);
         dest.writeInt(page);
         dest.writeInt(hitsPerPage);
     }
@@ -305,6 +311,14 @@ public class SearchField implements Parcelable {
         this.hitsPerPage = hitsPerPage;
     }
 
+    public void setSortOption(String sort) {
+        this.sort = sort;
+    }
+
+    public String getSortOption() {
+        return this.sort;
+    }
+
     // Builder pattern để dễ dàng tạo đối tượng tìm kiếm
     public static class Builder {
         private SearchField searchField;
@@ -392,6 +406,11 @@ public class SearchField implements Parcelable {
 
         public Builder airConditioner(boolean hasAirConditioner) {
             searchField.setAirConditioner(hasAirConditioner);
+            return this;
+        }
+
+        public Builder sortOptions(String sort) {
+            searchField.setSortOption(sort);
             return this;
         }
 

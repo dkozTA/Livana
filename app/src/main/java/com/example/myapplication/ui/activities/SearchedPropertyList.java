@@ -1,5 +1,10 @@
 package com.example.myapplication.ui.activities;
 
+import static com.example.myapplication.data.Enum.SortOption.None;
+import static com.example.myapplication.data.Enum.SortOption.Price_High_To_Low;
+import static com.example.myapplication.data.Enum.SortOption.Price_Low_To_High;
+import static com.example.myapplication.data.Enum.SortOption.Rating_High_To_Low;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Enum.SortOption;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Model.Search.SearchField;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
@@ -45,9 +51,10 @@ public class SearchedPropertyList extends AppCompatActivity implements SearchedL
     private TextView priceRangeValue;
     private TextView dateRangeValue;
     private TextView amenitiesValue;
-
+    private TextView sortValue;
     public static final String EXTRA_SEARCH_FIELD = "extra_search_field";
     public static final String EXTRA_PROPERTY_IDS = "extra_property_ids";
+    private SortOption sortOption;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +101,7 @@ public class SearchedPropertyList extends AppCompatActivity implements SearchedL
         priceRangeValue = findViewById(R.id.price_range_value);
         dateRangeValue = findViewById(R.id.date_range_value);
         amenitiesValue = findViewById(R.id.amenities_value);
-
+        sortValue = findViewById(R.id.sort_value);
         // Set up navigation buttons
 
     }
@@ -153,7 +160,7 @@ public class SearchedPropertyList extends AppCompatActivity implements SearchedL
         // Hiển thị khoảng giá
         NumberFormat currencyFormat = NumberFormat.getNumberInstance(new Locale("vi", "VN"));
         String minPrice = searchField.getMin_price() > 0 ?
-                currencyFormat.format(searchField.getMin_price()) + "₫" : "Không giới hạn";
+                currencyFormat.format(searchField.getMin_price()) + "₫" : "0₫";
         String maxPrice = searchField.getMax_price() > 0 ?
                 currencyFormat.format(searchField.getMax_price()) + "₫" : "Không giới hạn";
 
@@ -188,6 +195,30 @@ public class SearchedPropertyList extends AppCompatActivity implements SearchedL
         } else {
             amenitiesValue.setText("Không");
         }
+
+        String sort = searchField.getSortOption();
+        if(!TextUtils.isEmpty(sort)) {
+            if(sort.equalsIgnoreCase(Rating_High_To_Low.toString())) {
+                sortValue.setText("Đánh giá cao nhất");
+                this.sortOption = Rating_High_To_Low;
+            }
+            if(sort.equalsIgnoreCase(Price_Low_To_High.toString())) {
+                sortValue.setText("Giá tăng dần");
+                this.sortOption = Price_Low_To_High;
+            }
+            if(sort.equalsIgnoreCase(Price_High_To_Low.toString())) {
+                sortValue.setText("Giá giảm dần");
+                this.sortOption = Price_High_To_Low;
+            }
+            if(sort.equalsIgnoreCase(None.toString())) {
+                sortValue.setText("Không");
+                this.sortOption = None;
+            }
+        } else {
+            sortValue.setText("Không");
+            this.sortOption = None;
+        }
+
     }
 
     private void logSearchFieldInfo() {
@@ -216,6 +247,7 @@ public class SearchedPropertyList extends AppCompatActivity implements SearchedL
                 sb.append(code).append(" ");
             }
         }
+        sb.append(searchField.getSortOption());
 
         Log.d("Search Field", sb.toString());
     }
@@ -243,18 +275,33 @@ public class SearchedPropertyList extends AppCompatActivity implements SearchedL
     // Phương thức này sẽ được triển khai để gọi API hoặc truy vấn dữ liệu dựa trên các ID
     private void fetchPropertiesByIds(List<String> ids) {
         PropertyRepository propertyRepository = new PropertyRepository(this);
-        List<Property> properties = new ArrayList<>();
 
-        for (String id : ids) {
-            propertyRepository.getPropertyById(id,
-                    property -> {
-                        properties.add(property);
-                        if (properties.size() == ids.size()) {
-                            updatePropertyList(properties);
-                        }
-                    }, e -> {
-                        Toast.makeText(this, "Lỗi khi lấy thông tin của property", Toast.LENGTH_SHORT).show();
-                    });
+
+        if(this.sortOption == None) {
+            List<Property> properties = new ArrayList<>();
+            for (String id : ids) {
+                propertyRepository.getPropertyById(id,
+                        property -> {
+                            properties.add(property);
+                            if (properties.size() == ids.size()) {
+                                updatePropertyList(properties);
+                            }
+                        }, e -> {
+                            Toast.makeText(this, "Lỗi khi lấy thông tin của property", Toast.LENGTH_SHORT).show();
+                        });
+            }
+        } else if (this.sortOption == Rating_High_To_Low) {
+            propertyRepository.getPropertySortedByRating(ids, this::updatePropertyList, e -> {
+                Toast.makeText(this, "Lỗi khi lấy theo xếp hạng", Toast.LENGTH_LONG).show();
+            });
+        } else if(this.sortOption == Price_Low_To_High) {
+            propertyRepository.getPropertySortedByPriceAsc(ids, this::updatePropertyList, e -> {
+                Toast.makeText(this, "Lỗi khi lấy theo giá tăng dần", Toast.LENGTH_LONG).show();
+            });
+        } else {
+            propertyRepository.getPropertySortedByPriceDesc(ids, this::updatePropertyList, e -> {
+                Toast.makeText(this, "Lỗi khi lấy theo giá giảm dần", Toast.LENGTH_LONG).show();
+            });
         }
     }
 

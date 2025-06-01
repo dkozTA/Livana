@@ -526,7 +526,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginBottom="12dp"
-                                android:text="Số lượng khách tối thiểu"
+                                android:text="Số lượng khách"
                                 android:fontFamily="@font/afacad_medium"
                                 android:textSize="18sp" />
 

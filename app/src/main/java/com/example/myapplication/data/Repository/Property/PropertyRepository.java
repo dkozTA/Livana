@@ -3,18 +3,31 @@ package com.example.myapplication.data.Repository.Property;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+
+import com.example.myapplication.data.Enum.PropertyStatus;
 
 import com.example.myapplication.data.Model.Property.Property;
+import com.example.myapplication.data.Model.Property.SearchProperty;
+import com.example.myapplication.data.Model.Search.BookedDateRequest;
+import com.example.myapplication.data.Model.Search.SearchResponse;
 import com.example.myapplication.data.Repository.FirebaseService;
+import com.example.myapplication.data.Repository.Search.PropertyAPIClient;
 import com.example.myapplication.data.Repository.Storage.StorageRepository;
-import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.ui.fragments.LinkValidator;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import com.google.firebase.firestore.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -22,20 +35,26 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class PropertyRepository {
     private final FirebaseFirestore db;
     private final StorageRepository storageRepository;
     private final String COLLECTION_NAME = "properties"; // Tên collection trong Firestore
-    
+    private final PropertyAPIClient propertyAPIClient;
     public PropertyRepository(Context context) {
         this.db = FirebaseService.getInstance(context).getFireStore();
+        this.propertyAPIClient = new PropertyAPIClient();
         this.storageRepository = new StorageRepository(context);
     }
 
@@ -104,7 +123,20 @@ public class PropertyRepository {
                     property.setSub_photos(sub_img_urls);
                     this.db.collection(COLLECTION_NAME).document(ID)
                             .set(property)
-                            .addOnSuccessListener(onSuccess)
+                            .addOnSuccessListener(unused -> {
+
+                                propertyAPIClient.addPropertyToAlgolia(new SearchProperty(property), new PropertyAPIClient.OnPropertyCallback() {
+                                    @Override
+                                    public void onSuccess(SearchResponse response) {
+                                        onSuccess.onSuccess(null);
+                                    }
+
+                                    @Override
+                                    public void onError(String errorMessage) {
+                                        onFailure.onFailure(new Exception("Can not add property into Algolia"));
+                                    }
+                                });
+                            })
                             .addOnFailureListener(e -> {
                                 onFailure.onFailure(new Exception("Can not add property into db"));
                             });
@@ -120,7 +152,9 @@ public class PropertyRepository {
                 property.setSub_photos(sub_img_urls);
                 this.db.collection(COLLECTION_NAME).document(ID)
                         .set(property)
-                        .addOnSuccessListener(onSuccess)
+                        .addOnSuccessListener(unused -> {
+
+                        })
                         .addOnFailureListener(onFailure);
             }, e -> {
                 onFailure.onFailure(new Exception("Can not upload Sub images to Storage"));
@@ -285,6 +319,86 @@ public class PropertyRepository {
         return true; // Không có ngày nào trùng → hợp lệ
     }
 
+    //Gọi cái này để thêm vào link nhé, không gọi cái dưới
+    public void addLinksToBothProperty(String propertyID, String link_id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.addLinksToProperty(propertyID, link_id, unused -> {
+            this.addLinksToProperty(link_id, propertyID, onSuccess, onFailure);
+        }, e-> {
+            onFailure.onFailure(new Exception("Can not add links to property: " + e.getMessage()));
+        });
+    }
+
+    public void addLinksToProperty(String propertyID, String link_id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getPropertyById(link_id, property -> {
+            this.db.collection(COLLECTION_NAME).document(propertyID).update("links", FieldValue.arrayUnion(link_id))
+                    .addOnSuccessListener(onSuccess)
+                    .addOnFailureListener(e1 -> {
+                        onFailure.onFailure(new Exception("Can not add links to property: " + e1.getMessage() ));
+                    });
+        }, e-> {
+            onFailure.onFailure(new Exception("Link Id của Property không tồn tại"));
+        });
+    }
+
+    public void deleteLinksToProperty(String propertyID, String link_id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.getPropertyById(link_id, property -> {
+            this.db.collection(COLLECTION_NAME).document(propertyID).update("links", FieldValue.arrayRemove(link_id))
+                    .addOnSuccessListener(onSuccess)
+                    .addOnFailureListener(e1 -> {
+                        onFailure.onFailure(new Exception("Can not add links to property: " + e1.getMessage() ));
+                    });
+        }, e -> {
+           onFailure.onFailure(new Exception("Link Id của Property không tồn tại"));
+        });
+    }
+
+    public void updatePropertyStatus(String propertyID, PropertyStatus status, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.db.collection(COLLECTION_NAME).document(propertyID).update("status", status)
+                .addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
+    public void updatePropertyStatusWithLinksTransaction(String propertyID, PropertyStatus status, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.db.runTransaction(new Transaction.Function<Void>() {
+
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                // READ PHASE
+                if(propertyID == null) {
+                    throw new FirebaseFirestoreException("Property not found",
+                            FirebaseFirestoreException.Code.NOT_FOUND);
+                }
+                DocumentReference mainPropertyReference = db.collection("properties").document(propertyID);
+                DocumentSnapshot mainPropertySnapshot = transaction.get(mainPropertyReference);
+
+                if (!mainPropertySnapshot.exists()) {
+                    throw new FirebaseFirestoreException("Property not found",
+                            FirebaseFirestoreException.Code.NOT_FOUND);
+                }
+
+                Property mainProperty = mainPropertySnapshot.toObject(Property.class);
+                if(mainProperty == null) {
+                    throw new FirebaseFirestoreException("Property not found",
+                            FirebaseFirestoreException.Code.NOT_FOUND);
+                }
+                List<String> links = mainProperty.links;
+                // WRITE PHASE
+                transaction.update(mainPropertyReference, "status", status);
+                transaction.update(mainPropertyReference, "updated_at", new Date());
+                for (String link : links) {
+                    DocumentReference linkPropertyReference = db.collection("properties").document(link);
+                    transaction.update(linkPropertyReference, "status", status);
+                    transaction.update(linkPropertyReference, "updated_at", new Date());
+                }
+
+                return null;
+            }
+        }).addOnSuccessListener(onSuccess)
+                .addOnFailureListener(e -> {
+                    onFailure.onFailure(new Exception("Can not update status for property and its LINK"));
+                });
+    }
 
     // Lưu theo định dạng dd-MM-yyyy - Front end check xem ngày Start có lớn hơn ngày End không
     public void updateBookedDate(String propertyId, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
@@ -300,7 +414,19 @@ public class PropertyRepository {
                             if (validateBookedDate(property.booked_date, dateSeries)) {
                                 this.db.collection(COLLECTION_NAME).document(propertyId)
                                         .update("booked_date", FieldValue.arrayUnion(dateSeries.toArray()))
-                                        .addOnSuccessListener(onSuccess)
+                                        .addOnSuccessListener(unused -> {
+                                            propertyAPIClient.addBookedDate(propertyId, new BookedDateRequest(dateSeries), new PropertyAPIClient.OnPropertyCallback() {
+                                                @Override
+                                                public void onSuccess(SearchResponse response) {
+                                                    onSuccess.onSuccess(null);
+                                                }
+
+                                                @Override
+                                                public void onError(String errorMessage) {
+                                                    onFailure.onFailure(new Exception("Can not add booked-Date into Algolia"));
+                                                }
+                                            });
+                                        })
                                         .addOnFailureListener(onFailure);
                             } else {
                                 onFailure.onFailure(new Exception("Booked date is invalid"));
@@ -313,24 +439,105 @@ public class PropertyRepository {
                 });
     }
 
-    /*
-    public void removeBookedDate(String propertyID, String startDate, String endDate, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        List<String> dates = this.getDateRange(startDate, endDate);
-        this.db.collection("properties")
-                .document(propertyID)
-                .update("booked_date", FieldValue.arrayRemove(dates.toArray()))
-                .addOnSuccessListener(onSuccess)
-                .addOnFailureListener(onFailure);
-    }
-    */
+    public void updateBookedDateWithLinksTransaction(String propertyID, String startDate, String endDate,
+                                                     OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
 
-    public void clearBookedDates(String propertyId, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-        db.collection("properties").document(propertyId)
-                .update("booked_date", new ArrayList<String>())
-                .addOnSuccessListener(onSuccess)
-                .addOnFailureListener(onFailure);
+        this.db.runTransaction(new Transaction.Function<Void>() {
+            @Override
+            public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+                // ========== PHASE 1: TẤT CẢ READS TRƯỚC ==========
+
+                // 1. Đọc main property
+                DocumentReference mainPropertyRef = db.collection("properties").document(propertyID);
+                DocumentSnapshot mainPropertySnapshot = transaction.get(mainPropertyRef);
+
+                if (!mainPropertySnapshot.exists()) {
+                    throw new FirebaseFirestoreException("Property not found",
+                            FirebaseFirestoreException.Code.NOT_FOUND);
+                }
+
+                Property mainProperty = mainPropertySnapshot.toObject(Property.class);
+                if (mainProperty == null) {
+                    throw new FirebaseFirestoreException("Cannot parse property data",
+                            FirebaseFirestoreException.Code.DATA_LOSS);
+                }
+
+                // 2. Đọc TẤT CẢ linked properties trước (nếu có)
+                Map<String, DocumentSnapshot> linkedSnapshots = new HashMap<>();
+                if (mainProperty.links != null && !mainProperty.links.isEmpty()) {
+                    for (String linkId : mainProperty.links) {
+                        DocumentReference linkPropertyRef = db.collection("properties").document(linkId);
+                        DocumentSnapshot linkSnapshot = transaction.get(linkPropertyRef);
+
+                        if (!linkSnapshot.exists()) {
+                            throw new FirebaseFirestoreException("Linked property not found: " + linkId,
+                                    FirebaseFirestoreException.Code.NOT_FOUND);
+                        }
+
+                        linkedSnapshots.put(linkId, linkSnapshot);
+                    }
+                }
+
+                // ========== PHASE 2: VALIDATION ==========
+
+                // 3. Generate date series
+                List<String> dateSeries = generateDateSeries(startDate, endDate);
+                if (dateSeries == null || dateSeries.isEmpty()) {
+                    throw new FirebaseFirestoreException("Cannot generate date series",
+                            FirebaseFirestoreException.Code.INVALID_ARGUMENT);
+                }
+
+                // 4. Validate main property
+                if (!validateBookedDate(mainProperty.booked_date, dateSeries)) {
+                    throw new FirebaseFirestoreException("Invalid booked date for main property",
+                            FirebaseFirestoreException.Code.INVALID_ARGUMENT);
+                }
+
+                // 5. Validate tất cả linked properties
+                for (Map.Entry<String, DocumentSnapshot> entry : linkedSnapshots.entrySet()) {
+                    String linkId = entry.getKey();
+                    DocumentSnapshot linkSnapshot = entry.getValue();
+
+                    Property linkProperty = linkSnapshot.toObject(Property.class);
+                    if (linkProperty == null) {
+                        throw new FirebaseFirestoreException("Cannot parse linked property data: " + linkId,
+                                FirebaseFirestoreException.Code.DATA_LOSS);
+                    }
+
+                    if (!validateBookedDate(linkProperty.booked_date, dateSeries)) {
+                        throw new FirebaseFirestoreException("Invalid booked date for linked property: " + linkId,
+                                FirebaseFirestoreException.Code.INVALID_ARGUMENT);
+                    }
+                }
+
+                // ========== PHASE 3: TẤT CẢ WRITES SAU ==========
+
+                // 6. Update main property
+                transaction.update(mainPropertyRef, "booked_date", FieldValue.arrayUnion(dateSeries.toArray()));
+
+                // 7. Update tất cả linked properties
+                for (String linkId : linkedSnapshots.keySet()) {
+                    DocumentReference linkPropertyRef = db.collection("properties").document(linkId);
+                    transaction.update(linkPropertyRef, "booked_date", FieldValue.arrayUnion(dateSeries.toArray()));
+                }
+
+                return null; // Transaction thành công
+            }
+        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                onSuccess.onSuccess(null);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                onFailure.onFailure(e);
+            }
+        });
     }
 
+    // khi remove thì remove cả nhà cũng được link luôn
     public void removeBookedDates(String propertyId, String checkIn, String checkOut, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         // Fetch property, remove dates in range [checkIn, checkOut] from booked_date, and update
         db.collection("properties").document(propertyId).get()
@@ -344,6 +551,62 @@ public class PropertyRepository {
                             .addOnSuccessListener(onSuccess)
                             .addOnFailureListener(onFailure);
                 })
+                .addOnFailureListener(onFailure);
+    }
+
+    public void removeBookedDatesWithLinkTransaction(String propertyID, String checkIn, String checkOut,  OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        db.runTransaction(new Transaction.Function<Void>() {
+            @Nullable
+            @Override
+            public Void apply(@NonNull Transaction transaction) throws FirebaseFirestoreException {
+                // READ PHASE
+                DocumentReference mainPropertyReference = db.collection(COLLECTION_NAME).document(propertyID);
+                DocumentSnapshot mainPropertySnapshot = transaction.get(mainPropertyReference);
+
+                if(!mainPropertySnapshot.exists()) {
+                    throw new FirebaseFirestoreException("Property not found",
+                            FirebaseFirestoreException.Code.NOT_FOUND);
+                }
+
+                Property mainProperty = mainPropertySnapshot.toObject(Property.class);
+                if(mainProperty == null) {
+                    throw new FirebaseFirestoreException("Property not found",
+                            FirebaseFirestoreException.Code.NOT_FOUND);
+                }
+                List<String> links = mainProperty.links;
+                List<String> mainPropertyBookedDates = mainProperty.booked_date;
+                List<List<String>> linkedPropertyBookedDates = new ArrayList<>();
+                for(String link: links) {
+                    DocumentReference linkPropertyReference = db.collection(COLLECTION_NAME).document(link);
+                    DocumentSnapshot linkPropertySnapshot = transaction.get(linkPropertyReference);
+
+                    Property linkedProperty = linkPropertySnapshot.toObject(Property.class);
+                    if(linkedProperty == null) {
+                        throw new FirebaseFirestoreException("Property linked null",
+                                FirebaseFirestoreException.Code.NOT_FOUND);
+                    }
+                    linkedPropertyBookedDates.add(linkedProperty.booked_date);
+                }
+
+                // WRITE PHASE
+                List<String> toRemove = generateDateSeries(checkIn, checkOut);
+                if(toRemove == null) {
+                    throw new FirebaseFirestoreException("Date series is null",
+                            FirebaseFirestoreException.Code.INVALID_ARGUMENT);
+                }
+                mainPropertyBookedDates.removeAll(toRemove);
+                transaction.update(mainPropertyReference, "booked_date", mainPropertyBookedDates);
+
+                for(int i = 0; i< links.size(); i++) {
+                    List<String> booked_date = linkedPropertyBookedDates.get(i);
+                    booked_date.removeAll(toRemove);
+                    DocumentReference linkedProperty = db.collection(COLLECTION_NAME).document(links.get(i));
+                    transaction.update(linkedProperty, "booked_date", booked_date);
+                }
+
+                return null;
+            }
+        }).addOnSuccessListener(onSuccess)
                 .addOnFailureListener(onFailure);
     }
 
@@ -366,5 +629,119 @@ public class PropertyRepository {
         return dates;
     }
 
+    public void getPropertySortedByPriceAsc(List<String> property_ids, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        if (property_ids == null || property_ids.isEmpty()) {
+            onFailure.onFailure(new Exception("Property IDs list is empty"));
+            return;
+        }
 
+        List<Property> properties = new ArrayList<>();
+        AtomicInteger completedCount = new AtomicInteger(0);
+        AtomicBoolean hasError = new AtomicBoolean(false);
+
+        for (String id : property_ids) {
+            getPropertyById(id,
+                    property -> {
+                        synchronized (properties) {
+                            if (!hasError.get()) {
+                                property.id = (id); // Set ID cho property
+                                properties.add(property);
+
+                                // Kiểm tra xem đã lấy hết tất cả property chưa
+                                if (completedCount.incrementAndGet() == property_ids.size()) {
+                                    // Sắp xếp theo giá tăng dần
+                                    properties.sort(Comparator.comparingDouble(p -> p.normal_price));
+
+                                    onSuccess.onSuccess(properties);
+                                }
+                            }
+                        }
+                    },
+                    exception -> {
+                        if (!hasError.getAndSet(true)) {
+                            // Chỉ gọi onFailure một lần
+                            onFailure.onFailure(exception);
+                        }
+                    }
+            );
+        }
+    }
+
+    public void getPropertySortedByPriceDesc(List<String> property_ids, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        if (property_ids == null || property_ids.isEmpty()) {
+            onFailure.onFailure(new Exception("Property IDs list is empty"));
+            return;
+        }
+
+        List<Property> properties = new ArrayList<>();
+        AtomicInteger completedCount = new AtomicInteger(0);
+        AtomicBoolean hasError = new AtomicBoolean(false);
+
+        for (String id : property_ids) {
+            getPropertyById(id,
+                    property -> {
+                        synchronized (properties) {
+                            if (!hasError.get()) {
+                                property.id = (id); // Set ID cho property
+                                properties.add(property);
+
+                                // Kiểm tra xem đã lấy hết tất cả property chưa
+                                if (completedCount.incrementAndGet() == property_ids.size()) {
+                                    // Sắp xếp theo giá giảm dần
+                                    properties.sort((p1, p2) ->
+                                            Double.compare(p2.normal_price, p1.normal_price));
+
+                                    onSuccess.onSuccess(properties);
+                                }
+                            }
+                        }
+                    },
+                    exception -> {
+                        if (!hasError.getAndSet(true)) {
+                            // Chỉ gọi onFailure một lần
+                            onFailure.onFailure(exception);
+                        }
+                    }
+            );
+        }
+    }
+
+    public void getPropertySortedByRating(List<String> property_ids, OnSuccessListener<List<Property>> onSuccess, OnFailureListener onFailure) {
+        if (property_ids == null || property_ids.isEmpty()) {
+            onFailure.onFailure(new Exception("Property IDs list is empty"));
+            return;
+        }
+
+        List<Property> properties = new ArrayList<>();
+        AtomicInteger completedCount = new AtomicInteger(0);
+        AtomicBoolean hasError = new AtomicBoolean(false);
+
+        for (String id : property_ids) {
+            getPropertyById(id,
+                    property -> {
+                        synchronized (properties) {
+                            if (!hasError.get()) {
+                                property.id = (id); // Set ID cho property
+                                properties.add(property);
+
+                                // Kiểm tra xem đã lấy hết tất cả property chưa
+                                if (completedCount.incrementAndGet() == property_ids.size()) {
+                                    // Sắp xếp theo ratings giảm dần
+                                    properties.sort((p1, p2) ->
+                                            Double.compare(p2.avg_ratings, p1.avg_ratings));
+
+                                    onSuccess.onSuccess(properties);
+                                }
+                            }
+                        }
+                    },
+                    exception -> {
+                        if (!hasError.getAndSet(true)) {
+                            // Chỉ gọi onFailure một lần
+                            onFailure.onFailure(exception);
+                        }
+                    }
+            );
+        }
+    }
 }
