@@ -25,6 +25,7 @@ import com.example.myapplication.data.Model.Property.SearchProperty;
 import com.example.myapplication.data.Model.Review.Review;
 import com.example.myapplication.data.Model.Search.BookedDateRequest;
 import com.example.myapplication.data.Model.Search.SearchResponse;
+import com.example.myapplication.data.Model.Statistic.PropertyStatistic;
 import com.example.myapplication.data.Model.Statistic.PropertyStatisticDetails;
 import com.example.myapplication.data.Model.Statistic.ReviewStatisticDetails;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
@@ -49,20 +50,13 @@ public class TestActivity extends AppCompatActivity {
         String hostID = "v4528ioquLTQbtmKYieS3quQUsp2";
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            statisticRepository.getAllReviewStatistic(hostID, LocalDate.of(2025, 5, 14), reviewStatistic -> {
-                Log.d(TAG, "Average Ratings: " + reviewStatistic.getAverageRatings());
-                Log.d(TAG, "Five Start: " + reviewStatistic.getFiveStarRatingPercentage());
-                Log.d(TAG, "Number Reviews: " + reviewStatistic.getNumberOfReviews());
-                for(ReviewStatisticDetails reviewStatisticDetails : reviewStatistic.getDetails()) {
-                    Log.d(TAG, "Name: " + reviewStatisticDetails.getName());
-                    Log.d(TAG, "Average Rating: " + reviewStatisticDetails.getAvg_rating());
-                    Log.d(TAG, "NUmber of Reviews: " + reviewStatisticDetails.getNumber_of_reviews());
-                    Log.d(TAG, "IMG: " + reviewStatisticDetails.getMain_photo_url());
-                    Log.d(TAG, "Five Star Rating: " + reviewStatisticDetails.getFive_star_rating_percentage());
-                }
-            }, e-> {
+            //for(int i= 1; i< 6; i++) {
+                statisticRepository.getAllPropertyStatistic(hostID, LocalDate.of(2025, 5, 5), propertyStatistic -> {
 
-            });
+                }, e-> {
+
+                });
+            //}
         }
 
         /*
