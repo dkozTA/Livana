@@ -2,6 +2,8 @@ package com.example.myapplication.data.Repository.Statistic;
 
 import android.content.Context;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.example.myapplication.data.Enum.Booking_status;
@@ -25,7 +27,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -89,7 +93,7 @@ public class StatisticRepository {
             // sau khi đã lấy được tất cả các ngày trong tháng mà phòng được sử dụng
             int numberOfDaysInThatMonth = 0;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                numberOfDaysInThatMonth = getNumberOfDays(localDate, LocalDate.now().getMonthValue());
+                numberOfDaysInThatMonth = getNumberOfDays(localDate);
             }
             double power = ((double) date_count / (double) numberOfDaysInThatMonth) * 100;
             power = Math.round(power * 100.0) / 100.0;
@@ -114,62 +118,111 @@ public class StatisticRepository {
                 onFailure.onFailure(new NoPropertyException("User has no properties"));
                 return;
             }
-            // counting index
-            AtomicInteger count = new AtomicInteger(0);
-            int size = properties.size();
-            // value to return
-            AtomicReference<Double> allRoomsPower = new AtomicReference<>((double) 0);
-            AtomicInteger allRoomsTimeUsed = new AtomicInteger(0);
-            AtomicReference<List<PropertyStatisticDetails>> details = new AtomicReference<>(new ArrayList<>());
 
-            // duyệt qua mỗi properties để lấy thống kê, nếu lấy được thì thêm thống kê này vào biến chính sẽ trả về, nếu không lấy được thì tạo 1 phụ biến rỗng để thêm vào biến chính
+            int size = properties.size();
+
+            // Sử dụng object để synchronize và track state
+            final Object lock = new Object();
+            final AtomicInteger completedCount = new AtomicInteger(0);
+            final AtomicReference<Double> totalPower = new AtomicReference<>(0.0);
+            final AtomicInteger totalTimeUsed = new AtomicInteger(0);
+            final List<PropertyStatisticDetails> detailsList = Collections.synchronizedList(new ArrayList<>());
+            final AtomicBoolean isResultHandled = new AtomicBoolean(false);
+
             for(Property property : properties) {
-                this.getSinglePropertyStatisticByMonth(property.id, localDate, propertyStatisticDetails -> {
-                    allRoomsPower.updateAndGet(v -> v + propertyStatisticDetails.getAveragePowerByOneRoom());
-                    allRoomsTimeUsed.updateAndGet(v -> v + propertyStatisticDetails.getTimeUsedPerMonthByOneRoom());
-                    details.updateAndGet(v -> {
-                        v.add(propertyStatisticDetails);
-                        return v;
-                    });
-                    count.incrementAndGet();
-                    if(count.get() == size - 1) {
-                        handleFinalResult(size, allRoomsPower.get(), allRoomsTimeUsed.get(), details.get(), onSuccess);
-                    }
-                }, e-> {
-                    PropertyStatisticDetails tmp = new PropertyStatisticDetails();
-                    details.updateAndGet(v -> {
-                        v.add(tmp);
-                        return v;
-                    });
-                    count.incrementAndGet();
-                    if(count.get() ==  size - 1) {
-                        handleFinalResult(size, allRoomsPower.get(), allRoomsTimeUsed.get(), details.get(), onSuccess);
-                    }
-                });
+                this.getSinglePropertyStatisticByMonth(property.id, localDate,
+                        propertyStatisticDetails -> {
+                            synchronized(lock) {
+                                // Thêm vào kết quả
+                                totalPower.updateAndGet(v -> v + propertyStatisticDetails.getAveragePowerByOneRoom());
+                                totalTimeUsed.addAndGet(propertyStatisticDetails.getTimeUsedPerMonthByOneRoom());
+                                detailsList.add(propertyStatisticDetails);
+
+                                // Tăng counter và kiểm tra xem đã hoàn thành chưa
+                                int completed = completedCount.incrementAndGet();
+
+                                // Chỉ xử lý kết quả một lần duy nhất
+                                if (completed == size && !isResultHandled.getAndSet(true)) {
+                                    handleFinalResult(size, totalPower.get(), totalTimeUsed.get(), detailsList, onSuccess);
+                                }
+                            }
+                        },
+                        e -> {
+                            synchronized(lock) {
+                                // Tạo PropertyStatisticDetails rỗng với giá trị mặc định
+                                PropertyStatisticDetails emptyDetails = new PropertyStatisticDetails();
+                                emptyDetails.setAveragePowerByOneRoom(0.0);
+                                emptyDetails.setTimeUsedPerMonthByOneRoom(0);
+                                emptyDetails.setMain_img_url("");
+                                emptyDetails.setName("N/A");
+
+                                detailsList.add(emptyDetails);
+                                // Không cộng vào totalPower và totalTimeUsed vì là 0
+
+                                int completed = completedCount.incrementAndGet();
+
+                                // Chỉ xử lý kết quả một lần duy nhất
+                                if (completed == size && !isResultHandled.getAndSet(true)) {
+                                    handleFinalResult(size, totalPower.get(), totalTimeUsed.get(), detailsList, onSuccess);
+                                }
+                            }
+                        }
+                );
             }
-        }, e-> {
+        }, e -> {
             onFailure.onFailure(new Exception("Can not get properties by userID"));
         });
     }
-    /*
-    bên fe có thể check xem liệu là lỗi truy vấn hay là người dùng chưa có db nào nhé. VD:
-    onFailure = e -> {
-        if (e instanceof NoPropertyException) {
-            // Hiển thị "Bạn chưa có tài sản nào"
-        } else {
-            // Hiển thị "Có lỗi xảy ra khi tải dữ liệu"
-        }
-    };
-     */
 
+    // Method hỗ trợ với timeout để tránh treo vô hạn (optional)
+    public void getAllPropertyStatisticWithTimeout(String hostID, LocalDate localDate, OnSuccessListener<PropertyStatistic> onSuccess, OnFailureListener onFailure, long timeoutMs) {
+        Handler timeoutHandler = new Handler(Looper.getMainLooper());
+        AtomicBoolean isCompleted = new AtomicBoolean(false);
+
+        // Set timeout
+        Runnable timeoutRunnable = () -> {
+            if (isCompleted.compareAndSet(false, true)) {
+                onFailure.onFailure(new Exception("Request timeout"));
+            }
+        };
+        timeoutHandler.postDelayed(timeoutRunnable, timeoutMs);
+
+        // Wrap callbacks để remove timeout khi complete
+        OnSuccessListener<PropertyStatistic> wrappedSuccess = result -> {
+            if (isCompleted.compareAndSet(false, true)) {
+                timeoutHandler.removeCallbacks(timeoutRunnable);
+                onSuccess.onSuccess(result);
+            }
+        };
+
+        OnFailureListener wrappedFailure = error -> {
+            if (isCompleted.compareAndSet(false, true)) {
+                timeoutHandler.removeCallbacks(timeoutRunnable);
+                onFailure.onFailure(error);
+            }
+        };
+
+        // Gọi method chính
+        getAllPropertyStatistic(hostID, localDate, wrappedSuccess, wrappedFailure);
+    }
+
+    // Enhanced handleFinalResult với validation
     private void handleFinalResult(int size,
                                    double totalPower,
                                    int totalTimeUsed,
                                    List<PropertyStatisticDetails> details,
                                    OnSuccessListener<PropertyStatistic> onSuccess) {
-        double powerAVG = totalPower / (double) size;
+
+        // Validation
+        if (details.size() != size) {
+            Log.w("PropertyStats", "Details size mismatch: expected=" + size + ", actual=" + details.size());
+        }
+
+        // Tính toán average
+        double powerAVG = size > 0 ? totalPower / (double) size : 0.0;
         powerAVG = Math.round(powerAVG * 100.0) / 100.0;
-        double timeUsedAVG = (double) totalTimeUsed / (double) size;
+
+        double timeUsedAVG = size > 0 ? (double) totalTimeUsed / (double) size : 0.0;
         timeUsedAVG = Math.round(timeUsedAVG * 100.0) / 100.0;
 
         PropertyStatistic propertyStatistic = new PropertyStatistic();
@@ -177,6 +230,14 @@ public class StatisticRepository {
         propertyStatistic.setAveragePower(powerAVG);
         propertyStatistic.setAverageTimesBookedPerMonthByAllProperties(timeUsedAVG);
         propertyStatistic.setDetails(details);
+
+        // Log để debug
+        Log.d("PropertyStats", "Final Result - Size: " + size +
+                ", Total Power: " + totalPower +
+                ", Average Power: " + powerAVG +
+                ", Total Time Used: " + totalTimeUsed +
+                ", Average Time Used: " + timeUsedAVG);
+
         onSuccess.onSuccess(propertyStatistic);
     }
 
@@ -209,15 +270,11 @@ public class StatisticRepository {
     }
 
     //targetDate là tháng muốn lấy dữ liệu và month là tháng hiện tại
-    private int getNumberOfDays(LocalDate targetDate, int month) {
+    public int getNumberOfDays(LocalDate targetDate) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return 0;
         }
-        int targetMonth = targetDate.getMonthValue();
-        if(targetMonth < month) {
-          return targetDate.lengthOfMonth();
-        }
-        return targetDate.getDayOfMonth();
+        return targetDate.lengthOfMonth();
     }
 
     public void getSinglePropertyReviewByMonth(String propertyID, LocalDate localDate, OnSuccessListener<ReviewStatisticDetails> onSuccess, OnFailureListener onFailure) {
