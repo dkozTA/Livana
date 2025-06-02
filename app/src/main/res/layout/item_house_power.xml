@@ -9,8 +9,8 @@
     <!-- Property Image -->
     <ImageView
         android:id="@+id/property_image"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:background="@drawable/rounded_image_bg"
         android:clipToOutline="true"
         android:outlineProvider="background"
@@ -19,18 +19,21 @@
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/property_title"
+        android:id="@+id/property_title_power"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Flamigo Đải lại, Vĩnh Phúc, Vĩnh Yên"
         android:textColor="@color/black"
-        android:textSize="18sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:padding="5sp"
-        tools:ignore="MissingConstraints"
         app:layout_constraintStart_toEndOf="@id/property_image"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="5sp"/>
+        android:layout_marginStart="10sp"
+
+        app:layout_constraintTop_toTopOf="@id/property_image"
+        app:layout_constraintBottom_toBottomOf="@id/property_image" />
+
 
     <LinearLayout
         android:id="@+id/power_room"
@@ -41,7 +44,7 @@
         android:orientation="horizontal"
         android:weightSum="2">
         <TextView
-            android:id="@+id/percent_power"
+            android:id="@+id/percent_power_room"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="45%"
@@ -51,7 +54,7 @@
             android:textSize="16sp"
             />
         <TextView
-            android:id="@+id/number_day"
+            android:id="@+id/number_day_room"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="12.4 ngày"

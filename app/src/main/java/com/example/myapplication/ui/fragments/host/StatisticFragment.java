@@ -32,6 +32,8 @@ import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
 import com.example.myapplication.data.Enum.Booking_status;
 import com.example.myapplication.data.Model.Booking.Booking;
+import com.example.myapplication.data.Model.Statistic.PropertyStatisticDetails;
+import com.example.myapplication.data.Model.Statistic.ReviewStatisticDetails;
 import com.example.myapplication.data.Repository.Booking.BookingRepository;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.data.Repository.Statistic.StatisticRepository;
@@ -244,46 +246,6 @@ public class StatisticFragment extends Fragment {
         // Nút chọn tháng năm
         buttonPickMonth.setOnClickListener(v -> showMonthYearPicker(textViewMonthYear, hostID, view));
 
-        LinearLayout HousePowercontainer = view.findViewById(R.id.layoutHousePowerContainer);
-        LayoutInflater inflaterHousePower = LayoutInflater.from(getContext());
-
-        // Ví dụ: thêm 3 item
-        for (int i = 0; i < 3; i++) {
-            View itemView = inflaterHousePower.inflate(R.layout.item_house_power, HousePowercontainer, false);
-
-            // Cập nhật dữ liệu trong itemView nếu cần
-            TextView tvTitle = itemView.findViewById(R.id.property_title);
-            TextView tvPower = itemView.findViewById(R.id.percent_power);
-            TextView tvDays = itemView.findViewById(R.id.number_day);
-
-            tvTitle.setText("Flamingo Đại Lải, Vĩnh Phúc");
-            tvPower.setText("45.0%");
-            tvDays.setText("12.4 ngày");
-
-            HousePowercontainer.addView(itemView);
-        }
-
-        LinearLayout HouseRatingcontainer = view.findViewById(R.id.layoutHouseRatingContainer);
-        LayoutInflater inflaterHouseRating = LayoutInflater.from(getContext());
-
-        // Ví dụ: thêm 3 item
-        for (int i = 0; i < 3; i++) {
-            View itemView = inflaterHouseRating.inflate(R.layout.item_house_rating, HouseRatingcontainer, false);
-
-            // Cập nhật dữ liệu trong itemView nếu cần
-            TextView tvTitle = itemView.findViewById(R.id.property_title);
-            TextView tvRating = itemView.findViewById(R.id.average_rating);
-            TextView tvReview = itemView.findViewById(R.id.number_review);
-            TextView tvFive = itemView.findViewById(R.id.rating_five);
-
-            tvTitle.setText("Flamingo Đại Lải, Vĩnh Phúc");
-            tvRating.setText("4.34");
-            tvReview.setText("5 lượt");
-            tvFive.setText("93.2%");
-
-            HouseRatingcontainer.addView(itemView);
-        }
-
         showIncomeLayout();
 
         buttonIncome.setOnClickListener(v -> {
@@ -322,6 +284,34 @@ public class StatisticFragment extends Fragment {
                     numberRoom.setText(propertyStatistic.getNumberOfProperties() + " căn");
                     numberDay.setText(propertyStatistic.getAverageTimesBookedPerMonthByAllProperties() + " ngày");
 
+                    List<PropertyStatisticDetails> details = propertyStatistic.getDetails();
+
+                    LinearLayout HousePowercontainer = view.findViewById(R.id.layoutHousePowerContainer);
+                    LayoutInflater inflaterHousePower = LayoutInflater.from(getContext());
+
+                    // Ví dụ: thêm 3 item
+                    for (PropertyStatisticDetails detailPower : details) {
+                        View itemView = inflaterHousePower.inflate(R.layout.item_house_power, HousePowercontainer, false);
+
+                        // Cập nhật dữ liệu trong itemView nếu cần
+                        TextView tvTitle = itemView.findViewById(R.id.property_title_power);
+                        TextView tvPower = itemView.findViewById(R.id.percent_power_room);
+                        TextView tvDays = itemView.findViewById(R.id.number_day_room);
+                        ImageView tvImage = itemView.findViewById(R.id.property_image);
+
+                        tvTitle.setText(detailPower.getName());
+                        tvPower.setText(detailPower.getAveragePowerByOneRoom() + "%");
+                        tvDays.setText(detailPower.getTimeUsedPerMonthByOneRoom() + " ngày");
+                        Glide.with(itemView.getContext())
+                                .load(detailPower.getMain_img_url())  // String URL ảnh
+                                .placeholder(R.drawable.avatar_placeholder) // ảnh hiện tạm lúc load
+                                .error(R.drawable.error_image) // ảnh lỗi load
+                                .into(tvImage);
+
+
+                        HousePowercontainer.addView(itemView);
+                    }
+
                     Log.d("propertyStatistic", "averagePowerTotal:" + propertyStatistic.getAveragePower() +" cua " + finalDate +" ngay goc" + date);
                 }, e -> {
                     Toast.makeText(requireContext(), "Lỗi lấy dữ liệu", Toast.LENGTH_SHORT).show();
@@ -331,18 +321,47 @@ public class StatisticFragment extends Fragment {
                 reviewStatistic -> {
                     TextView averageRatingTotal = view.findViewById(R.id.average_rating_total);
                     TextView averageRating = view.findViewById(R.id.average_rating);
-                    TextView numberReview = view.findViewById(R.id.number_review);
+                    TextView numberReview = view.findViewById(R.id.number_reviews);
                     TextView numberFive = view.findViewById(R.id.rating_five);
 
                     averageRatingTotal.setText("★ " + reviewStatistic.getAverageRatings());
                     averageRating.setText("★ " + reviewStatistic.getAverageRatings() + "");
                     numberReview.setText(reviewStatistic.getNumberOfReviews() + " lượt");
                     numberFive.setText(reviewStatistic.getFiveStarRatingPercentage() + " %");
+
+                    List<ReviewStatisticDetails> details = reviewStatistic.getDetails();
+
+                    LinearLayout HouseRatingcontainer = view.findViewById(R.id.layoutHouseRatingContainer);
+                    LayoutInflater inflaterHouseRating = LayoutInflater.from(getContext());
+
+                    // Ví dụ: thêm 3 item
+                    for (ReviewStatisticDetails detailRating : details) {
+                        View itemView = inflaterHouseRating.inflate(R.layout.item_house_rating, HouseRatingcontainer, false);
+
+                        // Cập nhật dữ liệu trong itemView nếu cần
+                        TextView tvTitle = itemView.findViewById(R.id.property_title_rating);
+                        TextView tvRating = itemView.findViewById(R.id.average_rating_room);
+                        TextView tvReview = itemView.findViewById(R.id.number_review_room);
+                        TextView tvFive = itemView.findViewById(R.id.rating_five_room);
+                        ImageView tvImageRate = itemView.findViewById(R.id.property_image_rating);
+
+                        tvTitle.setText(detailRating.getName());
+                        tvRating.setText(detailRating.getAvg_rating() + "");
+                        tvReview.setText(detailRating.getNumber_of_reviews() + " lượt");
+                        tvFive.setText(detailRating.getFive_star_rating_percentage()+"%");
+                        Glide.with(itemView.getContext())
+                                .load(detailRating.getMain_photo_url())  // String URL ảnh
+                                .placeholder(R.drawable.anh_avatar) // ảnh hiện tạm lúc load
+                                .error(R.drawable.error_image) // ảnh lỗi load
+                                .into(tvImageRate);
+
+
+                        HouseRatingcontainer.addView(itemView);
+                    }
                 }, e -> {
                     Toast.makeText(requireContext(), "Lỗi lấy dữ liệu", Toast.LENGTH_SHORT).show();
                 });
 
-        statisticRepository.getSinglePropertyStatisticByMonth();
     }
 
     @SuppressLint("NewApi")
