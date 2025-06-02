@@ -1,8 +1,12 @@
 package com.example.myapplication.ui.fragments.host;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +14,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +34,7 @@ import com.example.myapplication.data.Enum.Booking_status;
 import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Repository.Booking.BookingRepository;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
+import com.example.myapplication.data.Repository.Statistic.StatisticRepository;
 import com.example.myapplication.ui.activities.IncomeOverviewActivity;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -37,6 +45,9 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Calendar;
+import java.util.Locale;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -66,9 +77,15 @@ public class StatisticFragment extends Fragment {
     private Button buttonIncome, buttonResult;
 
     List<Booking> completedBookings = new ArrayList<>();
-    List<Booking> upcomingBookings = new ArrayList<>();    
+    List<Booking> upcomingBookings = new ArrayList<>();
+
+    private StatisticRepository statisticRepository;
+
+    // Biến lưu ngày được chọn (đầu tháng)
+    private LocalDate selectedDate;
     
 
+    @SuppressLint("NewApi")
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -202,50 +219,70 @@ public class StatisticFragment extends Fragment {
                         }
                         isCompletedExpanded = !isCompletedExpanded;
                     });
-
-                    LinearLayout HousePowercontainer = view.findViewById(R.id.layoutHousePowerContainer);
-                    LayoutInflater inflaterHousePower = LayoutInflater.from(getContext());
-
-                    // Ví dụ: thêm 3 item
-                    for (int i = 0; i < 3; i++) {
-                        View itemView = inflaterHousePower.inflate(R.layout.item_house_power, HousePowercontainer, false);
-
-                        // Cập nhật dữ liệu trong itemView nếu cần
-                        TextView tvTitle = itemView.findViewById(R.id.property_title);
-                        TextView tvPower = itemView.findViewById(R.id.percent_power);
-                        TextView tvDays = itemView.findViewById(R.id.number_day);
-
-                        tvTitle.setText("Flamingo Đại Lải, Vĩnh Phúc");
-                        tvPower.setText("45.0%");
-                        tvDays.setText("12.4 ngày");
-
-                        HousePowercontainer.addView(itemView);
-                    }
-
-                    LinearLayout HouseRatingcontainer = view.findViewById(R.id.layoutHouseRatingContainer);
-                    LayoutInflater inflaterHouseRating = LayoutInflater.from(getContext());
-
-                    // Ví dụ: thêm 3 item
-                    for (int i = 0; i < 3; i++) {
-                        View itemView = inflaterHouseRating.inflate(R.layout.item_house_rating, HouseRatingcontainer, false);
-
-                        // Cập nhật dữ liệu trong itemView nếu cần
-                        TextView tvTitle = itemView.findViewById(R.id.property_title);
-                        TextView tvRating = itemView.findViewById(R.id.average_rating);
-                        TextView tvReview = itemView.findViewById(R.id.number_review);
-                        TextView tvFive = itemView.findViewById(R.id.rating_five);
-
-                        tvTitle.setText("Flamingo Đại Lải, Vĩnh Phúc");
-                        tvRating.setText("4.34");
-                        tvReview.setText("5 lượt");
-                        tvFive.setText("93.2%");
-
-                        HouseRatingcontainer.addView(itemView);
-                    }
                 },
                 e -> {
                     Toast.makeText(requireContext(), "Lỗi lấy dữ liệu", Toast.LENGTH_SHORT).show();
                 });
+
+        ImageButton buttonPickMonth = view.findViewById(R.id.buttonPickMonth);
+        TextView textViewMonthYear = view.findViewById(R.id.textViewMonthYear);
+
+        statisticRepository = new StatisticRepository(requireContext());
+
+        // Trong onViewCreated hoặc nơi bạn khởi tạo view:
+        Calendar calendar = Calendar.getInstance();
+        int month = calendar.get(Calendar.MONTH) + 1;
+        int year = calendar.get(Calendar.YEAR);
+        selectedDate = LocalDate.now();
+        Log.d("selectedDate", selectedDate.toString());
+        // Hiển thị tháng năm hiện tại
+        textViewMonthYear.setText("Tháng " + month + ", " + year);
+
+        // Gọi dữ liệu thống kê lần đầu với selectedDate
+        loadStatistics(selectedDate, hostID, view);
+
+        // Nút chọn tháng năm
+        buttonPickMonth.setOnClickListener(v -> showMonthYearPicker(textViewMonthYear, hostID, view));
+
+        LinearLayout HousePowercontainer = view.findViewById(R.id.layoutHousePowerContainer);
+        LayoutInflater inflaterHousePower = LayoutInflater.from(getContext());
+
+        // Ví dụ: thêm 3 item
+        for (int i = 0; i < 3; i++) {
+            View itemView = inflaterHousePower.inflate(R.layout.item_house_power, HousePowercontainer, false);
+
+            // Cập nhật dữ liệu trong itemView nếu cần
+            TextView tvTitle = itemView.findViewById(R.id.property_title);
+            TextView tvPower = itemView.findViewById(R.id.percent_power);
+            TextView tvDays = itemView.findViewById(R.id.number_day);
+
+            tvTitle.setText("Flamingo Đại Lải, Vĩnh Phúc");
+            tvPower.setText("45.0%");
+            tvDays.setText("12.4 ngày");
+
+            HousePowercontainer.addView(itemView);
+        }
+
+        LinearLayout HouseRatingcontainer = view.findViewById(R.id.layoutHouseRatingContainer);
+        LayoutInflater inflaterHouseRating = LayoutInflater.from(getContext());
+
+        // Ví dụ: thêm 3 item
+        for (int i = 0; i < 3; i++) {
+            View itemView = inflaterHouseRating.inflate(R.layout.item_house_rating, HouseRatingcontainer, false);
+
+            // Cập nhật dữ liệu trong itemView nếu cần
+            TextView tvTitle = itemView.findViewById(R.id.property_title);
+            TextView tvRating = itemView.findViewById(R.id.average_rating);
+            TextView tvReview = itemView.findViewById(R.id.number_review);
+            TextView tvFive = itemView.findViewById(R.id.rating_five);
+
+            tvTitle.setText("Flamingo Đại Lải, Vĩnh Phúc");
+            tvRating.setText("4.34");
+            tvReview.setText("5 lượt");
+            tvFive.setText("93.2%");
+
+            HouseRatingcontainer.addView(itemView);
+        }
 
         showIncomeLayout();
 
@@ -263,6 +300,130 @@ public class StatisticFragment extends Fragment {
         return view;
     }
 
+    @SuppressLint("NewApi")
+    private void loadStatistics(LocalDate date, String hostId, View view) {
+        boolean isCurrentMonth = date.getMonthValue() == LocalDate.now().getMonthValue() && date.getYear() == LocalDate.now().getYear();
+        LocalDate finalDate;
+        if (isCurrentMonth) {
+            finalDate = LocalDate.now();
+        } else {
+            finalDate = date.withDayOfMonth(date.lengthOfMonth()); // cuối tháng
+        }
+
+        statisticRepository.getAllPropertyStatistic(hostId, finalDate,
+                propertyStatistic -> {
+                    TextView averagePowerTotal = view.findViewById(R.id.percent_power_total);
+                    TextView averagePower = view.findViewById(R.id.percent_power);
+                    TextView numberRoom = view.findViewById(R.id.number_room);
+                    TextView numberDay = view.findViewById(R.id.number_day);
+
+                    averagePowerTotal.setText(propertyStatistic.getAveragePower() + "%");
+                    averagePower.setText(propertyStatistic.getAveragePower() + "%");
+                    numberRoom.setText(propertyStatistic.getNumberOfProperties() + " căn");
+                    numberDay.setText(propertyStatistic.getAverageTimesBookedPerMonthByAllProperties() + " ngày");
+
+                    Log.d("propertyStatistic", "averagePowerTotal:" + propertyStatistic.getAveragePower() +" cua " + finalDate +" ngay goc" + date);
+                }, e -> {
+                    Toast.makeText(requireContext(), "Lỗi lấy dữ liệu", Toast.LENGTH_SHORT).show();
+                });
+
+        statisticRepository.getAllReviewStatistic(hostId, date,
+                reviewStatistic -> {
+                    TextView averageRatingTotal = view.findViewById(R.id.average_rating_total);
+                    TextView averageRating = view.findViewById(R.id.average_rating);
+                    TextView numberReview = view.findViewById(R.id.number_review);
+                    TextView numberFive = view.findViewById(R.id.rating_five);
+
+                    averageRatingTotal.setText("★ " + reviewStatistic.getAverageRatings());
+                    averageRating.setText("★ " + reviewStatistic.getAverageRatings() + "");
+                    numberReview.setText(reviewStatistic.getNumberOfReviews() + " lượt");
+                    numberFive.setText(reviewStatistic.getFiveStarRatingPercentage() + " %");
+                }, e -> {
+                    Toast.makeText(requireContext(), "Lỗi lấy dữ liệu", Toast.LENGTH_SHORT).show();
+                });
+
+        statisticRepository.getSinglePropertyStatisticByMonth();
+    }
+
+    @SuppressLint("NewApi")
+    private void showMonthYearPicker(TextView textViewMonthYear, String hostId, View view) {
+        Dialog dialog = new Dialog(getContext(), R.style.MyDialogTheme);
+        dialog.setContentView(R.layout.dialog_month_year_picker);
+
+        NumberPicker monthPicker = dialog.findViewById(R.id.picker_month);
+        NumberPicker yearPicker = dialog.findViewById(R.id.picker_year);
+
+        if (monthPicker != null && yearPicker != null) {
+            // Setup tháng
+            monthPicker.setMinValue(1);
+            monthPicker.setMaxValue(12);
+            monthPicker.setValue(selectedDate.getMonthValue());
+
+            // Setup năm
+            int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+            yearPicker.setMinValue(currentYear - 100);
+            yearPicker.setMaxValue(currentYear + 20);
+            yearPicker.setValue(selectedDate.getYear());
+
+
+            // Đổi màu text nếu muốn
+            int color = ContextCompat.getColor(requireContext(), R.color.black);
+            forceSetNumberPickerTextColor(monthPicker, color);
+            forceSetNumberPickerTextColor(yearPicker, color);
+        }
+
+        Button btnOk = dialog.findViewById(R.id.btn_ok);
+        if (btnOk != null) {
+            btnOk.setOnClickListener(v -> {
+                int month = monthPicker.getValue();
+                int year = yearPicker.getValue();
+
+                textViewMonthYear.setText("Tháng " + month + ", " + year);
+
+                // Luôn đặt ngày là 1
+                selectedDate = LocalDate.of(year, month, 1);
+
+                loadStatistics(selectedDate, hostId, view);
+                dialog.dismiss();
+            });
+        }
+
+
+        dialog.show();
+    }
+    private void forceSetNumberPickerTextColor(NumberPicker numberPicker, int color) {
+        try {
+            // Truy cập Paint nội bộ vẽ các giá trị trong NumberPicker
+            Field selectorWheelPaintField = NumberPicker.class.getDeclaredField("mSelectorWheelPaint");
+            selectorWheelPaintField.setAccessible(true);
+            Paint paint = (Paint) selectorWheelPaintField.get(numberPicker);
+            if (paint != null) {
+                paint.setColor(color);
+            }
+
+            // Gán màu cho EditText (giá trị trung tâm)
+            int count = numberPicker.getChildCount();
+            for (int i = 0; i < count; i++) {
+                View child = numberPicker.getChildAt(i);
+                if (child instanceof EditText) {
+                    EditText editText = (EditText) child;
+                    editText.setTextColor(color);
+                    editText.setCursorVisible(false);
+                    editText.setFocusable(false);
+                    editText.setFocusableInTouchMode(false);
+                }
+            }
+
+            // Vô hiệu hóa formatter (nếu có)
+            numberPicker.setFormatter(null);
+
+            // Ép redraw lại
+            numberPicker.invalidate();
+            numberPicker.requestLayout();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void highlightButton(Button button) {
         button.setBackgroundColor(Color.parseColor("black")); // Hồng
         button.setTextColor(Color.WHITE);

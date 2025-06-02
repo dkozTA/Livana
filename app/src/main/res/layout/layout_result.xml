@@ -42,7 +42,7 @@
                     android:id="@+id/textViewMonthYear"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="tháng 5, 2025"
+                    android:text="Tháng 6, 2025"
                     android:textColor="@color/black"
                     android:textSize="18sp"
                     android:textStyle="bold"
@@ -85,6 +85,7 @@
                         android:gravity="center" />
 
                     <TextView
+                        android:id="@+id/percent_power_total"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="45.0%"
@@ -118,6 +119,7 @@
                         android:gravity="center" />
 
                     <TextView
+                        android:id="@+id/average_rating_total"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="★ 4.34"
