@@ -64,7 +64,7 @@ public class MessagesFragment extends Fragment implements ConversationListAdapte
         currentUserId = auth.getUserUid(); // Replace with actual user ID
 
         // For demo purposes, set isHost. In production, this might be determined by user role
-        isHost = true; // Set to false, assuming we're in guest mode as per your request
+        isHost = false; // Set to false, assuming we're in guest mode as per your request
 
         // Setup RecyclerView
         setupRecyclerView();
