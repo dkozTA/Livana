@@ -31,12 +31,10 @@ public class FolderDetailFragment extends Fragment {
                 requireActivity().getSupportFragmentManager().popBackStack()
         );
 
-
         ImageButton closeButton = view.findViewById(R.id.btnClose);
         closeButton.setOnClickListener(v ->
                 requireActivity().getSupportFragmentManager().popBackStack()
         );
-
 
         TextView folderNameText = view.findViewById(R.id.folder_name);
         folderNameText.setText(folder.getName());

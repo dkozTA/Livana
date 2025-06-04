@@ -4,10 +4,11 @@ import com.example.myapplication.data.Enum.Booking_status;
 import com.google.firebase.firestore.Exclude;
 import com.google.firebase.firestore.PropertyName;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-public class Booking {
+public class Booking implements Serializable {
     public String id;
     public String property_id;
     public String guest_id;

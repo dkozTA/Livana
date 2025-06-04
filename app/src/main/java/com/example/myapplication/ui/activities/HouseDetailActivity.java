@@ -144,6 +144,7 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
             RatingBar ratingBar = findViewById(R.id.review_rating_bar);
             TextView hostName = findViewById(R.id.host_name);
+            TextView hostYear = findViewById(R.id.hostYear);
             TextView location = findViewById(R.id.location);
             TextView detail = findViewById(R.id.details);
             TextView dateRange = findViewById(R.id.date_range);
@@ -200,8 +201,15 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
                     }
             );
 
-
-
+            // them ui phan host
+//            userRepository.getDateCreateByPropertyID(post.getId(),
+//                    hostYearStr -> {
+//                        hostYear.setText("" + hostYearStr);
+//                    },
+//                    e -> {
+//                        hostYear.setText("");
+//                    }
+//            );
 
             reviewRecyclerView = findViewById(R.id.reviewRecyclerView);
 

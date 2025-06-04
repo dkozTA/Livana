@@ -27,6 +27,7 @@ public class Property {
     public List<String> booked_date;
     public int total_reviews;
     public double avg_ratings;
+    public List<String> links;
     public Date created_at;
     public Date updated_at;
 
@@ -71,6 +72,7 @@ public class Property {
         this.booked_date = new ArrayList<>();
         this.total_reviews = 0;
         this.avg_ratings = 0;
+        this.links = new ArrayList<>();
         this.created_at = new Date();
         this.updated_at = new Date();
     }
@@ -96,6 +98,7 @@ public class Property {
             this.booked_date = new ArrayList<>();
             this.total_reviews = 0;
             this.avg_ratings = 0;
+            this.links = new ArrayList<>();
             this.created_at = new Date();
             this.updated_at = new Date();
         }
