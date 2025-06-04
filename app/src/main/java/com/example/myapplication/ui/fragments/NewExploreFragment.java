@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +48,7 @@ public class NewExploreFragment extends Fragment {
 
     private ImageView logoText;
     private AppBarLayout appBarLayout;
+    private View headerLineView;
 
     private float startX, startY;
     private float endX, endY;
@@ -86,6 +88,7 @@ public class NewExploreFragment extends Fragment {
 
         logoText = view.findViewById(R.id.logoImage);
         appBarLayout = view.findViewById(R.id.appBar);
+        headerLineView = view.findViewById(R.id.headerLine);
 
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             @Override
@@ -112,14 +115,24 @@ public class NewExploreFragment extends Fragment {
 
                 if (positionCalculated) {
                     // Scale logo
-                    float scale = 0.5f + 0.5f * offsetFactor;
+                    float scale = 0.2f + 0.8f * offsetFactor;
                     logoText.setScaleX(scale);
                     logoText.setScaleY(scale);
+
+                    logoText.setAlpha(scale);
+
+                    if (offsetFactor > 0.15) {
+                        logoText.setVisibility(View.VISIBLE);
+                        headerLineView.setVisibility(View.INVISIBLE);
+                    } else {
+                        logoText.setVisibility(View.INVISIBLE);
+                        headerLineView.setVisibility(View.VISIBLE);
+                    }
 
                     // Dịch chuyển logo từ giữa về trái
                     float currentX = endX + (startX - endX) * offsetFactor;
                     float currentY = endY + (startY - endY) * offsetFactor;
-                    logoText.setX(currentX);
+                    //logoText.setX(currentX);
                     //logoText.setY(currentY);
                 }
             }

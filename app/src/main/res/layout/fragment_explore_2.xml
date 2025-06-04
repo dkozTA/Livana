@@ -8,17 +8,19 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#FFFFFF"
         android:backgroundTint="#FFFFFF"
+        android:clipChildren="false"
         android:clipToPadding="false"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:elevation="30dp">
+        android:translationZ="10dp"
+        app:elevation="10dp"
+        app:liftOnScroll="true">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/card_border"
-            android:elevation="30dp"
+            android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:titleEnabled="false">
@@ -27,18 +29,17 @@
             <ImageView
                 android:id="@+id/logoImage"
                 android:layout_width="172dp"
-                android:layout_height="54dp"
-                android:layout_gravity="center_horizontal|left"
-                android:layout_marginLeft="40dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_app_name_3"
-                android:translationY="30dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center_horizontal"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_app_name_5"
+                android:translationY="20dp"
                 app:layout_collapseMode="parallax" />
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="125dp"
+                android:layout_height="100dp"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
@@ -47,7 +48,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="110dp"
                 android:layout_marginStart="-5dp"
-                android:layout_marginTop="70dp"
+                android:layout_marginTop="55dp"
                 android:layout_marginEnd="-2dp"
                 android:backgroundTint="#00000000"
                 app:cardElevation="0dp"
@@ -125,6 +126,13 @@
             <!-- Toolbar -->
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
+        <View
+            android:id="@+id/headerLine"
+            android:layout_width="match_parent"
+            android:layout_height="1.4dp"
+            android:background="#BDBDBD"
+            android:elevation="10dp" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- RecyclerView thay thế NestedScrollView -->
@@ -133,10 +141,11 @@
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#FFFFFF"
         android:backgroundTint="#FFFFFF"
         android:clipToPadding="false"
         android:foregroundTint="#FFFFFF"
-        android:paddingTop="8dp"
+        android:paddingTop="15dp"
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
