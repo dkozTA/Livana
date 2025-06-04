@@ -81,20 +81,20 @@ public class SearchProperty {
     public SearchProperty(Property property) {
         this.objectID = property.getId();
         this.propertyName = property.getName();
-        this.city_code = property.getAddress().city_code;
-        this.district_code = property.getAddress().district_code;
+        this.city_code = property.getAddress().getCity_code();
+        this.district_code = property.getAddress().getDistrict_code();
         this.max_guest = property.getMax_guess();
         this.price = property.getNormal_price();
         this.bookedDate = property.getBooked_date();
         this.bed_rooms = property.getRooms().bedRooms;
-        this.tv = property.getAmenities().tv == AmenityStatus.Available;
-        this.petAllowance = property.getAmenities().petAllowance == AmenityStatus.Available;
-        this.pool = property.getAmenities().pool == AmenityStatus.Available;
-        this.washingMachine = property.getAmenities().washingMachine == AmenityStatus.Available;
-        this.breakfast = property.getAmenities().breakfast == AmenityStatus.Available;
-        this.bbq = property.getAmenities().bbq == AmenityStatus.Available;
-        this.wifi = property.getAmenities().wifi == AmenityStatus.Available;
-        this.airConditioner = property.getAmenities().airConditioner == AmenityStatus.Available;
+        this.tv = property.getAmenities().getTv() == AmenityStatus.Available;
+        this.petAllowance = property.getAmenities().getPetAllowance() == AmenityStatus.Available;
+        this.pool = property.getAmenities().getPool() == AmenityStatus.Available;
+        this.washingMachine = property.getAmenities().getWashingMachine() == AmenityStatus.Available;
+        this.breakfast = property.getAmenities().getBreakfast() == AmenityStatus.Available;
+        this.bbq = property.getAmenities().getBbq() == AmenityStatus.Available;
+        this.wifi = property.getAmenities().getWifi() == AmenityStatus.Available;
+        this.airConditioner = property.getAmenities().getAirConditioner() == AmenityStatus.Available;
     }
 
     // Getters

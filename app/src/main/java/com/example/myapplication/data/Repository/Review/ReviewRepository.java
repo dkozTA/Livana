@@ -41,7 +41,6 @@ public class ReviewRepository {
     // user danh gia 1 phong sau khi da hoan thanh 1 booking = tao ra danh gia cho 1 booking -> cap nhat total review cua 1 nha va cap nhat avg rating
     // ben fe goi ham nay nhe
     public void guestReviewBooking(Review review, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
-
         this.bookingRepository.getBookingById(review.booking_id,
                 booking -> {
                     this.userRepository.getUserByUid(booking.guest_id,

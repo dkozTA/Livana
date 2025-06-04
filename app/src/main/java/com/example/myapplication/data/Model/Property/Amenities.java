@@ -74,4 +74,86 @@ public class Amenities implements Parcelable {
     public int describeContents() {
         return 0;
     }
+
+    // Getters and Setters
+
+    public AmenityStatus getTv() {
+        return tv;
+    }
+
+    public void setTv(AmenityStatus tv) {
+        this.tv = tv;
+    }
+
+    public AmenityStatus getWifi() {
+        return wifi;
+    }
+
+    public void setWifi(AmenityStatus wifi) {
+        this.wifi = wifi;
+    }
+
+    public AmenityStatus getPetAllowance() {
+        return petAllowance;
+    }
+
+    public void setPetAllowance(AmenityStatus petAllowance) {
+        this.petAllowance = petAllowance;
+    }
+
+    public AmenityStatus getPool() {
+        return pool;
+    }
+
+    public void setPool(AmenityStatus pool) {
+        this.pool = pool;
+    }
+
+    public AmenityStatus getWashingMachine() {
+        return washingMachine;
+    }
+
+    public void setWashingMachine(AmenityStatus washingMachine) {
+        this.washingMachine = washingMachine;
+    }
+
+    public AmenityStatus getBreakfast() {
+        return breakfast;
+    }
+
+    public void setBreakfast(AmenityStatus breakfast) {
+        this.breakfast = breakfast;
+    }
+
+    public AmenityStatus getAirConditioner() {
+        return airConditioner;
+    }
+
+    public void setAirConditioner(AmenityStatus airConditioner) {
+        this.airConditioner = airConditioner;
+    }
+
+    public AmenityStatus getBbq() {
+        return bbq;
+    }
+
+    public void setBbq(AmenityStatus bbq) {
+        this.bbq = bbq;
+    }
+
+    public String getMore() {
+        return more;
+    }
+
+    public void setMore(String more) {
+        this.more = more;
+    }
+
+    public String getHouseRules() {
+        return houseRules;
+    }
+
+    public void setHouseRules(String houseRules) {
+        this.houseRules = houseRules;
+    }
 }
