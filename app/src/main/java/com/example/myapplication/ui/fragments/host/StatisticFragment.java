@@ -39,10 +39,16 @@ import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.data.Repository.Statistic.StatisticRepository;
 import com.example.myapplication.ui.activities.IncomeOverviewActivity;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -136,6 +142,8 @@ public class StatisticFragment extends Fragment {
                     }
 
                     BarDataSet dataSet = new BarDataSet(entries, "Doanh thu theo tháng");
+                    dataSet.setColor(Color.parseColor("#E6005C"));
+                    dataSet.setValueTextSize(12f);
                     BarData barData = new BarData(dataSet);
                     barChart.setData(barData);
                     barChart.setFitBars(true);
@@ -154,8 +162,7 @@ public class StatisticFragment extends Fragment {
                     barChart.getAxisLeft().setEnabled(false);
 
                     // Cải thiện giao diện
-                    dataSet.setColor(Color.parseColor("#E6005C"));
-                    dataSet.setValueTextSize(12f);
+
                     barChart.getDescription().setEnabled(false); // Ẩn mô tả mặc định
                     barChart.animateY(1000); // Thêm hiệu ứng
 
@@ -362,6 +369,99 @@ public class StatisticFragment extends Fragment {
                     Toast.makeText(requireContext(), "Lỗi lấy dữ liệu", Toast.LENGTH_SHORT).show();
                 });
 
+        statisticRepository.getPropertyPowerForChart(hostId, date,
+                propertyStatisticDetails -> {
+                    LineChart powerLineChart = view.findViewById(R.id.chartPower);
+                    List<Entry> entries = new ArrayList<>();
+
+                    for (int i = 1; i <= date.getMonthValue(); i++) {
+                        double value = propertyStatisticDetails.getOrDefault(i, -1.0);
+                        if (value >= 0) { // Bỏ qua dữ liệu lỗi
+                            entries.add(new Entry(i, (float) value));
+                        }
+                    }
+
+                    // Tạo DataSet và cấu hình
+                    LineDataSet dataSet = new LineDataSet(entries, "Trung bình công suất");
+                    dataSet.setColor(Color.parseColor("#E6005C"));
+                    dataSet.setCircleColor(Color.RED);
+                    dataSet.setLineWidth(2f);
+                    dataSet.setValueTextSize(12f);
+
+                    // Tạo LineData và set cho LineChart
+                    LineData lineData = new LineData(dataSet);
+                    powerLineChart.setData(lineData);
+
+                    // Cấu hình trục X
+                    XAxis xAxis = powerLineChart.getXAxis();
+                    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                    xAxis.setGranularity(1f); // Mỗi đơn vị là 1 tháng
+                    xAxis.setGranularityEnabled(true);
+                    xAxis.setLabelCount(entries.size(), true); // Đảm bảo hiển thị đủ nhãn
+
+                    // Ẩn trục Y phải và trái
+                    powerLineChart.getAxisRight().setEnabled(false);
+                    powerLineChart.getAxisLeft().setDrawLabels(false); // Ẩn nhãn trục Y trái
+
+                    YAxis yAxisLeft = powerLineChart.getAxisLeft();
+                    yAxisLeft.setAxisMinimum(0f); // Bắt đầu trục Y từ 0
+                    yAxisLeft.setDrawLabels(false); // Ẩn nhãn nếu bạn không cần hiển thị số
+
+                    powerLineChart.getAxisRight().setEnabled(false); // Vẫn ẩn trục phải
+                    powerLineChart.getDescription().setEnabled(false);
+
+                    powerLineChart.invalidate(); // Vẽ lại biểu đồ
+
+                }, e -> {
+                    Toast.makeText(requireContext(), "Lỗi lấy dữ liệu", Toast.LENGTH_SHORT).show();
+                });
+
+        statisticRepository.getRatingForChart(hostId, date,
+                reviewStatisticDetails -> {
+                    LineChart ratingLineChart = view.findViewById(R.id.chartRating);
+                    List<Entry> entries = new ArrayList<>();
+
+                    for (int i = 1; i <= date.getMonthValue(); i++) {
+                        double value = reviewStatisticDetails.getOrDefault(i, -1.0);
+                        if (value >= 0) { // Bỏ qua dữ liệu lỗi
+                            entries.add(new Entry(i, (float) value));
+                        }
+                    }
+
+                    // Tạo DataSet và cấu hình
+                    LineDataSet dataSet = new LineDataSet(entries, "Trung bình đánh giá");
+                    dataSet.setColor(Color.parseColor("#E6005C"));
+                    dataSet.setCircleColor(Color.RED);
+                    dataSet.setLineWidth(2f);
+                    dataSet.setValueTextSize(12f);
+
+                    // Tạo LineData và set cho LineChart
+                    LineData lineData = new LineData(dataSet);
+                    ratingLineChart.setData(lineData);
+
+                    // Cấu hình trục X
+                    XAxis xAxis = ratingLineChart.getXAxis();
+                    xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+                    xAxis.setGranularity(1f); // Mỗi đơn vị là 1 tháng
+                    xAxis.setGranularityEnabled(true);
+                    xAxis.setLabelCount(entries.size(), true); // Đảm bảo hiển thị đủ nhãn
+
+                    // Ẩn trục Y phải và trái
+                    ratingLineChart.getAxisRight().setEnabled(false);
+                    ratingLineChart.getAxisLeft().setDrawLabels(false); // Ẩn nhãn trục Y trái
+
+                    YAxis yAxisLeft = ratingLineChart.getAxisLeft();
+                    yAxisLeft.setAxisMinimum(0f); // Bắt đầu trục Y từ 0
+                    yAxisLeft.setDrawLabels(false); // Ẩn nhãn nếu bạn không cần hiển thị số
+
+                    ratingLineChart.getAxisRight().setEnabled(false); // Vẫn ẩn trục phải
+                    ratingLineChart.getDescription().setEnabled(false);
+
+
+                    ratingLineChart.invalidate(); // Vẽ lại biểu đồ
+                }, e -> {
+
+                });
     }
 
     @SuppressLint("NewApi")
