@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +26,9 @@ import com.example.myapplication.data.Enum.Booking_status;
 import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Repository.Booking.BookingRepository;
 import com.example.myapplication.ui.misc.Post;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.datepicker.CalendarConstraints;
 import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.firebase.auth.FirebaseAuth;
@@ -102,6 +105,7 @@ public class RoomBookingFragment extends Fragment {
         datesGuestsText = view.findViewById(R.id.dates_guests);
         changeButton = view.findViewById(R.id.change_button);
         guestNoteInput = view.findViewById(R.id.guest_note_input);
+        Button priceDetailButton = view.findViewById(R.id.price_detail_button);
     }
 
     private void getArgumentData() {
@@ -182,6 +186,34 @@ public class RoomBookingFragment extends Fragment {
             }
         });
 
+        Button priceDetailButton = getView().findViewById(R.id.price_detail_button);
+        priceDetailButton.setOnClickListener(v -> {
+            // Create dialog to show price details
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_price_details, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setView(dialogView);
+
+            // Calculate nights
+            long nights = calculateNights(checkInDay, checkOutDay);
+            double roomRate = totalPrice; // Per night
+            double totalAmount = roomRate * nights;
+
+            // Set values in dialog
+            TextView nightsDetail = dialogView.findViewById(R.id.nights_detail);
+            TextView roomRateDetail = dialogView.findViewById(R.id.room_rate_detail);
+            TextView totalDetail = dialogView.findViewById(R.id.total_detail);
+
+            nightsDetail.setText(nights + " đêm");
+            roomRateDetail.setText("₫" + String.format("%,.0f", roomRate) + " × " + nights + " đêm");
+            totalDetail.setText("₫" + String.format("%,.0f", totalAmount));
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            // Handle close button
+            dialogView.findViewById(R.id.close_button).setOnClickListener(view -> dialog.dismiss());
+        });
+
         nextButton.setOnClickListener(v -> {
             if (checkInDay.isEmpty() || checkOutDay.isEmpty()) {
                 Toast.makeText(requireContext(), "Vui lòng chọn ngày", Toast.LENGTH_SHORT).show();
@@ -232,19 +264,26 @@ public class RoomBookingFragment extends Fragment {
 
     private void showDateAndGuestPicker() {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_date_guest_picker, null);
-        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext(), R.style.TransparentBottomSheetDialog);
         dialog.setContentView(dialogView);
 
-        Button datePickerBtn = dialogView.findViewById(R.id.date_picker_button);
+        // Set rounded corners for bottom sheet
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) dialogView.getParent());
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        MaterialButton datePickerBtn = dialogView.findViewById(R.id.date_picker_button);
         TextView dateRangeText = dialogView.findViewById(R.id.date_range_text);
         if (!checkInDay.isEmpty() && !checkOutDay.isEmpty()) {
             dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
         }
 
         TextView guestCountText = dialogView.findViewById(R.id.guest_count_text);
-        Button decreaseBtn = dialogView.findViewById(R.id.decrease_guest_button);
-        Button increaseBtn = dialogView.findViewById(R.id.increase_guest_button);
+        MaterialButton decreaseBtn = dialogView.findViewById(R.id.decrease_guest_button);
+        MaterialButton increaseBtn = dialogView.findViewById(R.id.increase_guest_button);
         guestCountText.setText(String.valueOf(guestCount));
+
+        // Update the guest buttons' state
+        updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
 
         // Use PropertyRepository to get property and booked_date
         com.example.myapplication.data.Repository.Property.PropertyRepository propertyRepository =
@@ -252,6 +291,9 @@ public class RoomBookingFragment extends Fragment {
 
         datePickerBtn.setOnClickListener(v -> {
             MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+            builder.setTitleText("Chọn ngày đến - đi");
+            builder.setTheme(R.style.CustomDatePickerStyle);
+
             CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
 
             Calendar calendar = Calendar.getInstance();
@@ -314,6 +356,7 @@ public class RoomBookingFragment extends Fragment {
             if (guestCount > 1) {
                 guestCount--;
                 guestCountText.setText(String.valueOf(guestCount));
+                updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
             }
         });
 
@@ -321,16 +364,27 @@ public class RoomBookingFragment extends Fragment {
             if (guestCount < 10) {
                 guestCount++;
                 guestCountText.setText(String.valueOf(guestCount));
+                updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
             }
         });
 
-        Button confirmButton = dialogView.findViewById(R.id.confirm_button);
+        MaterialButton confirmButton = dialogView.findViewById(R.id.confirm_button);
         confirmButton.setOnClickListener(v -> {
             updateDatesAndGuestsDisplay();
             dialog.dismiss();
         });
 
         dialog.show();
+    }
+
+    private void updateGuestButtonStates(MaterialButton decreaseBtn, MaterialButton increaseBtn, int count) {
+        // Disable decrease button if at minimum
+        decreaseBtn.setEnabled(count > 1);
+        decreaseBtn.setAlpha(count > 1 ? 1.0f : 0.5f);
+
+        // Disable increase button if at maximum
+        increaseBtn.setEnabled(count < 10);
+        increaseBtn.setAlpha(count < 10 ? 1.0f : 0.5f);
     }
 
 

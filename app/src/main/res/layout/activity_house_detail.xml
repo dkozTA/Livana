@@ -149,8 +149,9 @@
 
                     <LinearLayout
                         android:orientation="vertical"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
 
                         <TextView
                             android:id="@+id/host_name"
@@ -170,6 +171,16 @@
                             android:layout_height="wrap_content"
                             android:textSize="16dp"/>
                     </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/btnMessageHost"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center_vertical"
+                        android:background="@drawable/circle_white"
+                        android:src="@drawable/ic_message"
+                        android:contentDescription="Message Host"
+                        app:tint="#FF9800" />
                 </LinearLayout>
 
                 <!-- ✅ Divider -->
