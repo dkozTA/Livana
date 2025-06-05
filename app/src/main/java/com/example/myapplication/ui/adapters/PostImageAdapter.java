@@ -55,6 +55,10 @@ public class PostImageAdapter extends RecyclerView.Adapter<PostImageAdapter.Imag
                 .error(R.drawable.photo1)
                 .into((ImageView) holder.itemView);
 
+//        if (position + 1 < imageUrls.size()) {
+//            Glide.with(context).load(imageUrls.get(position + 1)).preload();
+//        }
+
         if (isClickable) {
             holder.itemView.setOnClickListener(v -> {
                 Log.d("PostImageAdapter", "Image clicked at position: " + position);

@@ -145,7 +145,7 @@
         android:backgroundTint="#FFFFFF"
         android:clipToPadding="false"
         android:foregroundTint="#FFFFFF"
-        android:paddingTop="15dp"
+        android:paddingTop="10dp"
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
