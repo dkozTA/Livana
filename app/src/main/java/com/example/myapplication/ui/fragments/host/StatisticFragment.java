@@ -626,19 +626,18 @@ public class StatisticFragment extends Fragment {
             }
         }
 
-        // Bổ sung các tháng không có booking
-        if (minDate != null && maxDate != null) {
+        if (maxDate != null) {
             Calendar cal = Calendar.getInstance();
-            cal.setTime(minDate);
-            Calendar end = Calendar.getInstance();
-            end.setTime(maxDate);
+            cal.setTime(maxDate);
+            cal.add(Calendar.MONTH, -4); // Lùi về 4 tháng để có tổng 5 tháng
 
-            while (!cal.after(end)) {
+            for (int i = 0; i < 5; i++) {
                 String key = monthFormat.format(cal.getTime());
                 monthlyTotal.putIfAbsent(key, 0.0);
                 cal.add(Calendar.MONTH, 1);
             }
         }
+
 
         // Lấy 5 tháng gần nhất
         int size = monthlyTotal.size();
