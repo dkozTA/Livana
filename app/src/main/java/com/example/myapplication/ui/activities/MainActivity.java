@@ -68,6 +68,46 @@ public class MainActivity extends AppCompatActivity {
         }
 
         setupFooterNavigation();
+
+        // Check for navigation intents
+        String fragmentToLoad = getIntent().getStringExtra("FRAGMENT_TO_LOAD");
+        if (fragmentToLoad != null) {
+            switch (fragmentToLoad) {
+                case "wishlists":
+                    loadFragment(new WishlistFragment());
+                    updateButtonStates(R.id.button_wishlists);
+                    break;
+                case "trips":
+                    loadFragment(new TripsFragment());
+                    updateButtonStates(R.id.button_trips);
+                    break;
+                case "profile":
+                    loadFragment(new ProfileFragment());
+                    updateButtonStates(R.id.button_profile);
+                    break;
+                case "messages":
+                    // Handle in the specific check below
+                    break;
+                default:
+                    loadFragment(new ExploreFragment());
+                    updateButtonStates(R.id.button_explore);
+                    break;
+            }
+        }
+
+        // Neu intent contains "messages", load MessagesFragment
+        if (fragmentToLoad != null && fragmentToLoad.equals("messages")) {
+            MessagesFragment messagesFragment = new MessagesFragment();
+
+            // Pass any extras to the fragment
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                messagesFragment.setArguments(extras);
+            }
+
+            loadFragment(messagesFragment);
+            updateButtonStates(R.id.button_messages);
+        }
     }
 
     private void updateButtonStates(int selectedButtonId) {

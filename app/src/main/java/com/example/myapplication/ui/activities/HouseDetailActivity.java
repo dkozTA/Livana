@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class HouseDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
     private ImageButton heartButton;
@@ -86,6 +87,21 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
 
         ImageButton shareButton = findViewById(R.id.btnShare);
         shareButton.setOnClickListener(v -> sharePost());
+
+        ImageButton btnMessageHost = findViewById(R.id.btnMessageHost);
+        btnMessageHost.setOnClickListener(view -> {
+            // Get host ID from the property
+            String hostId = post.getHostId();
+            String currentUserId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
+            // Create intent to MainActivity with messages fragment
+            Intent intent = new Intent(HouseDetailActivity.this, MainActivity.class);
+            intent.putExtra("FRAGMENT_TO_LOAD", "messages");
+            intent.putExtra("HOST_ID", hostId);
+            intent.putExtra("PROPERTY_ID", post.getId());
+            intent.putExtra("CREATE_CONVERSATION", true);
+            startActivity(intent);
+        });
 
         ScrollView scrollView = findViewById(R.id.scrollView);
         ViewPager2 postImage = findViewById(R.id.viewPagerImages);
@@ -128,6 +144,7 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
             //ImageView postImageView = findViewById(R.id.post_image);
             ViewPager2 viewPager = findViewById(R.id.viewPagerImages);
             TextView hostName = findViewById(R.id.host_name);
+            TextView hostYear = findViewById(R.id.hostYear);
             TextView location = findViewById(R.id.location);
             TextView detail = findViewById(R.id.details);
             TextView dateRange = findViewById(R.id.date_range);
@@ -183,8 +200,15 @@ public class HouseDetailActivity extends AppCompatActivity implements OnMapReady
                     }
             );
 
-
-
+            // them ui phan host
+//            userRepository.getDateCreateByPropertyID(post.getId(),
+//                    hostYearStr -> {
+//                        hostYear.setText("" + hostYearStr);
+//                    },
+//                    e -> {
+//                        hostYear.setText("");
+//                    }
+//            );
 
             reviewRecyclerView = findViewById(R.id.reviewRecyclerView);
 

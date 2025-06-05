@@ -79,6 +79,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             } else {
                 WishlistManager.getInstance().removeFromInterestedView(post, FirebaseAuth.getInstance().getCurrentUser().getUid(), new UserRepository(context));
+                notifyDataSetChanged();
                 notifyItemChanged(holder.getAdapterPosition()); // Cập nhật lại icon
                 holder.heartButton.setImageResource(R.drawable.ic_heart_outline);
             }

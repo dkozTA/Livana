@@ -15,6 +15,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.myapplication.R;
 import com.example.myapplication.data.Model.Conversation.Conversation;
+import com.example.myapplication.data.Model.Conversation.Message;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
 import com.example.myapplication.data.Repository.Conversation.ConversationRepository;
 import com.example.myapplication.ui.activities.ChatActivity;
@@ -23,6 +24,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MessagesFragment extends Fragment implements ConversationListAdapter.OnConversationClickListener{
@@ -88,6 +90,15 @@ public class MessagesFragment extends Fragment implements ConversationListAdapte
 //        moreIcon.setOnClickListener(v -> {
 //            // Xử lý khi click vào icon more options
 //        });
+
+        // Check if we need to create a new conversation
+        if (getArguments() != null && getArguments().getBoolean("CREATE_CONVERSATION", false)) {
+            String hostId = getArguments().getString("HOST_ID");
+            String propertyId = getArguments().getString("PROPERTY_ID");
+            if (hostId != null) {
+                checkExistingConversation(hostId, propertyId);
+            }
+        }
     }
 
     private void setupRecyclerView() {
@@ -120,6 +131,57 @@ public class MessagesFragment extends Fragment implements ConversationListAdapte
         } else {
             conversationRepository.getAllConversationByGuestID(currentUserId, onSuccess, onFailure);
         }
+    }
+
+    private void checkExistingConversation(String hostId, String propertyId) {
+        // First check if conversation already exists
+        conversationRepository.getAllConversationByGuestID(currentUserId,
+                conversations -> {
+                    boolean conversationExists = false;
+                    String existingConversationId = null;
+
+                    for (Conversation conversation : conversations) {
+                        if (conversation.host_id.equals(hostId)) {
+                            conversationExists = true;
+                            existingConversationId = conversation.id;
+                            break;
+                        }
+                    }
+
+                    if (conversationExists && existingConversationId != null) {
+                        // Open existing conversation
+                        Intent intent = new Intent(getContext(), ChatActivity.class);
+                        intent.putExtra("CONVERSATION_ID", existingConversationId);
+                        startActivity(intent);
+                    } else {
+                        // Create new conversation
+                        createNewConversation(hostId, propertyId);
+                    }
+                },
+                e -> Toast.makeText(getContext(), "Failed to check conversations: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+        );
+    }
+
+    private void createNewConversation(String hostId, String propertyId) {
+        String name = "Chat with Host"; // Default name
+        String avatarUrl = ""; // avatar?
+
+        Conversation newConversation = new Conversation(name, currentUserId, hostId, avatarUrl);
+
+        // Add initial system message
+        Message systemMessage = new Message("Conversation started", "system");
+        newConversation.messages.add(systemMessage);
+
+        // Save to Firebase
+        conversationRepository.createConversation(newConversation,
+                unused -> {
+                    // Open the new conversation
+                    Intent intent = new Intent(getContext(), ChatActivity.class);
+                    intent.putExtra("CONVERSATION_ID", newConversation.id);
+                    startActivity(intent);
+                },
+                e -> Toast.makeText(getContext(), "Failed to create conversation: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+        );
     }
 
     @Override

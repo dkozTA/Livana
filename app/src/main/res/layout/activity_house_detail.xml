@@ -234,6 +234,16 @@
                             android:text="Superhost · 2 years hosting"
                             android:textColor="#777777"
                             android:textSize="13.5dp" />
+
+                        <ImageButton
+                            android:id="@+id/btnMessageHost"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_vertical"
+                            android:background="@drawable/circle_white"
+                            android:src="@drawable/ic_message"
+                            android:contentDescription="Message Host"
+                            app:tint="#FF9800"/>
                     </LinearLayout>
                 </LinearLayout>
 

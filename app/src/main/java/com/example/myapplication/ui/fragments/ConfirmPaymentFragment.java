@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.fragments;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,8 +18,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.firebase.firestore.FieldValue;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import android.util.Log;
 
 public class ConfirmPaymentFragment extends Fragment {
     private TextView propertyTitleText;
@@ -66,6 +74,7 @@ public class ConfirmPaymentFragment extends Fragment {
         payButton = view.findViewById(R.id.next_button);
         bookingRepository = new BookingRepository(requireContext());
         paymentScheduleText = view.findViewById(R.id.payment_schedule);
+        Button priceButton = view.findViewById(R.id.price_details_button);
     }
 
     private void getArgumentData() {
@@ -87,6 +96,34 @@ public class ConfirmPaymentFragment extends Fragment {
 
     private void setupListeners() {
         payButton.setOnClickListener(v -> handlePayment());
+
+
+        Button priceDetailsButton = getView().findViewById(R.id.price_details_button);
+        priceDetailsButton.setOnClickListener(v -> {
+            // Create dialog to show price details
+            View dialogView = getLayoutInflater().inflate(R.layout.dialog_price_details, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+            builder.setView(dialogView);
+
+            // Calculate nights - assume simple date format
+            long nights = calculateNights(checkInDay, checkOutDay);
+            double roomRate = totalPrice / nights; // Per night rate
+
+            // Set values in dialog
+            TextView nightsDetail = dialogView.findViewById(R.id.nights_detail);
+            TextView roomRateDetail = dialogView.findViewById(R.id.room_rate_detail);
+            TextView totalDetail = dialogView.findViewById(R.id.total_detail);
+
+            nightsDetail.setText(nights + " đêm");
+            roomRateDetail.setText("₫" + String.format("%,.0f", roomRate) + " × " + nights + " đêm");
+            totalDetail.setText("₫" + String.format("%,.0f", totalPrice));
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
+
+            // Handle close button
+            dialogView.findViewById(R.id.close_button).setOnClickListener(view -> dialog.dismiss());
+        });
     }
 
     private void setupViews() {
@@ -119,6 +156,8 @@ public class ConfirmPaymentFragment extends Fragment {
         // Use BookingRepository to create the booking
         bookingRepository.createBooking(booking,
                 unused -> {
+                    updatePropertyBookedDates(checkInDay, checkOutDay);
+
                     Toast.makeText(requireContext(),
                             "Đặt phòng thành công!",
                             Toast.LENGTH_SHORT).show();
@@ -141,5 +180,53 @@ public class ConfirmPaymentFragment extends Fragment {
                         "Đặt phòng thất bại: " + e.getMessage(),
                         Toast.LENGTH_SHORT).show()
         );
+    }
+
+    // Add this method to update the property's booked dates
+    private void updatePropertyBookedDates(String checkInDay, String checkOutDay) {
+        try {
+            // Parse dates - they should be in dd-MM-yyyy format already
+            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+            Date checkInDate = sdf.parse(checkInDay);
+            Date checkOutDate = sdf.parse(checkOutDay);
+
+            // Get all dates between check-in and check-out
+            List<String> datesToBook = new ArrayList<>();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(checkInDate);
+
+            while (!calendar.getTime().after(checkOutDate)) {
+                datesToBook.add(sdf.format(calendar.getTime()));
+                calendar.add(Calendar.DATE, 1);
+            }
+
+            // Update property with new booked dates
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("properties").document(propertyId)
+                    .update("booked_date", FieldValue.arrayUnion(datesToBook.toArray()))
+                    .addOnSuccessListener(aVoid ->
+                            Log.d("ConfirmPayment", "Booked dates updated successfully"))
+                    .addOnFailureListener(e ->
+                            Log.e("ConfirmPayment", "Error updating booked dates", e));
+
+        } catch (ParseException e) {
+            Log.e("ConfirmPayment", "Date parsing error", e);
+        }
+    }
+
+    private long calculateNights(String checkInDay, String checkOutDay) {
+        try {
+            // Parse dates in format "dd/MM/yyyy"
+            java.text.SimpleDateFormat format = new java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault());
+            java.util.Date checkIn = format.parse(checkInDay);
+            java.util.Date checkOut = format.parse(checkOutDay);
+
+            // Calculate difference in days
+            long diffInMillis = checkOut.getTime() - checkIn.getTime();
+            return java.util.concurrent.TimeUnit.DAYS.convert(diffInMillis, java.util.concurrent.TimeUnit.MILLISECONDS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 1; // Default to 1 night if date parsing fails
+        }
     }
 }

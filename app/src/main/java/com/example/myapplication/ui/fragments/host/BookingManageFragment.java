@@ -2,6 +2,7 @@ package com.example.myapplication.ui.fragments.host;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,6 +98,7 @@ public class BookingManageFragment extends Fragment {
             return;
         }
         String hostId = firebaseAuth.getCurrentUser().getUid();
+        Log.d("hostId", hostId);
         bookingRepository.getAllBookingsByHostID(hostId,
                 bookings -> {
                     if (isAdded()) {
@@ -104,6 +106,7 @@ public class BookingManageFragment extends Fragment {
                         listInProgress.clear();
                         listUpcoming.clear();
                         listCancelled.clear();
+                        Log.d("booking", bookings.size() + "");
                         if (bookings != null) {
                             for (Booking booking : bookings) {
                                 if (booking.status == Booking_status.COMPLETED || booking.status == Booking_status.REVIEWED) {

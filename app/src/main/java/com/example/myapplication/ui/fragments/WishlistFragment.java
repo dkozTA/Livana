@@ -13,10 +13,6 @@ import com.example.myapplication.ui.adapters.PostAdapter;
 import com.example.myapplication.ui.misc.WishlistFolder;
 import com.example.myapplication.ui.adapters.WishlistFolderAdapter;
 import com.example.myapplication.ui.misc.WishlistManager;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import android.widget.EditText;
-
 public class WishlistFragment extends Fragment implements WishlistFolderAdapter.OnFolderClickListener {
     private RecyclerView recyclerView;
     private PostAdapter allHousesAdapter;
@@ -33,10 +29,6 @@ public class WishlistFragment extends Fragment implements WishlistFolderAdapter.
                 this
         );
         foldersRecycler.setAdapter(folderAdapter);
-
-        //FloatingActionButton fab = view.findViewById(R.id.fab_add_folder);
-        //fab.setOnClickListener(v -> showCreateFolderDialog());
-
         return view;
     }
 

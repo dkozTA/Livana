@@ -88,6 +88,10 @@ dependencies {
     // splash screen
     implementation("androidx.core:core-splashscreen:1.0.1")
 
+    // chart
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+
 }
 
 apply(plugin = "com.google.gms.google-services")
