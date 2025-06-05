@@ -2,10 +2,12 @@ package com.example.myapplication.ui;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -39,65 +41,26 @@ import com.example.myapplication.data.Repository.Statistic.StatisticRepository;
 
 public class TestActivity extends AppCompatActivity {
     private static final String TAG = "TestActivity";
+    private StatisticRepository statisticRepository;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        StatisticRepository statisticRepository = new StatisticRepository(this);
-        String propertyID = "382d0a84-cb3e-420f-bbfa-c88ee98ba238";
         String hostID = "v4528ioquLTQbtmKYieS3quQUsp2";
-
+        statisticRepository = new StatisticRepository(this);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            //for(int i= 1; i< 6; i++) {
-                statisticRepository.getAllPropertyStatistic(hostID, LocalDate.of(2025, 5, 5), propertyStatistic -> {
+            statisticRepository.getPropertyPowerForChart(hostID, LocalDate.of(2025, 5, 30), result -> {
+                for (Map.Entry<Integer, Double> entry : result.entrySet()) {
+                    Integer key = entry.getKey();
+                    Double value = entry.getValue();
+                    Log.d(TAG, "Month: " + key + ", Average Power: " + value);
+                }
+            }, e -> {
 
-                }, e-> {
-
-                });
-            //}
+            });
         }
-
-        /*
-        statisticRepository.bookingRepository.getBookingsByPropertyId(propertyID, bookings -> {
-            List<String> dateSeries = new ArrayList<>();
-            for (Booking booking : bookings) {
-                List<String> series = statisticRepository.generateDateSeries(booking.check_in_day, booking.check_out_day);
-                if(statisticRepository.propertyRepository.validateBookedDate(dateSeries, series)) {
-                    dateSeries.addAll(series);
-                } else {
-                    statisticRepository.bookingRepository.deleteBooking(booking.id, unused -> {
-                        Log.d(TAG, "onCreate: Booking deleted " + booking.id);
-                    }, e-> {
-                        Log.d(TAG, "onCreate: Booking not deleted " + booking.id);
-                    });
-                }
-            }
-
-        }, e-> {
-            Log.d(TAG, "onCreate: " + e.getMessage());
-        });
-
-        statisticRepository.bookingRepository.getAllBookingsByHostID(hostID, bookings -> {
-            Map<String, List<String>> map = new HashMap<>();
-            for(Booking booking : bookings) {
-                if(!map.containsKey(booking.property_id)) {
-                    map.put(booking.property_id, new ArrayList<>());
-                    map.get(booking.property_id).add(booking.check_in_day);
-                    map.get(booking.property_id).add(booking.check_out_day);
-                } else {
-                    map.get(booking.property_id).add(booking.check_in_day);
-                    map.get(booking.property_id).add(booking.check_out_day);
-                }
-            }
-            for(Map.Entry<String, List<String>> entry : map.entrySet()) {
-                Log.d(TAG, entry.getKey());
-                Log.d(TAG, entry.getValue().toString());
-            }
-        }, e-> {
-            Log.d(TAG, "onCreate: " + e.getMessage());
-        });
-        */
     }
+
+
 }

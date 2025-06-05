@@ -11,7 +11,6 @@ import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Model.Review.ReviewWithReviewerName;
 import com.example.myapplication.data.Model.Statistic.NoPropertyException;
-import com.example.myapplication.data.Model.Statistic.NoReviewsException;
 import com.example.myapplication.data.Model.Statistic.PropertyStatistic;
 import com.example.myapplication.data.Model.Statistic.PropertyStatisticDetails;
 import com.example.myapplication.data.Model.Statistic.ReviewStatistic;
@@ -28,14 +27,17 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StatisticRepository {
     public BookingRepository bookingRepository;
-    private ReviewRepository reviewRepository;
+    public ReviewRepository reviewRepository;
     public PropertyRepository propertyRepository;
 
     public StatisticRepository(Context context) {
@@ -378,5 +380,78 @@ public class StatisticRepository {
         }, e-> {
             onFailure.onFailure(new Exception("Failed to get properties by user ID"));
         });
+    }
+
+
+    // Trả về giá trị từ tháng 1 đến tháng của localDate truyền vào, định dạng map với key là tháng còn value là double avgPower
+    public void getPropertyPowerForChart(String hostID, LocalDate localDate, OnSuccessListener<Map<Integer, Double>> onSuccess, OnFailureListener onFailure) {
+        int month;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            month = localDate.getMonthValue();
+        } else {
+            month = 0;
+            onFailure.onFailure(new Exception("Can not convert date due to version"));
+            return;
+        }
+
+        Map<Integer, Double> powerResultForChart = new ConcurrentHashMap<>();
+        AtomicInteger count = new AtomicInteger(0);
+        AtomicBoolean callbackCalled = new AtomicBoolean(false);
+
+        for(int i = 1; i <= month; i++) {
+            int m = i;
+            int y = 0;
+            y = localDate.getYear();
+
+            this.getAllPropertyStatistic(hostID, LocalDate.of(y, m, 1),
+                    propertyStatistic -> {
+                        powerResultForChart.put(m, propertyStatistic.getAveragePower());
+                        if (count.incrementAndGet() == month && callbackCalled.compareAndSet(false, true)) {
+                            onSuccess.onSuccess(powerResultForChart);
+                        }
+                    },
+                    e -> {
+                        powerResultForChart.put(m, -1.0);
+                        if (count.incrementAndGet() == month && callbackCalled.compareAndSet(false, true)) {
+                            onSuccess.onSuccess(powerResultForChart);
+                        }
+                    });
+        }
+    }
+
+    // Trả về giá trị từ tháng 1 đến tháng của localDate truyền vào, định dạng map với key là tháng còn value là double avgRating
+    public void getRatingForChart(String hostID, LocalDate localDate, OnSuccessListener<Map<Integer, Double>> onSuccess, OnFailureListener onFailure) {
+        int month;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            month = localDate.getMonthValue();
+        } else {
+            month = 0;
+            onFailure.onFailure(new Exception("Can not convert date due to version"));
+            return;
+        }
+
+        Map<Integer, Double> powerResultForChart = new ConcurrentHashMap<>();
+        AtomicInteger count = new AtomicInteger(0);
+        AtomicBoolean callbackCalled = new AtomicBoolean(false);
+
+        for(int i = 1; i <= month; i++) {
+            int m = i;
+            int y = 0;
+            y = localDate.getYear();
+
+            this.getAllReviewStatistic(hostID, LocalDate.of(y, m, 1),
+                    reviewStatistic -> {
+                        powerResultForChart.put(m, reviewStatistic.getAverageRatings());
+                        if (count.incrementAndGet() == month && callbackCalled.compareAndSet(false, true)) {
+                            onSuccess.onSuccess(powerResultForChart);
+                        }
+                    },
+                    e -> {
+                        powerResultForChart.put(m, -1.0);
+                        if (count.incrementAndGet() == month && callbackCalled.compareAndSet(false, true)) {
+                            onSuccess.onSuccess(powerResultForChart);
+                        }
+                    });
+        }
     }
 }

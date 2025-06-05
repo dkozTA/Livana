@@ -188,4 +188,81 @@ public class Property {
     public void setSub_photos(List<String> sub_photos) {
         this.sub_photos = sub_photos;
     }
+
+    // --- SETTERS ---
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setHost_id(String host_id) {
+        this.host_id = host_id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setProperty_type(PropertyType property_type) {
+        this.property_type = property_type;
+    }
+
+    public void setStatus(PropertyStatus status) {
+        this.status = status;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
+
+    public void setRooms(Rooms rooms) {
+        this.rooms = rooms;
+    }
+
+    public void setMax_guess(int max_guess) {
+        this.max_guess = max_guess;
+    }
+
+    public void setAmenities(Amenities amenities) {
+        this.amenities = amenities;
+    }
+
+    public void setNormal_price(double normal_price) {
+        this.normal_price = normal_price;
+    }
+
+    public void setWeekend_price(double weekend_price) {
+        this.weekend_price = weekend_price;
+    }
+
+    public void setHoliday_price(double holiday_price) {
+        this.holiday_price = holiday_price;
+    }
+
+    public void setDeposit(double deposit) {
+        this.deposit = deposit;
+    }
+
+    public void setBooked_date(List<String> booked_date) {
+        this.booked_date = booked_date;
+    }
+
+    public void setTotal_reviews(int total_reviews) {
+        this.total_reviews = total_reviews;
+    }
+
+    public void setAvg_ratings(double avg_ratings) {
+        this.avg_ratings = avg_ratings;
+    }
+
+    public void setLinks(List<String> links) {
+        this.links = links;
+    }
+
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
+    }
+
+    public void setUpdated_at(Date updated_at) {
+        this.updated_at = updated_at;
+    }
 }
