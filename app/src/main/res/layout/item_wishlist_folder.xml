@@ -3,21 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="98dp"
+    android:layout_height="110dp"
     android:backgroundTint="#FFFFFF">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="-10dp"
+        android:layout_marginBottom="-5dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="15dp"
         android:paddingEnd="15dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="120dp"
-            android:layout_height="100dp"
+            android:layout_width="130dp"
+            android:layout_height="110dp"
             android:clipChildren="false"
             android:clipToPadding="false">
 
@@ -93,7 +93,7 @@
             android:fontFamily="@font/afacad"
             android:text="Yêu thích"
             android:textColor="#3C3C3C"
-            android:textSize="21sp"
+            android:textSize="24sp"
             android:textStyle="bold" />
     </LinearLayout>
 

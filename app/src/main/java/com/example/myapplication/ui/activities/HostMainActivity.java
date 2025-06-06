@@ -19,7 +19,7 @@ public class HostMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_host_main);
 
         if (savedInstanceState == null) {
-            loadFragment(new PropertyManageFragment());
+            loadFragment(new PropertyManagementFragment());
             updateButtonStates(R.id.button_property_manage);
         }
 

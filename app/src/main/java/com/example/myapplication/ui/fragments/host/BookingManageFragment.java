@@ -1,11 +1,14 @@
 package com.example.myapplication.ui.fragments.host;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,13 +26,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookingManageFragment extends Fragment {
+    private Button upComingTab;
+    private Button onGoingTab;
+    private Button completedTab;
+    private RecyclerView recycler;
 
-    private RecyclerView recyclerCompleted, recyclerInProgress, recyclerUpcoming, recyclerCancelled;
+    private ImageView emptyImage;
+
     private HostBookingAdapter adapterCompleted, adapterInProgress, adapterUpcoming, adapterCancelled;
     private List<Booking> listCompleted = new ArrayList<>();
     private List<Booking> listInProgress = new ArrayList<>();
     private List<Booking> listUpcoming = new ArrayList<>();
     private List<Booking> listCancelled = new ArrayList<>();
+
     private BookingRepository bookingRepository;
     private FirebaseAuth firebaseAuth;
 
@@ -43,27 +52,48 @@ public class BookingManageFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_host_booking_manage, container, false);
+        View view = inflater.inflate(R.layout.fragment_host_booking_management, container, false);
 
-        recyclerCompleted = view.findViewById(R.id.recycler_completed);
-        recyclerInProgress = view.findViewById(R.id.recycler_inprogress);
-        recyclerUpcoming = view.findViewById(R.id.recycler_upcoming);
-        recyclerCancelled = view.findViewById(R.id.recycler_cancelled);
+        recycler = view.findViewById(R.id.recyclerView);
+        recycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        recyclerCompleted.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerInProgress.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerUpcoming.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerCancelled.setLayoutManager(new LinearLayoutManager(getContext()));
+        upComingTab = view.findViewById(R.id.upConming);
+        onGoingTab = view.findViewById(R.id.onGoing);
+        completedTab = view.findViewById(R.id.completed);
+
+        emptyImage = view.findViewById(R.id.imageEmpty);
 
         adapterCompleted = new HostBookingAdapter(listCompleted, bookingActionListener, getContext());
         adapterInProgress = new HostBookingAdapter(listInProgress, bookingActionListener, getContext());
         adapterUpcoming = new HostBookingAdapter(listUpcoming, bookingActionListener, getContext());
         adapterCancelled = new HostBookingAdapter(listCancelled, bookingActionListener, getContext());
 
-        recyclerCompleted.setAdapter(adapterCompleted);
-        recyclerInProgress.setAdapter(adapterInProgress);
-        recyclerUpcoming.setAdapter(adapterUpcoming);
-        recyclerCancelled.setAdapter(adapterCancelled);
+        highlightButton(upComingTab);
+        unhighlightButton(onGoingTab);
+        unhighlightButton(completedTab);
+
+        recycler.setAdapter(adapterUpcoming);
+
+        upComingTab.setOnClickListener(v -> {
+            highlightButton(upComingTab);
+            unhighlightButton(onGoingTab);
+            unhighlightButton(completedTab);
+            UpdateBooking(0);
+        });
+
+        onGoingTab.setOnClickListener(v -> {
+            highlightButton(onGoingTab);
+            unhighlightButton(upComingTab);
+            unhighlightButton(completedTab);
+            UpdateBooking(1);
+        });
+
+        completedTab.setOnClickListener(v -> {
+            highlightButton(completedTab);
+            unhighlightButton(upComingTab);
+            unhighlightButton(onGoingTab);
+            UpdateBooking(2);
+        });
 
         fetchHostBookings();
 
@@ -130,6 +160,30 @@ public class BookingManageFragment extends Fragment {
                         Toast.makeText(getContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void UpdateBooking(int index) {
+        emptyImage.setVisibility(View.INVISIBLE);
+        if (index == 0) {
+            recycler.setAdapter(adapterUpcoming);
+            if (adapterUpcoming.getItemCount() == 0) emptyImage.setVisibility(View.VISIBLE);
+        } else if (index == 1) {
+            recycler.setAdapter(adapterInProgress);
+            if (adapterInProgress.getItemCount() == 0) emptyImage.setVisibility(View.VISIBLE);
+        } else {
+            recycler.setAdapter(adapterCompleted);
+            if (adapterCompleted.getItemCount() == 0) emptyImage.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void highlightButton(Button button) {
+        button.setBackgroundColor(Color.parseColor("black")); // Hồng
+        button.setTextColor(Color.WHITE);
+    }
+
+    private void unhighlightButton(Button button) {
+        button.setBackgroundColor(Color.parseColor("#F3F3F3")); // Xám nhạt
+        button.setTextColor(Color.BLACK);
     }
 
     private void handleBookingAction(Booking booking) {

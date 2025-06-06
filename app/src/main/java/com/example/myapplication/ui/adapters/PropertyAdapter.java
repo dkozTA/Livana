@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -64,7 +65,7 @@ public class PropertyAdapter extends RecyclerView.Adapter<PropertyAdapter.Proper
         private TextView textPropertyPrice;
         private TextView textStatusLabel;
         private View statusIndicator;
-        private TextView textUpdateButton;
+        private Button textUpdateButton;
         private CardView cardProperty;
 
         public PropertyViewHolder(@NonNull View itemView) {
@@ -85,10 +86,8 @@ public class PropertyAdapter extends RecyclerView.Adapter<PropertyAdapter.Proper
             if (property.main_photo != null && !property.main_photo.isEmpty()) {
                 Glide.with(context)
                         .load(property.main_photo)
-                        .apply(new RequestOptions()
-                                .placeholder(R.drawable.placeholder_property)
-                                .error(R.drawable.placeholder_property)
-                                .transform(new RoundedCorners(16)))
+                        .placeholder(R.drawable.placeholder_property)
+                        .error(R.drawable.placeholder_property)
                         .into(imageProperty);
             } else {
                 imageProperty.setImageResource(R.drawable.placeholder_property);
