@@ -122,7 +122,9 @@
                 android:layout_height="wrap_content"
                 android:text="Hủy đặt phòng"
                 android:textSize="12sp"
-                android:layout_marginStart="8dp"/>
+                android:layout_marginStart="8dp"
+                android:backgroundTint="#E21C51"
+                android:textColor="@color/white"/>
 
             <Button
                 android:id="@+id/view_details_button"
@@ -130,7 +132,9 @@
                 android:layout_height="wrap_content"
                 android:text="Chi tiết"
                 android:textSize="12sp"
-                android:layout_marginStart="8dp"/>
+                android:layout_marginStart="8dp"
+                android:backgroundTint="#E21C51"
+                android:textColor="@color/white"/>
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

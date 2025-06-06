@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -383,10 +384,20 @@ public class StatisticFragment extends Fragment {
 
                     // Tạo DataSet và cấu hình
                     LineDataSet dataSet = new LineDataSet(entries, "Trung bình công suất");
-                    dataSet.setColor(Color.parseColor("#E6005C"));
-                    dataSet.setCircleColor(Color.RED);
+                    dataSet.setColor(Color.parseColor("#FF4081"));
+                    //dataSet.setColor(Color.RED);
+                    dataSet.setDrawCircles(false);
                     dataSet.setLineWidth(2f);
                     dataSet.setValueTextSize(12f);
+                    dataSet.setDrawValues(false);
+
+                    // Bật fill (đổ nền dưới đường line)
+                    dataSet.setDrawFilled(true);
+                    dataSet.setFillAlpha(255); // Độ mờ fill
+
+                    // Gradient drawable
+                    Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_red);
+                    dataSet.setFillDrawable(drawable);
 
                     // Tạo LineData và set cho LineChart
                     LineData lineData = new LineData(dataSet);
@@ -398,16 +409,18 @@ public class StatisticFragment extends Fragment {
                     xAxis.setGranularity(1f); // Mỗi đơn vị là 1 tháng
                     xAxis.setGranularityEnabled(true);
                     xAxis.setLabelCount(entries.size(), true); // Đảm bảo hiển thị đủ nhãn
+                    // Ẩn đường lưới trục X (dọc)
+                    xAxis.setDrawGridLines(false);
 
                     // Ẩn trục Y phải và trái
-                    powerLineChart.getAxisRight().setEnabled(false);
-                    powerLineChart.getAxisLeft().setDrawLabels(false); // Ẩn nhãn trục Y trái
+                    powerLineChart.getAxisRight().setDrawLabels(false);
+                    powerLineChart.getAxisRight().setEnabled(false); // hoặc .setDrawGridLines(false);
 
                     YAxis yAxisLeft = powerLineChart.getAxisLeft();
                     yAxisLeft.setAxisMinimum(0f); // Bắt đầu trục Y từ 0
                     yAxisLeft.setDrawLabels(false); // Ẩn nhãn nếu bạn không cần hiển thị số
+                    yAxisLeft.setDrawGridLines(false);
 
-                    powerLineChart.getAxisRight().setEnabled(false); // Vẫn ẩn trục phải
                     powerLineChart.getDescription().setEnabled(false);
 
                     powerLineChart.invalidate(); // Vẽ lại biểu đồ
@@ -430,10 +443,20 @@ public class StatisticFragment extends Fragment {
 
                     // Tạo DataSet và cấu hình
                     LineDataSet dataSet = new LineDataSet(entries, "Trung bình đánh giá");
-                    dataSet.setColor(Color.parseColor("#E6005C"));
-                    dataSet.setCircleColor(Color.RED);
+                    dataSet.setColor(Color.parseColor("#FF4081"));
+                    //dataSet.setColor(Color.RED);
+                    dataSet.setDrawCircles(false);
                     dataSet.setLineWidth(2f);
                     dataSet.setValueTextSize(12f);
+                    dataSet.setDrawValues(false);
+
+                    // Bật fill (đổ nền dưới đường line)
+                    dataSet.setDrawFilled(true);
+                    dataSet.setFillAlpha(255); // Độ mờ fill
+
+                    // Gradient drawable
+                    Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.fade_red);
+                    dataSet.setFillDrawable(drawable);
 
                     // Tạo LineData và set cho LineChart
                     LineData lineData = new LineData(dataSet);
@@ -445,18 +468,18 @@ public class StatisticFragment extends Fragment {
                     xAxis.setGranularity(1f); // Mỗi đơn vị là 1 tháng
                     xAxis.setGranularityEnabled(true);
                     xAxis.setLabelCount(entries.size(), true); // Đảm bảo hiển thị đủ nhãn
+                    xAxis.setDrawGridLines(false);
 
                     // Ẩn trục Y phải và trái
-                    ratingLineChart.getAxisRight().setEnabled(false);
-                    ratingLineChart.getAxisLeft().setDrawLabels(false); // Ẩn nhãn trục Y trái
+                    ratingLineChart.getAxisRight().setDrawLabels(false);
+                    ratingLineChart.getAxisRight().setEnabled(false); // hoặc .setDrawGridLines(false);
 
                     YAxis yAxisLeft = ratingLineChart.getAxisLeft();
                     yAxisLeft.setAxisMinimum(0f); // Bắt đầu trục Y từ 0
                     yAxisLeft.setDrawLabels(false); // Ẩn nhãn nếu bạn không cần hiển thị số
+                    yAxisLeft.setDrawGridLines(false);
 
-                    ratingLineChart.getAxisRight().setEnabled(false); // Vẫn ẩn trục phải
                     ratingLineChart.getDescription().setEnabled(false);
-
 
                     ratingLineChart.invalidate(); // Vẽ lại biểu đồ
                 }, e -> {
