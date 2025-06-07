@@ -14,6 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.myapplication.R;
+import com.example.myapplication.data.Enum.Role;
+import com.example.myapplication.data.Model.User.User;
+import com.example.myapplication.data.Repository.User.UserRepository;
 import com.example.myapplication.data.Model.Conversation.Conversation;
 import com.example.myapplication.data.Model.Conversation.Message;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
@@ -63,8 +66,19 @@ public class MessagesFragment extends Fragment implements ConversationListAdapte
         AuthRepository auth = new AuthRepository(requireContext());
         currentUserId = auth.getUserUid(); // Replace with actual user ID
 
-        // For demo purposes, set isHost. In production, this might be determined by user role
-        isHost = true; // Set to false, assuming we're in guest mode as per your request
+        UserRepository userRepository = new UserRepository(requireContext());
+        userRepository.getUserByUid(currentUserId, user -> {
+            if (user != null && user.role != null) {
+                isHost = (user.role == Role.HOST);
+            } else {
+                isHost = false; // default to guest if role not found
+            }
+            // Now load conversations after role is determined
+            loadConversations();
+        }, e -> {
+            isHost = false;
+            loadConversations();
+        });
 
         // Setup RecyclerView
         setupRecyclerView();
