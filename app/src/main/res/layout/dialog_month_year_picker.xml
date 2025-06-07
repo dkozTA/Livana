@@ -27,14 +27,14 @@
                 android:text="Tháng"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:textStyle="bold"/>
+                android:fontFamily="@font/roboto_bold"/>
 
             <NumberPicker
                 android:id="@+id/picker_month"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:minWidth="100dp"
-                android:textStyle="bold"/>
+                android:fontFamily="@font/roboto_bold"/>
         </LinearLayout>
 
         <LinearLayout
@@ -50,13 +50,14 @@
                 android:text="Năm"
                 android:textSize="16sp"
                 android:textColor="@color/black"
-                android:textStyle="bold"/>
+                android:fontFamily="@font/roboto_bold"/>
 
             <NumberPicker
                 android:id="@+id/picker_year"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:minWidth="100dp" />
+                android:minWidth="100dp"
+                android:fontFamily="@font/roboto_bold"/>
         </LinearLayout>
     </LinearLayout>
 

@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Xem lại và tiếp tục"
+                android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/black"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -70,7 +70,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/roboto_bold"
                             android:textSize="18sp"
                             android:textColor="@color/black"
                             android:text="Căn hộ mẫu"
@@ -130,7 +130,7 @@
                             android:layout_marginTop="24dp"
                             android:text="Chi tiết chuyến đi"
                             android:textSize="16sp"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/black"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/divider_1" />
@@ -174,7 +174,7 @@
                             android:layout_height="wrap_content"
                             android:text="Tổng tiền"
                             android:textColor="@color/black"
-                            android:textStyle="bold"
+                            android:fontFamily="@font/roboto_bold"
                             android:textSize="16sp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/divider_2" />
@@ -246,7 +246,7 @@
                             android:text="Chọn cách thanh toán"
                             android:textColor="@color/black"
                             android:textSize="20sp"
-                            android:textStyle="bold" />
+                            android:fontFamily="@font/roboto_bold"/>
 
                         <RadioGroup
                             android:id="@+id/payment_options_group"

@@ -21,6 +21,7 @@ import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Auth.AuthRepository;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.ui.activities.CreatePropertyActivity;
+import com.example.myapplication.ui.activities.HostDetailPropertyActivity;
 import com.example.myapplication.ui.adapters.PropertyAdapter;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -90,7 +91,7 @@ public class PropertyManagementFragment extends Fragment {
                 Gson gson = new Gson();
                 String json = gson.toJson(property);
 
-                Intent intent = new Intent(requireContext(), CreatePropertyActivity.class);
+                Intent intent = new Intent(requireContext(), HostDetailPropertyActivity.class);
                 intent.putExtra("property_json", json);
 
                 startActivity(intent);
