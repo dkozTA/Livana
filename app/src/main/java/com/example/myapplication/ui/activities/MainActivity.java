@@ -31,6 +31,7 @@ import androidx.core.splashscreen.SplashScreen;
 public class MainActivity extends AppCompatActivity {
     private UserRepository userRepository;
     private WishlistManager wishlistManager;
+    private boolean isFragmentTransactionInProgress = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Install splash screen
@@ -151,10 +152,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadFragment(Fragment fragment) {
+        // Prevent multiple concurrent transactions
+        if (isFragmentTransactionInProgress) {
+            return;
+        }
+
+        // Prevent loading the same fragment type that's already showing
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (currentFragment != null && currentFragment.getClass().equals(fragment.getClass())) {
+            return;
+        }
+
+        isFragmentTransactionInProgress = true;
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
-                .commit();
+                .commitAllowingStateLoss(); // Use commitAllowingStateLoss instead of commit
+
+        // Reset the flag after a short delay to allow the transaction to complete
+        new android.os.Handler().postDelayed(() -> isFragmentTransactionInProgress = false, 300);
     }
 
     private void loadUserWishlist() {

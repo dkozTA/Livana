@@ -83,6 +83,30 @@ public class RoomBookingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Log raw price information when entering the fragment
+        Bundle args = getArguments();
+        if (args != null) {
+            // Log the raw price string exactly as received, before any parsing
+            String rawPrice = args.getString("price", "0đ");
+            Log.d("RoomBookingFragment", "Raw price received: " + rawPrice);
+
+            // Your existing logging code
+            totalPrice = Double.parseDouble(rawPrice.replaceAll("\\D", ""));
+            Log.d("RoomBookingFragment", "Parsed price value: " + totalPrice);
+
+            // Log booked dates if available
+            if (args.getStringArrayList("bookedDates") != null) {
+                bookedDates = args.getStringArrayList("bookedDates");
+                Log.d("RoomBookingFragment", "Booked dates received: " + bookedDates.size());
+                for (String date : bookedDates) {
+                    Log.d("RoomBookingFragment", "Booked date: " + date);
+                }
+            } else {
+                Log.d("RoomBookingFragment", "No booked dates received");
+            }
+        } else {
+            Log.d("RoomBookingFragment", "No arguments received");
+        }
 
         TextView datesGuestsText = view.findViewById(R.id.dates_guests);
         // get default date to today and 1 guest
@@ -116,7 +140,27 @@ public class RoomBookingFragment extends Fragment {
             checkInDay = args.getString("checkInDay", "");
             checkOutDay = args.getString("checkOutDay", "");
             guestCount = args.getInt("guestCount", 1);
-            totalPrice = Double.parseDouble(args.getString("price", "0").replaceAll("[^\\d]", ""));
+            totalPrice = parsePrice(args.getString("price", "0"));
+        }
+    }
+
+    private double parsePrice(String priceText) {
+        // Extract the numeric part (with commas) between the currency symbol and any text
+        String pricePattern = "₫([\\d,]+)";
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(pricePattern);
+        java.util.regex.Matcher matcher = pattern.matcher(priceText);
+
+        if (matcher.find()) {
+            // Extract the number part with commas
+            String priceWithCommas = matcher.group(1);
+            // Remove commas and parse
+            String priceWithoutCommas = priceWithCommas.replace(",", "");
+            Log.d("RoomBookingFragment", "Extracted price: " + priceWithoutCommas);
+            return Double.parseDouble(priceWithoutCommas);
+        } else {
+            // Fallback if pattern not found
+            Log.d("RoomBookingFragment", "Price pattern not found in: " + priceText);
+            return 0;
         }
     }
 
@@ -134,7 +178,7 @@ public class RoomBookingFragment extends Fragment {
             titleView.setText(args.getString("propertyTitle", ""));
             locationView.setText(args.getString("propertyLocation", ""));
             String price = args.getString("price", "0đ");
-            totalPrice = Double.parseDouble(price.replaceAll("\\D", ""));
+            totalPrice = parsePrice(price);
             priceView.setText(price);
 
             double avgRating = args.getDouble("propertyRating", 4.5);
@@ -264,26 +308,19 @@ public class RoomBookingFragment extends Fragment {
 
     private void showDateAndGuestPicker() {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_date_guest_picker, null);
-        BottomSheetDialog dialog = new BottomSheetDialog(requireContext(), R.style.TransparentBottomSheetDialog);
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
         dialog.setContentView(dialogView);
 
-        // Set rounded corners for bottom sheet
-        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) dialogView.getParent());
-        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-
-        MaterialButton datePickerBtn = dialogView.findViewById(R.id.date_picker_button);
+        Button datePickerBtn = dialogView.findViewById(R.id.date_picker_button);
         TextView dateRangeText = dialogView.findViewById(R.id.date_range_text);
         if (!checkInDay.isEmpty() && !checkOutDay.isEmpty()) {
             dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
         }
 
         TextView guestCountText = dialogView.findViewById(R.id.guest_count_text);
-        MaterialButton decreaseBtn = dialogView.findViewById(R.id.decrease_guest_button);
-        MaterialButton increaseBtn = dialogView.findViewById(R.id.increase_guest_button);
+        Button decreaseBtn = dialogView.findViewById(R.id.decrease_guest_button);
+        Button increaseBtn = dialogView.findViewById(R.id.increase_guest_button);
         guestCountText.setText(String.valueOf(guestCount));
-
-        // Update the guest buttons' state
-        updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
 
         // Use PropertyRepository to get property and booked_date
         com.example.myapplication.data.Repository.Property.PropertyRepository propertyRepository =
@@ -291,9 +328,6 @@ public class RoomBookingFragment extends Fragment {
 
         datePickerBtn.setOnClickListener(v -> {
             MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
-            builder.setTitleText("Chọn ngày đến - đi");
-            builder.setTheme(R.style.CustomDatePickerStyle);
-
             CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
 
             Calendar calendar = Calendar.getInstance();
@@ -356,7 +390,6 @@ public class RoomBookingFragment extends Fragment {
             if (guestCount > 1) {
                 guestCount--;
                 guestCountText.setText(String.valueOf(guestCount));
-                updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
             }
         });
 
@@ -364,11 +397,10 @@ public class RoomBookingFragment extends Fragment {
             if (guestCount < 10) {
                 guestCount++;
                 guestCountText.setText(String.valueOf(guestCount));
-                updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
             }
         });
 
-        MaterialButton confirmButton = dialogView.findViewById(R.id.confirm_button);
+        Button confirmButton = dialogView.findViewById(R.id.confirm_button);
         confirmButton.setOnClickListener(v -> {
             updateDatesAndGuestsDisplay();
             dialog.dismiss();
@@ -376,6 +408,7 @@ public class RoomBookingFragment extends Fragment {
 
         dialog.show();
     }
+
 
     private void updateGuestButtonStates(MaterialButton decreaseBtn, MaterialButton increaseBtn, int count) {
         // Disable decrease button if at minimum

@@ -21,8 +21,6 @@ public class ProfileInfoActivity extends AppCompatActivity {
     private TextView profilePhone;
     private TextView profileRole;
     private TextView profileCreatedAt;
-    private TextView profileRentingHistory;
-    private TextView profileWishList;
     private UserRepository userRepository;
 
     @Override
@@ -40,8 +38,6 @@ public class ProfileInfoActivity extends AppCompatActivity {
         profilePhone = findViewById(R.id.profile_phone);
         profileRole = findViewById(R.id.profile_role);
         profileCreatedAt = findViewById(R.id.profile_created_at);
-        profileRentingHistory = findViewById(R.id.profile_renting_history);
-        profileWishList = findViewById(R.id.profile_wish_list);
         userRepository = new UserRepository(this);
 
         ImageButton btnBack = findViewById(R.id.btn_back);
@@ -71,15 +67,6 @@ public class ProfileInfoActivity extends AppCompatActivity {
                         } else {
                             profileCreatedAt.setText("Not available");
                         }
-
-                        // Set collections
-                        String rentingHistory = (user.rentingHistory != null && !user.rentingHistory.isEmpty()) ?
-                                String.join(", ", user.rentingHistory) : "No renting history";
-                        profileRentingHistory.setText(rentingHistory);
-
-                        String wishList = (user.wish_list != null && !user.wish_list.isEmpty()) ?
-                                String.join(", ", user.wish_list) : "No items in wish list";
-                        profileWishList.setText(wishList);
 
                         // Load profile image
                         if (user.avatar_link != null && !user.avatar_link.isEmpty()) {
