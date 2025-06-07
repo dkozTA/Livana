@@ -25,6 +25,17 @@
             android:layout_width="wrap_content"
             android:textColor="@color/black"
             android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/empty_completed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_completed"
             android:layout_width="match_parent"
@@ -39,6 +50,17 @@
             android:textColor="@color/black"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/empty_inprogress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_inprogress"
             android:layout_width="match_parent"
@@ -53,6 +75,17 @@
             android:textColor="@color/black"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/empty_upcoming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_upcoming"
             android:layout_width="match_parent"
@@ -67,6 +100,17 @@
             android:textColor="@color/black"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"/>
+
+        <TextView
+            android:id="@+id/empty_cancelled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textSize="14sp"
+            android:textStyle="italic"
+            android:visibility="gone" />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_cancelled"
             android:layout_width="match_parent"

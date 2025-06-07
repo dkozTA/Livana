@@ -89,8 +89,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             bookingDatesText.setText(dateRange);
 
             // Set booking price
-            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
-            String formattedPrice = currencyFormat.format(booking.total_price) + " tổng cộng";
+            NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+            String formattedPrice = numberFormat.format(booking.total_price) + " VND tổng cộng";
             bookingPriceText.setText(formattedPrice);
 
             // Set booking status with appropriate color
