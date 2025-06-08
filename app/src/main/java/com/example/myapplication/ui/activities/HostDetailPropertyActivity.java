@@ -23,6 +23,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -156,39 +157,75 @@ public class HostDetailPropertyActivity extends AppCompatActivity {
 
     // Call this in your activity to show the dialog
     private void showReadOnlyCalendarDialog() {
-        BookingRepository bookingRepository = new BookingRepository(this);
-        bookingRepository.getBookingsByPropertyId(propertyData.getId(),
-                bookings -> {
-                    List<long[]> bookedRanges = new ArrayList<>();
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
-                    for (Booking booking : bookings) {
-                        if (booking.status == Booking_status.CANCELLED) continue;
-                        try {
-                            Date start = sdf.parse(booking.check_in_day);
-                            Date end = sdf.parse(booking.check_out_day);
-                            if (start != null && end != null) {
-                                bookedRanges.add(new long[]{start.getTime(), end.getTime()});
-                            }
-                        } catch (ParseException e) {
-                            Log.e("CalendarDialog", "Date parsing error: " + e.getMessage());
-                        }
-                    }
-                    CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-                    constraintsBuilder.setValidator(new DisabledDateRangeValidator(bookedRanges));
+//        BookingRepository bookingRepository = new BookingRepository(this);
+//        bookingRepository.getBookingsByPropertyId(propertyData.getId(),
+//                bookings -> {
+//                    List<long[]> bookedRanges = new ArrayList<>();
+//                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+//                    for (Booking booking : bookings) {
+//                        if (booking.status == Booking_status.CANCELLED) continue;
+//                        try {
+//                            Date start = sdf.parse(booking.check_in_day);
+//                            Date end = sdf.parse(booking.check_out_day);
+//                            if (start != null && end != null) {
+//                                bookedRanges.add(new long[]{start.getTime(), end.getTime()});
+//                            }
+//                        } catch (ParseException e) {
+//                            Log.e("CalendarDialog", "Date parsing error: " + e.getMessage());
+//                        }
+//                    }
+//                    CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+//                    constraintsBuilder.setValidator(new DisabledDateRangeValidator(bookedRanges));
+//
+//                    // Create MaterialDatePicker without custom theme
+//                    MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+//                            .setTitleText("Lịch phòng: " + propertyData.getName())
+//                            .setCalendarConstraints(constraintsBuilder.build())
+//                            .build();
+//
+//                    // Disable selection by not handling positive button
+//                    datePicker.addOnPositiveButtonClickListener(selection -> { /* Do nothing */ });
+//
+//                    datePicker.show(getSupportFragmentManager(), "calendar_dialog");
+//                },
+//                error -> Toast.makeText(this, "Không thể tải lịch", Toast.LENGTH_SHORT).show()
+//        );
 
-                    // Create MaterialDatePicker without custom theme
-                    MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                            .setTitleText("Lịch phòng: " + propertyData.getName())
-                            .setCalendarConstraints(constraintsBuilder.build())
-                            .build();
+        MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+        builder.setTitleText("Lịch phòng: " + propertyData.getName());
+        builder.setTheme(R.style.CustomDatePickerStyle);
 
-                    // Disable selection by not handling positive button
-                    datePicker.addOnPositiveButtonClickListener(selection -> { /* Do nothing */ });
+        CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
 
-                    datePicker.show(getSupportFragmentManager(), "calendar_dialog");
-                },
-                error -> Toast.makeText(this, "Không thể tải lịch", Toast.LENGTH_SHORT).show()
-        );
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        long today = calendar.getTimeInMillis();
+
+        List<String> bookedDates = propertyData.booked_date != null ? propertyData.booked_date : new java.util.ArrayList<>(); // dd-MM-yyyy
+
+        CalendarConstraints.DateValidator bookedDatesValidator = new CalendarConstraints.DateValidator() {
+            @Override
+            public boolean isValid(long date) {
+                if (date < today) return false;
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(date);
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd-MM-yyyy", java.util.Locale.getDefault());
+                String dateStr = sdf.format(cal.getTime());
+                return bookedDates == null || !bookedDates.contains(dateStr);
+            }
+            @Override public int describeContents() { return 0; }
+            @Override public void writeToParcel(android.os.Parcel dest, int flags) {}
+        };
+
+        constraintsBuilder.setStart(today);
+        constraintsBuilder.setValidator(bookedDatesValidator);
+        builder.setCalendarConstraints(constraintsBuilder.build());
+
+        MaterialDatePicker<Pair<Long, Long>> picker = builder.build();
+        picker.show(getSupportFragmentManager(), picker.toString());
     }
 
     private void UpdateDisplay(Property property) {

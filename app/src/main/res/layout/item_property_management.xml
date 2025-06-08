@@ -90,7 +90,8 @@
                 android:maxLines="1"
                 android:text="Địa chỉ"
                 android:textColor="@color/text_secondary"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:visibility="gone" />
 
             <!-- Status Layout -->
             <LinearLayout
