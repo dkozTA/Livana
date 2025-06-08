@@ -1,13 +1,19 @@
 package com.example.myapplication.ui.activities;
 
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -22,13 +28,37 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.myapplication.R;
+import com.example.myapplication.data.Enum.Booking_status;
+import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Model.Property.Property;
+import com.example.myapplication.data.Repository.Booking.BookingRepository;
 import com.example.myapplication.data.Repository.Property.PropertyRepository;
 import com.example.myapplication.ui.adapters.LinkingIDAdapter;
 import com.example.myapplication.utils.PostConverter;
+import com.google.android.material.datepicker.CalendarConstraints;
+import com.google.android.material.datepicker.CompositeDateValidator;
+import com.google.android.material.datepicker.MaterialDatePicker;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.view.Window;
+import android.view.ViewGroup;
+import android.widget.CalendarView;
+import com.example.myapplication.data.Repository.Booking.BookingRepository;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.HashSet;
+import java.util.Set;
 
 public class HostDetailPropertyActivity extends AppCompatActivity {
     private Property propertyData;
@@ -119,6 +149,46 @@ public class HostDetailPropertyActivity extends AppCompatActivity {
 
         ImageButton backBtn = findViewById(R.id.btnBack);
         backBtn.setOnClickListener(v -> finish());
+
+        Button viewCalendarButton = findViewById(R.id.viewCalendarButton);
+        viewCalendarButton.setOnClickListener(v -> showReadOnlyCalendarDialog());
+    }
+
+    // Call this in your activity to show the dialog
+    private void showReadOnlyCalendarDialog() {
+        BookingRepository bookingRepository = new BookingRepository(this);
+        bookingRepository.getBookingsByPropertyId(propertyData.getId(),
+                bookings -> {
+                    List<long[]> bookedRanges = new ArrayList<>();
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+                    for (Booking booking : bookings) {
+                        if (booking.status == Booking_status.CANCELLED) continue;
+                        try {
+                            Date start = sdf.parse(booking.check_in_day);
+                            Date end = sdf.parse(booking.check_out_day);
+                            if (start != null && end != null) {
+                                bookedRanges.add(new long[]{start.getTime(), end.getTime()});
+                            }
+                        } catch (ParseException e) {
+                            Log.e("CalendarDialog", "Date parsing error: " + e.getMessage());
+                        }
+                    }
+                    CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
+                    constraintsBuilder.setValidator(new DisabledDateRangeValidator(bookedRanges));
+
+                    // Create MaterialDatePicker without custom theme
+                    MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
+                            .setTitleText("Lịch phòng: " + propertyData.getName())
+                            .setCalendarConstraints(constraintsBuilder.build())
+                            .build();
+
+                    // Disable selection by not handling positive button
+                    datePicker.addOnPositiveButtonClickListener(selection -> { /* Do nothing */ });
+
+                    datePicker.show(getSupportFragmentManager(), "calendar_dialog");
+                },
+                error -> Toast.makeText(this, "Không thể tải lịch", Toast.LENGTH_SHORT).show()
+        );
     }
 
     private void UpdateDisplay(Property property) {
@@ -212,5 +282,52 @@ public class HostDetailPropertyActivity extends AppCompatActivity {
 
         // Hiển thị dialog
         alertDialog.show();
+    }
+
+    public static class DisabledDateRangeValidator implements CalendarConstraints.DateValidator {
+        private final List<long[]> bookedRanges;
+
+        public DisabledDateRangeValidator(List<long[]> bookedRanges) {
+            this.bookedRanges = bookedRanges;
+        }
+
+        @Override
+        public boolean isValid(long date) {
+            for (long[] range : bookedRanges) {
+                if (date >= range[0] && date <= range[1]) return false;
+            }
+            return true;
+        }
+
+        @Override
+        public int describeContents() { return 0; }
+
+        @Override
+        public void writeToParcel(android.os.Parcel dest, int flags) {
+            dest.writeInt(bookedRanges.size());
+            for (long[] range : bookedRanges) {
+                dest.writeLong(range[0]);
+                dest.writeLong(range[1]);
+            }
+        }
+
+        public static final Creator<DisabledDateRangeValidator> CREATOR = new Creator<DisabledDateRangeValidator>() {
+            @Override
+            public DisabledDateRangeValidator createFromParcel(android.os.Parcel in) {
+                int size = in.readInt();
+                List<long[]> ranges = new ArrayList<>();
+                for (int i = 0; i < size; i++) {
+                    long start = in.readLong();
+                    long end = in.readLong();
+                    ranges.add(new long[]{start, end});
+                }
+                return new DisabledDateRangeValidator(ranges);
+            }
+
+            @Override
+            public DisabledDateRangeValidator[] newArray(int size) {
+                return new DisabledDateRangeValidator[size];
+            }
+        };
     }
 }

@@ -260,6 +260,17 @@
                 android:textScaleX="1.02"
                 android:textSize="27sp" />
 
+            <Button
+                android:id="@+id/viewCalendarButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="30dp"
+                android:layout_marginBottom="10dp"
+                android:backgroundTint="#000000"
+                android:textColor="#FFFFFF"
+                android:text="Xem lịch" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
