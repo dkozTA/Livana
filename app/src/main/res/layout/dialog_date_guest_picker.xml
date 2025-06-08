@@ -24,7 +24,7 @@
         android:text="Chọn ngày và số khách"
         android:textColor="#000000"
         android:textSize="18sp"
-        android:textStyle="bold"
+        android:fontFamily="@font/roboto_bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/drag_handle" />
@@ -54,7 +54,8 @@
                 android:text="Ngày"
                 android:textColor="#000000"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:fontFamily="@font/roboto_bold"
+                />
 
             <TextView
                 android:id="@+id/date_range_text"
@@ -105,7 +106,7 @@
                 android:text="Số khách"
                 android:textColor="#000000"
                 android:textSize="16sp"
-                android:textStyle="bold"
+                android:fontFamily="@font/roboto_bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

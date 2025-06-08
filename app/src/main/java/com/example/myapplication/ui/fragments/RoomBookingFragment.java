@@ -308,19 +308,27 @@ public class RoomBookingFragment extends Fragment {
 
     private void showDateAndGuestPicker() {
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_date_guest_picker, null);
-        BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
+        BottomSheetDialog dialog = new BottomSheetDialog(requireContext(), R.style.TransparentBottomSheetDialog);
         dialog.setContentView(dialogView);
 
-        Button datePickerBtn = dialogView.findViewById(R.id.date_picker_button);
+        // Set rounded corners for bottom sheet
+        BottomSheetBehavior<View> behavior = BottomSheetBehavior.from((View) dialogView.getParent());
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        MaterialButton datePickerBtn = dialogView.findViewById(R.id.date_picker_button);
+
         TextView dateRangeText = dialogView.findViewById(R.id.date_range_text);
         if (!checkInDay.isEmpty() && !checkOutDay.isEmpty()) {
             dateRangeText.setText(String.format("%s - %s", checkInDay, checkOutDay));
         }
 
         TextView guestCountText = dialogView.findViewById(R.id.guest_count_text);
-        Button decreaseBtn = dialogView.findViewById(R.id.decrease_guest_button);
-        Button increaseBtn = dialogView.findViewById(R.id.increase_guest_button);
+        MaterialButton decreaseBtn = dialogView.findViewById(R.id.decrease_guest_button);
+        MaterialButton increaseBtn = dialogView.findViewById(R.id.increase_guest_button);
         guestCountText.setText(String.valueOf(guestCount));
+
+        // Update the guest buttons' state
+        updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
 
         // Use PropertyRepository to get property and booked_date
         com.example.myapplication.data.Repository.Property.PropertyRepository propertyRepository =
@@ -328,6 +336,9 @@ public class RoomBookingFragment extends Fragment {
 
         datePickerBtn.setOnClickListener(v -> {
             MaterialDatePicker.Builder<Pair<Long, Long>> builder = MaterialDatePicker.Builder.dateRangePicker();
+            builder.setTitleText("Chọn ngày đến - đi");
+            builder.setTheme(R.style.CustomDatePickerStyle);
+
             CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
 
             Calendar calendar = Calendar.getInstance();
@@ -390,6 +401,7 @@ public class RoomBookingFragment extends Fragment {
             if (guestCount > 1) {
                 guestCount--;
                 guestCountText.setText(String.valueOf(guestCount));
+                updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
             }
         });
 
@@ -397,10 +409,11 @@ public class RoomBookingFragment extends Fragment {
             if (guestCount < 10) {
                 guestCount++;
                 guestCountText.setText(String.valueOf(guestCount));
+                updateGuestButtonStates(decreaseBtn, increaseBtn, guestCount);
             }
         });
 
-        Button confirmButton = dialogView.findViewById(R.id.confirm_button);
+        MaterialButton confirmButton = dialogView.findViewById(R.id.confirm_button);
         confirmButton.setOnClickListener(v -> {
             updateDatesAndGuestsDisplay();
             dialog.dismiss();
