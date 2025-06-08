@@ -138,4 +138,9 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="ThemeOverlay.App.DatePicker.White" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="colorSurface">@android:color/white</item>
+        <item name="colorOnSurface">@android:color/black</item>
+    </style>
+
 </resources>
