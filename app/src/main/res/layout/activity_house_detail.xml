@@ -199,6 +199,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clipToPadding="false"
                     android:orientation="horizontal"
                     android:paddingStart="13dp"
                     android:paddingEnd="10dp">
@@ -222,10 +223,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="7dp"
+                            android:fontFamily="@font/roboto_bold"
                             android:text="Host: Jureeporn"
                             android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:textStyle="bold" />
+                            android:textSize="16dp" />
 
                         <TextView
                             android:id="@+id/hostYear"
@@ -235,16 +236,18 @@
                             android:textColor="#777777"
                             android:textSize="13.5dp" />
 
-                        <ImageButton
-                            android:id="@+id/btnMessageHost"
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:layout_gravity="center_vertical"
-                            android:background="@drawable/circle_white"
-                            android:src="@drawable/ic_message"
-                            android:contentDescription="Message Host"
-                            app:tint="#FF9800"/>
                     </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/btnMessageHost"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:layout_gravity="right|center_vertical"
+                        android:layout_marginStart="15dp"
+                        android:background="@drawable/circle_white"
+                        android:contentDescription="Message Host"
+                        android:scaleType="centerInside"
+                        android:src="@drawable/ic_chat" />
                 </LinearLayout>
 
                 <!-- ✅ Divider -->

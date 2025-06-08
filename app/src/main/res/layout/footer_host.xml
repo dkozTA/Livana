@@ -49,21 +49,6 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/button_message"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="?attr/selectableItemBackground"
-            android:drawableTop="@drawable/ic_message"
-            android:drawablePadding="4dp"
-            android:drawableTint="@color/footer_icon_color"
-            android:padding="8dp"
-            android:text="Tin nhắn"
-            android:textAllCaps="false"
-            android:textColor="@color/footer_button_text_color"
-            android:textSize="12sp" />
-
-        <Button
             android:id="@+id/button_statistic"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -74,6 +59,21 @@
             android:drawableTint="@color/footer_icon_color"
             android:padding="8dp"
             android:text="Thống kê"
+            android:textAllCaps="false"
+            android:textColor="@color/footer_button_text_color"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/button_message"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackground"
+            android:drawableTop="@drawable/ic_message"
+            android:drawablePadding="4dp"
+            android:drawableTint="@color/footer_icon_color"
+            android:padding="8dp"
+            android:text="Tin nhắn"
             android:textAllCaps="false"
             android:textColor="@color/footer_button_text_color"
             android:textSize="12sp" />

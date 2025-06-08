@@ -22,6 +22,7 @@ import com.example.myapplication.ui.adapters.MessageAdapter;
 import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -107,7 +108,7 @@ public class ChatActivity extends AppCompatActivity {
 
         buttonSend.setOnClickListener(v -> {
             String content = editMessage.getText().toString().trim();
-            if (!content.isEmpty()) {
+            if (!content.isEmpty() && !containsSensitiveInfo(content)) {
                 Message newMessage = new Message(content, sender_ID);
                 conversationRepository.sendMessage(conversationID, newMessage,
                         unused -> {
@@ -119,6 +120,8 @@ public class ChatActivity extends AppCompatActivity {
                             Toast.makeText(this, "Gửi tin nhắn thất bại", Toast.LENGTH_SHORT).show();
                         }
                 );
+            } else {
+                Toast.makeText(this, "Tin nhắn không phù hợp", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -131,5 +134,34 @@ public class ChatActivity extends AppCompatActivity {
             messageListener.remove();
             messageListener = null;
         }
+    }
+
+    // Kiểm tra xem có số điện thoại hay không
+    public boolean containsPhoneNumber(String text) {
+        String phoneRegex = "\\b(\\+?\\d{1,3})?[-.\\s]?\\(?\\d{2,4}\\)?[-.\\s]?\\d{3,4}[-.\\s]?\\d{3,4}\\b";
+        return Pattern.compile(phoneRegex).matcher(text).find();
+    }
+
+    public boolean containsEmail(String text) {
+        String emailRegex = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}";
+        return Pattern.compile(emailRegex).matcher(text).find();
+    }
+
+    public boolean containsAddressKeywords(String text) {
+        String[] addressKeywords = {
+                "đường", "phố", "phường", "quận", "thành phố", "tỉnh", "xã", "số nhà", "ngõ", "ấp", "huyện"
+        };
+
+        text = text.toLowerCase();
+        for (String keyword : addressKeywords) {
+            if (text.contains(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean containsSensitiveInfo(String text) {
+        return containsPhoneNumber(text) || containsEmail(text) || containsAddressKeywords(text);
     }
 }
