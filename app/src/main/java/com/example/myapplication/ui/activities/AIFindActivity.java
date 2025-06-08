@@ -2,9 +2,15 @@ package com.example.myapplication.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.NestedScrollingChild;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,6 +21,7 @@ import com.example.myapplication.ui.adapters.PostAdapter;
 import com.example.myapplication.ui.misc.Post;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.gson.Gson;
 
 import org.json.*;
 
@@ -30,7 +37,11 @@ public class AIFindActivity extends AppCompatActivity {
     ImageButton backButton;
     RecyclerView resultContainer;
 
+    ImageView aiIcon;
     Button detailButton;
+
+    private boolean isTitleVisible = false;
+    private int showThresholdPx;
 
     // Store property data from backend
     private PropertyRepository propertyRepository;
@@ -51,20 +62,49 @@ public class AIFindActivity extends AppCompatActivity {
         resultContainer = findViewById(R.id.recyclerAI);
         detailButton = findViewById(R.id.detailButton);
         resultContainer.setLayoutManager(new LinearLayoutManager(this));
+        aiIcon = findViewById(R.id.aiIcon);
 
+        TextView folderHeaderText = findViewById(R.id.headerTitle);
+        View headerLine = findViewById(R.id.headerLine);
+
+
+        NestedScrollView nestedScrollView = findViewById(R.id.nestedScrollView);
+
+        // Ngưỡng tính bằng pixels (100dp)
+        float dpThreshold = 50f;
+        showThresholdPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, dpThreshold, getResources().getDisplayMetrics()
+        );
+
+        nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener)
+                (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                    if (scrollY > 0) {
+                        headerLine.setVisibility(View.VISIBLE);
+                    } else {
+                        headerLine.setVisibility(View.GONE);
+                    }
+
+                    if (scrollY > showThresholdPx && !isTitleVisible) {
+                        isTitleVisible = true;
+                        folderHeaderText.animate().alpha(1f).setDuration(150).start();
+                    } else if (scrollY <= showThresholdPx && isTitleVisible) {
+                        isTitleVisible = false;
+                        folderHeaderText.animate().alpha(0f).setDuration(50).start();
+                    }
+                }
+        );
 
         btnSubmit.setOnClickListener(view -> {
             String userInput = editTextRequest.getText().toString().trim();
             if (!userInput.isEmpty()) {
                 sendRequestToModel(userInput);
-                editTextRequest.setEnabled(false);
-                btnSubmit.setEnabled(false);
+                SearchStart();
             } else {
                 Toast.makeText(this, "Vui lòng nhập nội dung", Toast.LENGTH_SHORT).show();
             }
         });
 
-        backButton = findViewById(R.id.back);
+        backButton = findViewById(R.id.btnBack);
         backButton.setOnClickListener(v -> finish());
 
         // Initialize empty list and adapter
@@ -85,13 +125,13 @@ public class AIFindActivity extends AppCompatActivity {
         new Thread(() -> {
             HttpURLConnection conn = null;
             try {
-                URL url = new URL("http://10.0.2.2:8000/extract_booking");
+                URL url = new URL("https://search-ai-363255354392.asia-southeast1.run.app/extract_booking");
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json");
                 conn.setDoOutput(true);
-                conn.setConnectTimeout(50000); // 10s timeout kết nối
-                conn.setReadTimeout(50000);    // 10s timeout đọc dữ liệu
+                conn.setConnectTimeout(60000); // 10s timeout kết nối
+                conn.setReadTimeout(60000);    // 10s timeout đọc dữ liệu
 
                 // Gửi dữ liệu JSON
                 JSONObject jsonRequest = new JSONObject();
@@ -119,13 +159,11 @@ public class AIFindActivity extends AppCompatActivity {
                     runOnUiThread(() -> {
                         Toast.makeText(this, "Kết nối thành công", Toast.LENGTH_SHORT).show();
                         parseAndDisplayResponse(response.toString());
+                        SearchEnd();
                     });
                 } else {
                     runOnUiThread(() -> {
-                        editTextRequest.setEnabled(true);
-                        btnSubmit.setEnabled(true);
-                        resultContainer.setVisibility(View.GONE);
-                        detailButton.setVisibility(View.GONE);
+                        SearchEnd();
                         Toast.makeText(this, "Lỗi server: " + responseCode, Toast.LENGTH_SHORT).show();
                     });
                 }
@@ -146,15 +184,17 @@ public class AIFindActivity extends AppCompatActivity {
     }
 
     private void parseAndDisplayResponse(String json) {
-        editTextRequest.setEnabled(true);
-        btnSubmit.setEnabled(true);
+//        editTextRequest.setEnabled(true);
+//        btnSubmit.setEnabled(true);
 
         detailButton.setOnClickListener(v -> {
             NavResult(json);
         });
 
-        detailButton.setVisibility(View.VISIBLE);
-        resultContainer.setVisibility(View.VISIBLE);
+//        detailButton.setVisibility(View.VISIBLE);
+//        resultContainer.setVisibility(View.VISIBLE);
+
+
     }
 
     private void NavResult(String result) {
@@ -172,6 +212,53 @@ public class AIFindActivity extends AppCompatActivity {
         resultContainer.addView(tv);
     }
 
+//    private void FetchData(String responseAI) {
+//
+//        String jsonString = responseAI;
+//        if (jsonString != null && !jsonString.isEmpty()) {
+//            try {
+//                Gson gson = new Gson();
+//                AIResultActivity.PropertyResponse response = gson.fromJson(jsonString, AIResultActivity.PropertyResponse.class);
+//
+//                PropertyRepository repo = new PropertyRepository(this);
+//                for (int i = 0; i < response.extracted_info.properties.size(); i++) {
+//                    repo.getPropertyById(response.extracted_info.properties.get(i).id, property -> {
+//
+//                    }
+//                });
+//                }
+//
+//            } catch (Exception e) {
+//                String errorMsg = "⚠️ Error parsing JSON: " + e.getMessage();
+//                Log.e("JSON_ERROR", errorMsg, e);
+//                textView.setText(errorMsg + "\n\nJSON Content:\n" + jsonString);
+//            }
+//    }
+
+    private void SearchStart() {
+        aiIcon.setVisibility(View.VISIBLE);
+        AlphaAnimation blinkAnimation = new AlphaAnimation(1.0f, 0.3f); // từ sáng -> mờ
+        blinkAnimation.setDuration(500); // thời gian mỗi lần mờ/sáng (ms)
+
+        blinkAnimation.setRepeatCount(Animation.INFINITE);
+        blinkAnimation.setRepeatMode(Animation.REVERSE); // lặp lại từ mờ -> sáng
+
+        aiIcon.startAnimation(blinkAnimation);
+
+        detailButton.setVisibility(View.GONE);
+        btnSubmit.setVisibility(View.GONE);
+        resultContainer.setVisibility(View.GONE);
+        editTextRequest.setEnabled(false);
+    }
+
+    private void SearchEnd() {
+        aiIcon.clearAnimation();
+        aiIcon.setVisibility(View.GONE);
+        detailButton.setVisibility(View.VISIBLE);
+        btnSubmit.setVisibility(View.VISIBLE);
+        resultContainer.setVisibility(View.VISIBLE);
+        editTextRequest.setEnabled(true);
+    }
     private void fetchBackendData() {
         // Call repository method to get all properties from Firestore
         propertyRepository.getAllProperties(

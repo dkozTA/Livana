@@ -60,7 +60,7 @@ public class AIResultActivity extends AppCompatActivity {
             return "❌ Không tìm thấy dữ liệu hợp lệ";
         }
 
-        List<Property> properties = response.extracted_info.properties;
+        List<PropertyData> properties = response.extracted_info.properties;
         if (properties.isEmpty()) {
             return "ℹ️ Không có property nào";
         }
@@ -68,7 +68,7 @@ public class AIResultActivity extends AppCompatActivity {
         StringBuilder result = new StringBuilder();
 
         // 2. Duyệt qua các property
-        for (Property property : properties) {
+        for (PropertyData property : properties) {
             if (property == null) continue;
 
             // 2.1. Thông tin cơ bản
@@ -114,11 +114,11 @@ public class AIResultActivity extends AppCompatActivity {
         public ExtractedInfo extracted_info;
 
         public class ExtractedInfo {
-            public List<Property> properties;
+            public List<PropertyData> properties;
         }
     }
 
-    public static class Property {
+    public static class PropertyData {
         public String id;
         public double score;
         public List<Match> matches;
