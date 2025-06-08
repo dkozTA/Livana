@@ -116,6 +116,29 @@
                 android:textColor="#333333" />
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/guest_note_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ghi chú: "
+                android:textSize="16sp"
+                android:textColor="#757575" />
+
+            <TextView
+                android:id="@+id/host_detail_guest_note"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:textColor="#333333" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/host_detail_booking_id"
             android:layout_width="match_parent"

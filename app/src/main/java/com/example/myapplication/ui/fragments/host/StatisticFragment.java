@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -534,18 +535,10 @@ public class StatisticFragment extends Fragment {
         dialog.show();
     }
     private void forceSetNumberPickerTextColor(NumberPicker numberPicker, int color) {
+        // Just set the text color for the input field - the safer approach
         try {
-            // Truy cập Paint nội bộ vẽ các giá trị trong NumberPicker
-            Field selectorWheelPaintField = NumberPicker.class.getDeclaredField("mSelectorWheelPaint");
-            selectorWheelPaintField.setAccessible(true);
-            Paint paint = (Paint) selectorWheelPaintField.get(numberPicker);
-            if (paint != null) {
-                paint.setColor(color);
-            }
-
-            // Gán màu cho EditText (giá trị trung tâm)
-            int count = numberPicker.getChildCount();
-            for (int i = 0; i < count; i++) {
+            // Find the EditText inside the NumberPicker
+            for (int i = 0; i < numberPicker.getChildCount(); i++) {
                 View child = numberPicker.getChildAt(i);
                 if (child instanceof EditText) {
                     EditText editText = (EditText) child;
@@ -553,17 +546,15 @@ public class StatisticFragment extends Fragment {
                     editText.setCursorVisible(false);
                     editText.setFocusable(false);
                     editText.setFocusableInTouchMode(false);
+
+                    // To ensure consistent color, we also need to ensure the text doesn't change
+                    // when it becomes selected
+                    editText.setHighlightColor(color);
+                    return;
                 }
             }
-
-            // Vô hiệu hóa formatter (nếu có)
-            numberPicker.setFormatter(null);
-
-            // Ép redraw lại
-            numberPicker.invalidate();
-            numberPicker.requestLayout();
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("NumberPicker", "Error setting text color: " + e.getMessage());
         }
     }
     private void highlightButton(Button button) {
@@ -755,141 +746,171 @@ public class StatisticFragment extends Fragment {
     }
 
     private void showBookingDetailDialog(Booking booking, String propertyID) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
-        View view = getLayoutInflater().inflate(R.layout.dialog_booking_detail, null);
-
-        // Find views
-        ImageView propertyImage = view.findViewById(R.id.detail_property_image);
-        TextView propertyName = view.findViewById(R.id.detail_property_name);
-        TextView propertyLocation = view.findViewById(R.id.detail_property_location);
-        TextView bookingDates = view.findViewById(R.id.detail_booking_dates);
-        TextView status = view.findViewById(R.id.detail_status);
-        TextView totalPrice = view.findViewById(R.id.detail_total_price);
-        TextView bookingId = view.findViewById(R.id.detail_booking_id);
-        TextView priceBreakdown = view.findViewById(R.id.detail_price_breakdown);
-
-        MaterialButton closeButton = view.findViewById(R.id.btn_close_dialog);
-
-        AlertDialog dialog = builder.setView(view).create();
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        if (booking == null) {
+            Toast.makeText(getContext(), "Booking details unavailable", Toast.LENGTH_SHORT).show();
+            return;
         }
 
-        closeButton.setOnClickListener(v -> dialog.dismiss());
+        // Create dialog with custom style
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_booking_detail);
 
-        // Show dialog immediately (with placeholders), fill in property data later
-        dialog.show();
+        // Make dialog background transparent
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        // Set booking info first
+            // Get screen width
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+            // Set dialog width to 90% of screen width
+            int dialogWidth = (int) (screenWidth * 0.9);
+
+            dialog.getWindow().setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        // Find views
+        ImageView propertyImage = dialog.findViewById(R.id.detail_property_image);
+        TextView propertyName = dialog.findViewById(R.id.detail_property_name);
+        TextView propertyLocation = dialog.findViewById(R.id.detail_property_location);
+        TextView bookingDates = dialog.findViewById(R.id.detail_booking_dates);
+        TextView status = dialog.findViewById(R.id.detail_status);
+        TextView totalPrice = dialog.findViewById(R.id.detail_total_price);
+        TextView bookingId = dialog.findViewById(R.id.detail_booking_id);
+        TextView priceBreakdown = dialog.findViewById(R.id.detail_price_breakdown);
+        MaterialButton closeButton = dialog.findViewById(R.id.btn_close_dialog);
+
+        // Set booking dates and ID right away
         bookingDates.setText(getString(R.string.booking_dates_format,
                 booking.check_in_day, booking.check_out_day));
-
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
-        totalPrice.setText(getString(R.string.total_price_format,
-                currencyFormat.format(booking.total_price)));
-
         bookingId.setText(getString(R.string.booking_id_format, booking.id));
 
-        // Status logic
+        // Set status with appropriate color based on booking status
         String statusText = "Trạng thái: ";
         int statusColor;
-        switch (booking.status) {
+
+        switch(booking.status) {
             case IN_PROGRESS:
                 statusText += "Đang tiến hành";
-                statusColor = ContextCompat.getColor(getContext(), android.R.color.black);
+                statusColor = requireContext().getColor(R.color.black);
                 break;
             case ACCEPTED:
                 statusText += "Đã xác nhận";
-                statusColor = ContextCompat.getColor(getContext(), android.R.color.holo_green_dark);
+                statusColor = requireContext().getColor(android.R.color.holo_green_dark);
                 break;
             case COMPLETED:
                 statusText += "Đã hoàn thành";
-                statusColor = ContextCompat.getColor(getContext(), android.R.color.holo_blue_dark);
+                statusColor = requireContext().getColor(android.R.color.holo_blue_dark);
                 break;
             case CANCELLED:
                 statusText += "Đã hủy";
-                statusColor = ContextCompat.getColor(getContext(), android.R.color.holo_red_dark);
+                statusColor = requireContext().getColor(android.R.color.holo_red_dark);
                 break;
             case REVIEWED:
                 statusText += "Đã đánh giá";
-                statusColor = ContextCompat.getColor(getContext(), android.R.color.holo_purple);
+                statusColor = requireContext().getColor(android.R.color.holo_purple);
                 break;
             default:
                 statusText += booking.status.toString();
-                statusColor = ContextCompat.getColor(getContext(), android.R.color.black);
+                statusColor = requireContext().getColor(R.color.black);
         }
 
         status.setText(statusText);
         status.setTextColor(statusColor);
 
-        // Price breakdown
+        // Format currency and set total price with VND instead of $
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+        totalPrice.setText(getString(R.string.total_price_format,
+                numberFormat.format(booking.total_price) + " VND"));
+
+        // Calculate and set price breakdown
         try {
-            String[] dateFormats = {"dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy"};
-            Date checkInDate = null, checkOutDate = null;
-            for (String format : dateFormats) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
-                    checkInDate = sdf.parse(booking.check_in_day);
-                    checkOutDate = sdf.parse(booking.check_out_day);
-                    if (checkInDate != null && checkOutDate != null) break;
-                } catch (ParseException ignored) {}
-            }
+            // Define the expected date format - adjust this to match your actual format
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+
+            // Parse the dates
+            Date checkInDate = dateFormat.parse(booking.check_in_day);
+            Date checkOutDate = dateFormat.parse(booking.check_out_day);
+
             if (checkInDate != null && checkOutDate != null) {
-                long diffMs = checkOutDate.getTime() - checkInDate.getTime();
-                int nights = Math.max(1, (int)(diffMs / (1000 * 60 * 60 * 24)));
-                double pricePerNight = booking.total_price / nights;
-                priceBreakdown.setText(String.format("%s × %d đêm",
-                        currencyFormat.format(pricePerNight), nights));
+                long differenceMs = checkOutDate.getTime() - checkInDate.getTime();
+                int numberOfDays = (int) (differenceMs / (1000 * 60 * 60 * 24));
+
+                // Ensure at least 1 day
+                if (numberOfDays < 1) numberOfDays = 1;
+
+                // Calculate price per night
+                double pricePerNight = booking.total_price / numberOfDays;
+
+                priceBreakdown.setText(String.format("%s VND × %d đêm",
+                        numberFormat.format(pricePerNight),
+                        numberOfDays));
             } else {
-                priceBreakdown.setText(String.format("%s (tổng cộng)",
-                        currencyFormat.format(booking.total_price)));
+                // Fallback if parsing fails
+                priceBreakdown.setText(String.format("%s VND (tổng cộng)",
+                        numberFormat.format(booking.total_price)));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            priceBreakdown.setText(String.format("%s (tổng cộng)",
-                    currencyFormat.format(booking.total_price)));
+        } catch (ParseException e) {
+            // Log the error for debugging
+            Log.e("BookingDetailDialog", "Date parsing error: " + e.getMessage());
+
+            // Fallback
+            priceBreakdown.setText(String.format("%s VND (tổng cộng)",
+                    numberFormat.format(booking.total_price)));
         }
 
-        // Load property info
-        PropertyRepository propertyRepository = new PropertyRepository(getContext());
-        propertyRepository.getPropertyById(propertyID, property -> {
-            propertyName.setText(property.getName());
+        // Set up close button
+        closeButton.setOnClickListener(v -> dialog.dismiss());
 
-            // Format address
-            if (property.getAddress() != null) {
-                StringBuilder addressBuilder = new StringBuilder();
-                if (property.getAddress().detailed_address != null && !property.getAddress().detailed_address.isEmpty())
-                    addressBuilder.append(property.getAddress().detailed_address);
-                if (property.getAddress().ward_name != null && !property.getAddress().ward_name.isEmpty())
-                    addressBuilder.append(", ").append(property.getAddress().ward_name);
-                if (property.getAddress().district_name != null && !property.getAddress().district_name.isEmpty())
-                    addressBuilder.append(", ").append(property.getAddress().district_name);
-                if (property.getAddress().city_name != null && !property.getAddress().city_name.isEmpty())
-                    addressBuilder.append(", ").append(property.getAddress().city_name);
+        // Load property details
+        PropertyRepository propertyRepository = new PropertyRepository(requireContext());
+        propertyRepository.getPropertyById(propertyID,
+                property -> {
+                    // Set property name
+                    propertyName.setText(property.getName());
 
-                propertyLocation.setText(addressBuilder.toString());
-            } else {
-                propertyLocation.setText("Địa chỉ không khả dụng");
-            }
+                    // Format and set property location
+                    if (property.getAddress() != null) {
+                        StringBuilder addressBuilder = new StringBuilder();
+                        if (property.getAddress().detailed_address != null && !property.getAddress().detailed_address.isEmpty())
+                            addressBuilder.append(property.getAddress().detailed_address);
+                        if (property.getAddress().ward_name != null && !property.getAddress().ward_name.isEmpty()) {
+                            if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                            addressBuilder.append(property.getAddress().ward_name);
+                        }
+                        if (property.getAddress().district_name != null && !property.getAddress().district_name.isEmpty()) {
+                            if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                            addressBuilder.append(property.getAddress().district_name);
+                        }
+                        if (property.getAddress().city_name != null && !property.getAddress().city_name.isEmpty()) {
+                            if (addressBuilder.length() > 0) addressBuilder.append(", ");
+                            addressBuilder.append(property.getAddress().city_name);
+                        }
+                        propertyLocation.setText(addressBuilder.toString());
+                    } else {
+                        propertyLocation.setText("Địa chỉ không khả dụng");
+                    }
 
-            // Load main photo
-            if (property.getMainPhoto() != null && !property.getMainPhoto().isEmpty()) {
-                Glide.with(this)
-                        .load(property.getMainPhoto())
-                        .centerCrop()
-                        .placeholder(R.drawable.loading_animation)
-                        .error(R.drawable.avatar_placeholder)
-                        .into(propertyImage);
-            } else {
-                propertyImage.setImageResource(R.drawable.avatar_placeholder);
-            }
+                    // Load property image with rounded corners
+                    if (property.getMainPhoto() != null && !property.getMainPhoto().isEmpty()) {
+                        Glide.with(requireContext())
+                                .load(property.getMainPhoto())
+                                .centerCrop()
+                                .placeholder(R.drawable.loading_animation)
+                                .error(R.drawable.avatar_placeholder)
+                                .into(propertyImage);
+                    } else {
+                        propertyImage.setImageResource(R.drawable.avatar_placeholder);
+                    }
+                },
+                error -> {
+                    propertyName.setText("Không tìm thấy thông tin nhà");
+                    propertyLocation.setText("Địa chỉ không khả dụng");
+                    propertyImage.setImageResource(R.drawable.avatar_placeholder);
+                }
+        );
 
-        }, error -> {
-            // Nếu load property thất bại, vẫn hiển thị dialog
-            propertyName.setText("Không tìm thấy tên nhà");
-            propertyLocation.setText("Địa chỉ không khả dụng");
-            propertyImage.setImageResource(R.drawable.avatar_placeholder);
-        });
+        dialog.show();
     }
 }
 

@@ -92,8 +92,8 @@ public class HostBookingAdapter extends RecyclerView.Adapter<HostBookingAdapter.
             bookingDatesText.setText(dateRange);
 
             // Format price
-            NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
-            String formattedPrice = currencyFormat.format(booking.total_price) + " VND";
+            NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+            String formattedPrice = numberFormat.format(booking.total_price) + " VND";
             bookingPriceText.setText(formattedPrice);
 
             // Load property details and guest info
