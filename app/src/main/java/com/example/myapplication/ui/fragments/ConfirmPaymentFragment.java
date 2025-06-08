@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.fragments;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.data.Enum.Booking_status;
 import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Repository.Booking.BookingRepository;
+import com.example.myapplication.ui.activities.MainActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import android.widget.ImageView;
@@ -162,17 +164,16 @@ public class ConfirmPaymentFragment extends Fragment {
                             "Đặt phòng thành công!",
                             Toast.LENGTH_SHORT).show();
                     new android.os.Handler().postDelayed(
-                            () -> requireActivity().getSupportFragmentManager()
-                                    .beginTransaction()
-                                    .setCustomAnimations(
-                                            R.anim.slide_in_right,
-                                            R.anim.slide_out_left,
-                                            R.anim.slide_in_left,
-                                            R.anim.slide_out_right
-                                    )
-                                    .replace(R.id.fragment_container, new com.example.myapplication.ui.fragments.TripsFragment())
-                                    .addToBackStack(null)
-                                    .commit(),
+                            () -> {
+                                // Close current activity and go to MainActivity with TripsFragment
+                                Intent intent = new Intent(requireActivity(), MainActivity.class);
+                                // Add flag to clear previous activities
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                // Use FRAGMENT_TO_LOAD instead of openFragment
+                                intent.putExtra("FRAGMENT_TO_LOAD", "trips");
+                                startActivity(intent);
+                                requireActivity().finish();
+                            },
                             1000 // 1 second delay
                     );
                 },

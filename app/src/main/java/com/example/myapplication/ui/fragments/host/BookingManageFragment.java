@@ -1,29 +1,40 @@
 package com.example.myapplication.ui.fragments.host;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.myapplication.R;
-import com.example.myapplication.ui.adapters.HostBookingAdapter;
-import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Enum.Booking_status;
+import com.example.myapplication.data.Model.Booking.Booking;
 import com.example.myapplication.data.Model.Property.Property;
 import com.example.myapplication.data.Repository.Booking.BookingRepository;
+import com.example.myapplication.data.Repository.User.UserRepository;
+import com.example.myapplication.ui.adapters.HostBookingAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class BookingManageFragment extends Fragment {
     private Button upComingTab;
@@ -101,26 +112,117 @@ public class BookingManageFragment extends Fragment {
     }
 
     private final HostBookingAdapter.OnBookingActionListener bookingActionListener = new HostBookingAdapter.OnBookingActionListener() {
-//        @Override
-//        public void onActionClick(Booking booking) {
-//            handleBookingAction(booking);
-//        }
-
         @Override
         public void onViewDetailsClick(Booking booking, Property property) {
-            try {
-                if (property != null && property.getId() != null && !property.getId().isEmpty()) {
-                    Intent intent = new Intent(requireContext(), Class.forName("com.example.myapplication.ui.activities.HouseDetailActivity"));
-                    intent.putExtra("propertyId", property.getId());
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getContext(), "Property details unavailable", Toast.LENGTH_SHORT).show();
-                }
-            } catch (Exception e) {
-                Toast.makeText(getContext(), "Navigation error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            }
+            showBookingDetailDialog(booking, property);
         }
     };
+
+    private void showBookingDetailDialog(Booking booking, Property property) {
+        if (booking == null || property == null) {
+            Toast.makeText(getContext(), "Booking details unavailable", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create dialog with custom style
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_host_booking_detail);
+
+        // Make dialog background transparent
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+            // Get screen width
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+            // Set dialog width to 90% of screen width
+            int dialogWidth = (int) (screenWidth * 0.9);
+
+            dialog.getWindow().setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        // Initialize dialog views
+        TextView propertyName = dialog.findViewById(R.id.host_detail_property_name);
+        TextView bookingStatus = dialog.findViewById(R.id.host_detail_status);
+        TextView bookingDates = dialog.findViewById(R.id.host_detail_booking_dates);
+        TextView guestName = dialog.findViewById(R.id.host_detail_guest_name);
+        TextView totalPrice = dialog.findViewById(R.id.host_detail_total_price);
+        TextView bookingId = dialog.findViewById(R.id.host_detail_booking_id);
+        LinearLayout guestNoteContainer = dialog.findViewById(R.id.guest_note_container);
+        TextView guestNote = dialog.findViewById(R.id.host_detail_guest_note);
+        com.google.android.material.button.MaterialButton closeButton = dialog.findViewById(R.id.btn_close_host_dialog);
+
+        // Set data to views
+        propertyName.setText(property.getName());
+        bookingStatus.setText(getStatusText(booking.status));
+
+        String dateRange = booking.check_in_day + " - " + booking.check_out_day;
+        bookingDates.setText(dateRange);
+
+        // Show guest name
+        if (booking.guest_id != null) {
+            // Fetch the guest name from the UserRepository
+            fetchGuestName(booking.guest_id, guestName);
+        } else {
+            guestName.setText("Khách: Unknown");
+        }
+
+        // Format price properly without $ sign and avoid scientific notation
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+        String formattedPrice = numberFormat.format(booking.total_price) + " VND";
+        totalPrice.setText(formattedPrice);
+
+        bookingId.setText("Mã đặt phòng: " + booking.id);
+
+        // Display guest note if available
+        if (booking.guest_note != null && !booking.guest_note.isEmpty()) {
+            guestNoteContainer.setVisibility(View.VISIBLE);
+            guestNote.setText(booking.guest_note);
+        } else {
+            guestNoteContainer.setVisibility(View.GONE);
+        }
+
+        // Set up close button
+        closeButton.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
+    private void fetchGuestName(String userId, TextView textView) {
+        UserRepository userRepository = new UserRepository(requireContext());
+        userRepository.getUserNameByUid(userId,
+                name -> {
+                    if (name != null && isAdded()) {
+                        textView.setText("Khách: " + name);
+                    }
+                },
+                error -> {
+                    if (isAdded()) {
+                        Log.e("BookingManageFragment", "Error fetching user: " + error.getMessage());
+                        textView.setText("Khách: " + userId);
+                    }
+                });
+    }
+
+    private String getStatusText(Booking_status status) {
+        if (status == null) return "Pending";
+
+        switch (status) {
+            case IN_PROGRESS:
+                return "Đang tiến hành";
+            case ACCEPTED:
+                return "Đã xác nhận";
+            case COMPLETED:
+                return "Đã hoàn thành";
+            case CANCELLED:
+                return "Đã hủy";
+            case REVIEWED:
+                return "Đã đánh giá";
+            default:
+                return status.toString();
+        }
+    }
 
     private void fetchHostBookings() {
         if (firebaseAuth.getCurrentUser() == null) {
