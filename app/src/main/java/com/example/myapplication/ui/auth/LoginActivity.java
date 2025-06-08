@@ -6,6 +6,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
     private SignInButton btnGoogleSignIn;
     private ActivityResultLauncher<Intent> googleSignInLauncher;
+    private TextView tvErrorMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         authRepository = new AuthRepository(this);
         userRepository = new UserRepository(this);
         notificationRepository = new NotificationRepository(this);
+
 
         if (authRepository.checkLogin()) {
             notificationRepository.fetchFCMToken(authRepository.getUserUid());
@@ -98,6 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         tvRegister = findViewById(R.id.tv_register);
         tvForgotPassword = findViewById(R.id.tv_forgot_password);
         btnGoogleSignIn = findViewById(R.id.btnGoogleSignIn);
+        tvErrorMessage = findViewById(R.id.tvErrorMessage);
 
         // Set click listeners
         btnLogin.setOnClickListener(v -> loginUser());
@@ -165,9 +169,12 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
+        tvErrorMessage.setVisibility(View.GONE);
+
         // Validate inputs
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+            tvErrorMessage.setText("Please fill all fields");
+            tvErrorMessage.setVisibility(View.VISIBLE);
             return;
         }
 
@@ -203,16 +210,16 @@ public class LoginActivity extends AppCompatActivity {
                 },
                 e -> {
                     btnLogin.setEnabled(true);
-                    Toast.makeText(LoginActivity.this,
-                            "Đăng nhập thất bại: " + e.getMessage(),
-                            Toast.LENGTH_SHORT).show();
+                    String errorMsg = "Sai email hoặc mật khẩu";
+                    tvErrorMessage.setText(errorMsg);
+                    tvErrorMessage.setVisibility(View.VISIBLE);
                 });
     }
 
     private void handleForgotPassword() {
         String email = etEmail.getText().toString().trim();
         if (email.isEmpty()) {
-            Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Hãy nhập email của bạn", Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -1,10 +1,10 @@
 package com.example.myapplication.ui.activities;
 
 import android.os.Bundle;
-import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import com.example.myapplication.R;
+import com.example.myapplication.ui.fragments.MessagesFragment;
 import com.example.myapplication.ui.fragments.host.BookingManageFragment;
 import com.example.myapplication.ui.fragments.host.PropertyManageFragment;
 import com.example.myapplication.ui.fragments.host.HostMessageFragment;
@@ -13,6 +13,8 @@ import com.example.myapplication.ui.fragments.host.StatisticFragment;
 import com.example.myapplication.ui.fragments.ProfileFragment;
 
 public class HostMainActivity extends AppCompatActivity {
+    private boolean isFragmentTransactionInProgress = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +38,7 @@ public class HostMainActivity extends AppCompatActivity {
             updateButtonStates(R.id.button_booking_manage);
         });
         findViewById(R.id.button_message).setOnClickListener(v -> {
-            loadFragment(new HostMessageFragment());
+            loadFragment(new MessagesFragment());
             updateButtonStates(R.id.button_message);
         });
         findViewById(R.id.button_statistic).setOnClickListener(v -> {
@@ -63,9 +65,25 @@ public class HostMainActivity extends AppCompatActivity {
     }
 
     private void loadFragment(Fragment fragment) {
+        // Prevent multiple concurrent transactions
+        if (isFragmentTransactionInProgress) {
+            return;
+        }
+
+        // Prevent loading the same fragment type that's already showing
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.host_fragment_container);
+        if (currentFragment != null && currentFragment.getClass().equals(fragment.getClass())) {
+            return;
+        }
+
+        isFragmentTransactionInProgress = true;
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.host_fragment_container, fragment)
-                .commit();
+                .commitAllowingStateLoss(); // Use commitAllowingStateLoss instead of commit
+
+        // Reset the flag after a short delay to allow the transaction to complete
+        new android.os.Handler().postDelayed(() -> isFragmentTransactionInProgress = false, 300);
     }
 }

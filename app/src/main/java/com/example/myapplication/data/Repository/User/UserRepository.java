@@ -374,4 +374,26 @@ public class UserRepository {
                 .update("role", role.toString())
                 .addOnCompleteListener(onCompleteListener);
     }
+
+    public void getUserNameByUid(String uid, OnSuccessListener<String> onSuccess, OnFailureListener onFailure) {
+        if (uid == null || uid.isEmpty()) {
+            onFailure.onFailure(new IllegalArgumentException("User UID cannot be null or empty"));
+            return;
+        }
+
+        this.db.collection("users").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String fullName = documentSnapshot.getString("full_name");
+                        if (fullName != null && !fullName.isEmpty()) {
+                            onSuccess.onSuccess(fullName);
+                        } else {
+                            onFailure.onFailure(new Exception("User name not found"));
+                        }
+                    } else {
+                        onFailure.onFailure(new Exception("User document not found"));
+                    }
+                })
+                .addOnFailureListener(onFailure);
+    }
 }

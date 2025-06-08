@@ -86,9 +86,6 @@ public class MessagesFragment extends Fragment implements ConversationListAdapte
         // Setup refresh listener
         swipeRefreshLayout.setOnRefreshListener(this::loadConversations);
 
-        // Load conversations
-        loadConversations();
-
         //menuIcon = view.findViewById(R.id.menuIcon);
 //        searchIcon = view.findViewById(R.id.searchIcon);
 //        moreIcon = view.findViewById(R.id.moreIcon);

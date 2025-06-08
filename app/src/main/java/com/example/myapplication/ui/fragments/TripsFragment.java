@@ -1,12 +1,15 @@
 package com.example.myapplication.ui.fragments;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
@@ -153,19 +156,39 @@ public class TripsFragment extends Fragment {
     }
 
     private void showBookingDetailDialog(Booking booking, Property property) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), R.style.CustomAlertDialog);
-        View view = getLayoutInflater().inflate(R.layout.dialog_booking_detail, null);
+        if (booking == null || property == null) {
+            Toast.makeText(requireContext(), "Booking details unavailable", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Create dialog with custom style
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_booking_detail);
+
+        // Make dialog background transparent
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+            // Get screen width
+            int screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+            // Set dialog width to 90% of screen width
+            int dialogWidth = (int) (screenWidth * 0.9);
+
+            dialog.getWindow().setLayout(dialogWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
 
         // Find views
-        ImageView propertyImage = view.findViewById(R.id.detail_property_image);
-        TextView propertyName = view.findViewById(R.id.detail_property_name);
-        TextView propertyLocation = view.findViewById(R.id.detail_property_location);
-        TextView bookingDates = view.findViewById(R.id.detail_booking_dates);
-        TextView status = view.findViewById(R.id.detail_status);
-        TextView totalPrice = view.findViewById(R.id.detail_total_price);
-        TextView bookingId = view.findViewById(R.id.detail_booking_id);
-        TextView priceBreakdown = view.findViewById(R.id.detail_price_breakdown);
-        View divider = view.findViewById(R.id.divider);
+        ImageView propertyImage = dialog.findViewById(R.id.detail_property_image);
+        TextView propertyName = dialog.findViewById(R.id.detail_property_name);
+        TextView propertyLocation = dialog.findViewById(R.id.detail_property_location);
+        TextView bookingDates = dialog.findViewById(R.id.detail_booking_dates);
+        TextView status = dialog.findViewById(R.id.detail_status);
+        TextView totalPrice = dialog.findViewById(R.id.detail_total_price);
+        TextView bookingId = dialog.findViewById(R.id.detail_booking_id);
+        TextView priceBreakdown = dialog.findViewById(R.id.detail_price_breakdown);
+        MaterialButton closeButton = dialog.findViewById(R.id.btn_close_dialog);
 
         // Set property name with styling
         propertyName.setText(property.getName());
@@ -229,55 +252,45 @@ public class TripsFragment extends Fragment {
         status.setText(statusText);
         status.setTextColor(statusColor);
 
-        // Set total price with currency formatting
-        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(Locale.US);
+        // Format currency and set total price
+        NumberFormat currencyFormat = NumberFormat.getNumberInstance(Locale.getDefault());
         totalPrice.setText(getString(R.string.total_price_format,
-                currencyFormat.format(booking.total_price)));
+                currencyFormat.format(booking.total_price) + " VND"));
 
         // Calculate and set price breakdown
+        // Replace the current date parsing logic with this more robust approach
         try {
-            // Try different date formats to handle various possible formats
-            String[] dateFormats = {"dd/MM/yyyy", "yyyy-MM-dd", "MM/dd/yyyy"};
-            Date checkInDate = null;
-            Date checkOutDate = null;
-            boolean datesParsed = false;
+            // Define the expected date format - adjust this to match your actual format
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
 
-            for (String format : dateFormats) {
-                try {
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(format, Locale.getDefault());
-                    checkInDate = dateFormat.parse(booking.check_in_day);
-                    checkOutDate = dateFormat.parse(booking.check_out_day);
-                    if (checkInDate != null && checkOutDate != null) {
-                        datesParsed = true;
-                        break;
-                    }
-                } catch (ParseException e) {
-                    // Try next format
-                }
-            }
+            // Parse the dates
+            Date checkInDate = dateFormat.parse(booking.check_in_day);
+            Date checkOutDate = dateFormat.parse(booking.check_out_day);
 
-            if (datesParsed && checkInDate != null && checkOutDate != null) {
+            if (checkInDate != null && checkOutDate != null) {
                 long differenceMs = checkOutDate.getTime() - checkInDate.getTime();
                 int numberOfDays = (int) (differenceMs / (1000 * 60 * 60 * 24));
 
-                // Ensure at least 1 day to avoid division by zero
+                // Ensure at least 1 day
                 if (numberOfDays < 1) numberOfDays = 1;
 
                 // Calculate price per night
                 double pricePerNight = booking.total_price / numberOfDays;
 
-                priceBreakdown.setText(String.format("%s × %d đêm",
+                priceBreakdown.setText(String.format("%s VND × %d đêm",
                         currencyFormat.format(pricePerNight),
                         numberOfDays));
             } else {
-                // If we can't parse the dates, just show the total
-                priceBreakdown.setText(String.format("%s (tổng cộng)",
+                // Fallback if parsing fails
+                priceBreakdown.setText(String.format("%s VND (tổng cộng)",
                         currencyFormat.format(booking.total_price)));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Fallback in case of any other errors
-            priceBreakdown.setText(String.format("%s (tổng cộng)",
+        } catch (ParseException e) {
+            // Log the error for debugging
+            Log.e("BookingDetailDialog", "Date parsing error: " + e.getMessage());
+
+            // Fallback
+            priceBreakdown.setText(String.format("%s VND (tổng cộng)",
                     currencyFormat.format(booking.total_price)));
         }
 
@@ -296,14 +309,7 @@ public class TripsFragment extends Fragment {
             propertyImage.setImageResource(R.drawable.avatar_placeholder);
         }
 
-        AlertDialog dialog = builder.setView(view)
-                .create();
-
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        }
-
-        MaterialButton closeButton = view.findViewById(R.id.btn_close_dialog);
+        // Set up close button
         closeButton.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();

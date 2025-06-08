@@ -101,10 +101,10 @@ public class BookingManageFragment extends Fragment {
     }
 
     private final HostBookingAdapter.OnBookingActionListener bookingActionListener = new HostBookingAdapter.OnBookingActionListener() {
-        @Override
-        public void onActionClick(Booking booking) {
-            handleBookingAction(booking);
-        }
+//        @Override
+//        public void onActionClick(Booking booking) {
+//            handleBookingAction(booking);
+//        }
 
         @Override
         public void onViewDetailsClick(Booking booking, Property property) {

@@ -31,7 +31,6 @@ public class HostBookingAdapter extends RecyclerView.Adapter<HostBookingAdapter.
     private final PropertyRepository propertyRepository;
 
     public interface OnBookingActionListener {
-        void onActionClick(Booking booking);
         void onViewDetailsClick(Booking booking, Property property);
     }
 
@@ -68,7 +67,7 @@ public class HostBookingAdapter extends RecyclerView.Adapter<HostBookingAdapter.
         private final TextView statusText;
         private final TextView bookingPriceText;
         private final ImageView propertyImageView;
-        private final Button actionButton;
+        private final Button btnViewDetails;
 
         ViewHolder(View itemView) {
             super(itemView);
@@ -78,7 +77,7 @@ public class HostBookingAdapter extends RecyclerView.Adapter<HostBookingAdapter.
             statusText = itemView.findViewById(R.id.status_text);
             bookingPriceText = itemView.findViewById(R.id.booking_price);
             propertyImageView = itemView.findViewById(R.id.property_image);
-            actionButton = itemView.findViewById(R.id.action_button);
+            btnViewDetails = itemView.findViewById(R.id.btn_view_details);
         }
 
         void bind(final Booking booking) {
@@ -116,10 +115,13 @@ public class HostBookingAdapter extends RecyclerView.Adapter<HostBookingAdapter.
                     }
 
                     // Set up action button
-                    configureActionButton(booking);
 
-                    // Make the item clickable
-                    itemView.setOnClickListener(v -> listener.onViewDetailsClick(booking, property));
+                    // Set up view details button
+                    btnViewDetails.setOnClickListener(v -> {
+                        if (listener != null) {
+                            listener.onViewDetailsClick(booking, property);
+                        }
+                    });
                 }
             }, e -> {
                 // Handle error
@@ -155,20 +157,6 @@ public class HostBookingAdapter extends RecyclerView.Adapter<HostBookingAdapter.
                     statusText.setText(status.toString());
                     statusText.setTextColor(itemView.getContext().getColor(R.color.black));
             }
-        }
-
-        private void configureActionButton(Booking booking) {
-            if (booking.status == Booking_status.ACCEPTED) {
-                actionButton.setText("Liên hệ khách");
-                actionButton.setVisibility(View.VISIBLE);
-            } else if (booking.status == Booking_status.IN_PROGRESS) {
-                actionButton.setText("Đánh dấu hoàn thành");
-                actionButton.setVisibility(View.VISIBLE);
-            } else {
-                actionButton.setVisibility(View.GONE);
-            }
-
-            actionButton.setOnClickListener(v -> listener.onActionClick(booking));
         }
     }
 }
