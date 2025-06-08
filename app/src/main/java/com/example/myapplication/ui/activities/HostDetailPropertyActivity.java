@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -161,35 +163,82 @@ public class HostDetailPropertyActivity extends AppCompatActivity {
                 bookings -> {
                     List<long[]> bookedRanges = new ArrayList<>();
                     SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault());
+
                     for (Booking booking : bookings) {
                         if (booking.status == Booking_status.CANCELLED) continue;
                         try {
                             Date start = sdf.parse(booking.check_in_day);
                             Date end = sdf.parse(booking.check_out_day);
                             if (start != null && end != null) {
-                                bookedRanges.add(new long[]{start.getTime(), end.getTime()});
+                                // Adjust the start and end dates to include the full day
+                                Calendar startCal = Calendar.getInstance();
+                                startCal.setTime(start);
+                                startCal.set(Calendar.HOUR_OF_DAY, 0);
+                                startCal.set(Calendar.MINUTE, 0);
+                                startCal.set(Calendar.SECOND, 0);
+                                startCal.set(Calendar.MILLISECOND, 0);
+
+                                Calendar endCal = Calendar.getInstance();
+                                endCal.setTime(end);
+                                endCal.set(Calendar.HOUR_OF_DAY, 23);
+                                endCal.set(Calendar.MINUTE, 59);
+                                endCal.set(Calendar.SECOND, 59);
+                                endCal.set(Calendar.MILLISECOND, 999);
+
+                                bookedRanges.add(new long[]{startCal.getTimeInMillis(), endCal.getTimeInMillis()});
                             }
                         } catch (ParseException e) {
                             Log.e("CalendarDialog", "Date parsing error: " + e.getMessage());
                         }
                     }
-                    CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder();
-                    constraintsBuilder.setValidator(new DisabledDateRangeValidator(bookedRanges));
 
-                    // Create MaterialDatePicker without custom theme
-                    MaterialDatePicker<Long> datePicker = MaterialDatePicker.Builder.datePicker()
-                            .setTitleText("Lịch phòng: " + propertyData.getName())
-                            .setCalendarConstraints(constraintsBuilder.build())
-                            .build();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.set(Calendar.HOUR_OF_DAY, 0);
+                    calendar.set(Calendar.MINUTE, 0);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+                    long today = calendar.getTimeInMillis();
 
-                    // Disable selection by not handling positive button
-                    datePicker.addOnPositiveButtonClickListener(selection -> { /* Do nothing */ });
+                    // Create a validator that disables booked dates without preventing selection
+                    CalendarConstraints.DateValidator bookedDateValidator = new DisabledDateRangeValidator(bookedRanges);
 
-                    datePicker.show(getSupportFragmentManager(), "calendar_dialog");
+                    CalendarConstraints.Builder constraintsBuilder = new CalendarConstraints.Builder()
+                            .setStart(today)
+                            .setValidator(bookedDateValidator);
+
+                    MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+                    builder.setTitleText("Lịch phòng: " + propertyData.getName());
+                    builder.setTheme(R.style.CustomDatePickerStyle);
+                    builder.setCalendarConstraints(constraintsBuilder.build());
+
+                    MaterialDatePicker<Long> picker = builder.build();
+
+                    picker.addOnPositiveButtonClickListener(selection -> {
+                        calendar.setTimeInMillis(selection);
+                        String selectedDate = sdf.format(calendar.getTime());
+
+                        // Check if selected date is in booked ranges
+                        boolean isBooked = false;
+                        for (long[] range : bookedRanges) {
+                            if (selection >= range[0] && selection <= range[1]) {
+                                isBooked = true;
+                                break;
+                            }
+                        }
+
+                        if (isBooked) {
+                            Toast.makeText(this, "Ngày " + selectedDate + " đã được đặt", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(this, "Ngày " + selectedDate + " còn trống", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    picker.show(getSupportFragmentManager(), "calendar_dialog");
                 },
                 error -> Toast.makeText(this, "Không thể tải lịch", Toast.LENGTH_SHORT).show()
         );
     }
+
 
     private void UpdateDisplay(Property property) {
         Glide.with(this)
