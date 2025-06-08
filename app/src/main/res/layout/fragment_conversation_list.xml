@@ -106,11 +106,15 @@
 
     <LinearLayout
         android:id="@+id/emptyStateView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:background="#FFFFFF"
+        android:elevation="2dp"
+        android:layout_gravity="center"
+        tools:visibility="visible">
 
         <ImageView
             android:layout_width="120dp"
