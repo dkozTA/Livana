@@ -33,7 +33,7 @@
             android:layout_height="200dp"
             android:layout_marginBottom="0dp"
             android:contentDescription="App Logo"
-            android:src="@drawable/logo_livana" />
+            android:src="@drawable/logo_livana2" />
 
 <!--        &lt;!&ndash; Welcome Text &ndash;&gt;-->
 <!--        <TextView-->
