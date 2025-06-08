@@ -384,6 +384,7 @@ public class PropertyRepository {
         return true; // Không có ngày nào trùng → hợp lệ
     }
 
+    /*
     //Gọi cái này để thêm vào link nhé, không gọi cái dưới
     public void addLinksToBothProperty(String propertyID, String link_id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.addLinksToProperty(propertyID, link_id, unused -> {
@@ -404,6 +405,48 @@ public class PropertyRepository {
             onFailure.onFailure(new Exception("Link Id của Property không tồn tại"));
         });
     }
+    */
+    public void addLinksToBothProperty(String propertyID, String link_id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
+        this.db.runTransaction(new Transaction.Function<Void>() {
+                    @Override
+                    public Void apply(Transaction transaction) throws FirebaseFirestoreException {
+
+                        DocumentReference mainPropertyReference = db.collection("properties").document(propertyID);
+                        DocumentSnapshot mainPropertySnapshot = transaction.get(mainPropertyReference);
+
+                        DocumentReference linkedPropertyReference = db.collection("properties").document(link_id);
+                        DocumentSnapshot linkedPropertySnapshot = transaction.get(linkedPropertyReference);
+                        if (!mainPropertySnapshot.exists() || !linkedPropertySnapshot.exists()) {
+                            throw new FirebaseFirestoreException("One or both properties not found",
+                                    FirebaseFirestoreException.Code.NOT_FOUND);
+                        }
+                        Property mainProperty = mainPropertySnapshot.toObject(Property.class);
+                        Property linkProperty = linkedPropertySnapshot.toObject(Property.class);
+
+                        List<String> mainPropertyBookedDate = mainProperty.booked_date;
+                        List<String> linkPropertyBookedDate = linkProperty.booked_date;
+
+                        if (mainPropertyBookedDate == null || linkPropertyBookedDate == null) {
+                            throw new FirebaseFirestoreException("One or both bookedDate is null",
+                                    FirebaseFirestoreException.Code.NOT_FOUND);
+                        }
+
+                        Set<String> mergedSet = new HashSet<>();
+                        mergedSet.addAll(mainPropertyBookedDate);
+                        mergedSet.addAll(linkPropertyBookedDate);
+
+                        List<String> combinedBookedDate = new ArrayList<>(mergedSet);
+                        transaction.update(linkedPropertyReference, "booked_date", combinedBookedDate);
+                        transaction.update(mainPropertyReference, "booked_date", combinedBookedDate);
+
+                        transaction.update(mainPropertyReference, "links", FieldValue.arrayUnion(link_id));
+                        transaction.update(linkedPropertyReference, "links", FieldValue.arrayUnion(propertyID));
+                        return null; // Transaction thành công
+                    }
+                }).addOnSuccessListener(onSuccess)
+                .addOnFailureListener(onFailure);
+    }
+
 
     public void deleteLinksToProperty(String propertyID, String link_id, OnSuccessListener<Void> onSuccess, OnFailureListener onFailure) {
         this.getPropertyById(link_id, property -> {
