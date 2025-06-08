@@ -111,6 +111,7 @@
             android:layout_marginBottom="24dp"
             android:backgroundTint="@android:color/black"
             android:text="Đăng ký"
+            android:textColor="@android:color/white"
             android:textAllCaps="false"
             android:textSize="16sp"
             app:cornerRadius="8dp"
